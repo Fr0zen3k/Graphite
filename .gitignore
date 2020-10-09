@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs/Graphite/v16
+/bin
+/bin-int
+/Graphite/vendor/Vulkan/1.2.148.1
+*.sln
+*.user
+*.filters
+*.vcxproj
