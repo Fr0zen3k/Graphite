@@ -10,10 +10,14 @@ workspace "Graphite"
 
 outdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+include "Graphite/vendor/imgui"
+
 project "Graphite"
 	location "Graphite"
 	kind "SharedLib"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outdir .. "/%{prj.name}")
@@ -33,34 +37,40 @@ project "Graphite"
 	{
 		"%{prj.name}/vendor/spdlog/include/",
 		"%{prj.name}/src/",
-		"%{prj.name}/vendor/glfw-3.3.2.bin.WIN64/include/",
+		"%{prj.name}/vendor/glfw_x64/include/",
 		"%{prj.name}/vendor/glm",
-		"%{prj.name}/vendor/Vulkan/1.2.148.1/Include/"
+		"%{prj.name}/vendor/Vulkan/1.2.148.1/Include/",
+		"%{prj.name}/vendor/imgui"
 	}
 	
 	libdirs 
 	{
-		"%{prj.name}/vendor/glfw-3.3.2.bin.WIN64/lib-vc2019",
-		"%{prj.name}/vendor/Vulkan/1.2.148.1/Lib"
+		"%{prj.name}/vendor/Vulkan/1.2.148.1/Lib",
+		"%{prj.name}/vendor/glfw_x64/lib-vc2019"
 	}
 	
 	links 
 	{
-		"glfw3",
-		"vulkan-1"
+		"vulkan-1",
+		"ImGui",
+		"glfw3"
+	}
+	
+	defines 
+	{
+		"GLFW_INCLUDE_VULKAN"
 	}
 	
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines	
 		{
 			"GR_PLATFORM_WINDOWS",
+			"_CRT_SECURE_NO_WARNINGS",
 			"GR_BUILD_DLL"
 		}
-
+		
 		postbuildcommands
 		{
 			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outdir .. "/Sandbox")
@@ -80,6 +90,7 @@ project "Graphite"
 			"GR_RELEASE",
 			"GR_ENABLE_ASSERT"
 		}
+		
 		optimize "On"
 
 	filter "configurations:Dist"
@@ -90,6 +101,8 @@ project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outdir .. "/%{prj.name}")
@@ -106,19 +119,17 @@ project "Sandbox"
 	{
 		"Graphite/vendor/spdlog/include/",
 		"Graphite/src/",
-		"Graphite/vendor/glfw-3.3.2.bin.WIN64/include/",
+		"Graphite/vendor/glfw_x64/include/",
 		"Graphite/vendor/glm",
-		"Graphite/vendor/Vulkan/1.2.148.1/Include/"
+		"Graphite/vendor/Vulkan/1.2.148.1/Include/",
+		"Graphite/vendor/imgui"
 	}
-
 	links 
 	{
-		"Graphite" 
+		"Graphite"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -128,12 +139,12 @@ project "Sandbox"
 
 	filter "configurations:Debug"
 		defines "GR_DEBUG"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "GR_RELEASE"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "GR_DIST"
-		optimize "On"
+		optimize "on"

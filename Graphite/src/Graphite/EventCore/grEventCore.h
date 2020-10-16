@@ -70,6 +70,8 @@ namespace Graphite {
             return GetCategoryFlags() & static_cast<int>(category);
         }
 
+        inline bool isHandled() { return m_Handled; }
+
     protected:
         /// <summary>
         /// A variable used to track weather the event was handles, if it isn't, its propagated further trough the engine

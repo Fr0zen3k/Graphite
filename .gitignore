@@ -10,3 +10,4 @@
 *.user
 *.filters
 *.vcxproj
+/.vs

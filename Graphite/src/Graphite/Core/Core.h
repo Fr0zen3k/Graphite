@@ -3,8 +3,6 @@
 //
 #pragma once
 
-#define GLFW_INCLUDE_VULKAN
-
 #ifndef GRAPHITE_CORE_H
 #define GRAPHITE_CORE_H
 

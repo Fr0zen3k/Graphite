@@ -1,8 +1,8 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
-
-#include <Graphite.h>
+#include "Graphite/Core/grpch.h"
+#include "Graphite.h"
 
 class Sandbox : public Graphite::Application {
 public:
