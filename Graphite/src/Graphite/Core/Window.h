@@ -30,7 +30,7 @@ namespace Graphite {
 	/// Class representing a window for the renderer to use, holds a glfwWindow, as well as the width and height data and the window title, which is changeable
 	/// </summary>
 	class GRAPHITE_API Window {
-		friend class VkGraphicsContext;
+		friend class VulkanGraphicsContext;
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 

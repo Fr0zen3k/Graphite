@@ -17,13 +17,13 @@
 
 namespace Graphite
 {
-	class GRAPHITE_API VkGraphicsContext
+	class GRAPHITE_API VulkanGraphicsContext
 	{
 		friend class Renderer2D;
 		friend class Renderer3D;
 	public:
-		VkGraphicsContext();
-		~VkGraphicsContext();
+		VulkanGraphicsContext();
+		~VulkanGraphicsContext();
 
 		bool OnEvent(Event& e);
 

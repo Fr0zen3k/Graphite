@@ -1,11 +1,13 @@
 #include "Graphite/Core/grpch.h"
 
-#include "VkGraphicsContext.h"
+#ifdef GRAPHITE_RENDERER_VULKAN
+
+#include "VulkanGraphicsContext.h"
 
 namespace Graphite
 {
 
-	VkGraphicsContext::VkGraphicsContext()
+	VulkanGraphicsContext::VulkanGraphicsContext()
 	{
 		try
 		{
@@ -17,13 +19,13 @@ namespace Graphite
 		}
 	}
 
-	VkGraphicsContext::~VkGraphicsContext()
+	VulkanGraphicsContext::~VulkanGraphicsContext()
 	{
 		Shutdown();
 	}
 
 
-	bool VkGraphicsContext::OnEvent(Event& e)
+	bool VulkanGraphicsContext::OnEvent(Event& e)
 	{
 		EventDispatch dispatcher(e);
 
@@ -31,12 +33,12 @@ namespace Graphite
 		{
 				m_FrameSize.first = static_cast<uint32_t>(e.GetHeight());
 				m_FrameSize.second = static_cast<uint32_t>(e.GetWidth());
-				return true;
+				return true; 
 		});
 	}
 
 
-	void VkGraphicsContext::Init()
+	void VulkanGraphicsContext::Init()
 	{
 		m_ActiveApplication = Application::Get();
 		
@@ -59,13 +61,13 @@ namespace Graphite
 		}
 	}
 
-	void VkGraphicsContext::Shutdown()
+	void VulkanGraphicsContext::Shutdown()
 	{
 		vkDestroyInstance(m_Instance, nullptr);
 	}
 
 	
-	void VkGraphicsContext::CreateInstance()
+	void VulkanGraphicsContext::CreateInstance()
 	{
 		m_ApplicationInfo = {};
 		m_ApplicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -112,7 +114,7 @@ namespace Graphite
 		}
 	}
 
-	void VkGraphicsContext::ChoosePhysicalDevice()
+	void VulkanGraphicsContext::ChoosePhysicalDevice()
 	{
 		m_PhysicalDevice = VK_NULL_HANDLE;
 
@@ -145,7 +147,7 @@ namespace Graphite
 		vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &m_PhysicalDeviceFeatures);
 	}
 
-	void VkGraphicsContext::CreateLogicalDevice()
+	void VulkanGraphicsContext::CreateLogicalDevice()
 	{
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		std::set<int> queueFamilyIndices = { m_QueueFamilies.m_GraphicsFamily, m_QueueFamilies.m_PresentationFamily };
@@ -184,7 +186,7 @@ namespace Graphite
 		vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilies.m_PresentationFamily, 0, &m_PresentationQueue);
 	}
 
-	void VkGraphicsContext::CreateSurface()
+	void VulkanGraphicsContext::CreateSurface()
 	{
 		VkResult result = glfwCreateWindowSurface(m_Instance, GetNativeWindow(), nullptr, &m_Surface);
 
@@ -195,7 +197,7 @@ namespace Graphite
 	}
 	
 
-	void VkGraphicsContext::GetQueueFamilies()
+	void VulkanGraphicsContext::GetQueueFamilies()
 	{
 		uint32_t familyCount = 0;
 		vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice, &familyCount, nullptr);
@@ -226,3 +228,5 @@ namespace Graphite
 	}
 
 }
+
+#endif
