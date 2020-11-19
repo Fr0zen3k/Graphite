@@ -25,7 +25,14 @@ namespace Graphite
 
 	bool VkGraphicsContext::OnEvent(Event& e)
 	{
-		
+		EventDispatch dispatcher(e);
+
+		dispatcher.Dispatch<WindowResizeEvent>([&](WindowResizeEvent e)
+		{
+				m_FrameSize.first = static_cast<uint32_t>(e.GetHeight());
+				m_FrameSize.second = static_cast<uint32_t>(e.GetWidth());
+				return true;
+		});
 	}
 
 
