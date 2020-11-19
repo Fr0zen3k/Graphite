@@ -8,16 +8,16 @@
 #ifndef GRAPHITE_GRMOUSEEVENT_H
 #define GRAPHITE_GRMOUSEEVENT_H
 
-#include "grEventCore.h"
+#include "EventCore.h"
 
 namespace Graphite {
 
     /// <summary>
     /// Implementation of a mouse move event, whenever a mouse is moved, the event is created and dispatched, and holds the position of the mouse cursor, which is retrievable
     /// </summary>
-    class GRAPHITE_API grMouseMovEvent : public grEvent {
+    class GRAPHITE_API MouseMovEvent : public Event {
     public:
-        grMouseMovEvent(double x, double y) : m_MouseX(x), m_MouseY(y) {}
+        MouseMovEvent(double x, double y) : m_MouseX(x), m_MouseY(y) {}
 
         inline double GetX() { return m_MouseX; }
 
@@ -31,7 +31,7 @@ namespace Graphite {
 
         GR_EVENT_CLASS_TYPE(MouseMovement)
 
-        GR_EVENT_CLASS_CATEGORY(static_cast<int>(grEventCategory::MouseEvent_c) | static_cast<int>(grEventCategory::InputEvent_c))
+        GR_EVENT_CLASS_CATEGORY(static_cast<int>(EventCategory::MouseEvent_c) | static_cast<int>(EventCategory::InputEvent_c))
     private:
         double m_MouseX;
         double m_MouseY;
@@ -40,9 +40,9 @@ namespace Graphite {
     /// <summary>
     /// Implementation of a mouse scroll event, supports both horizontal and vertical scrolling
     /// </summary>
-    class GRAPHITE_API grMouseScrollEvent : public grEvent {
+    class GRAPHITE_API MouseScrollEvent : public Event {
     public:
-        grMouseScrollEvent(double offsetX, double offsetY) : m_OffsetX(offsetX), m_OffsetY(offsetY) {}
+        MouseScrollEvent(double offsetX, double offsetY) : m_OffsetX(offsetX), m_OffsetY(offsetY) {}
 
         inline double GetOffsetX() { return m_OffsetX; }
         inline double GetOffsetY() { return m_OffsetY; }
@@ -55,7 +55,7 @@ namespace Graphite {
 
         GR_EVENT_CLASS_TYPE(MouseScroll)
 
-        GR_EVENT_CLASS_CATEGORY(static_cast<int>(grEventCategory::MouseEvent_c) | static_cast<int>(grEventCategory::InputEvent_c))
+        GR_EVENT_CLASS_CATEGORY(static_cast<int>(EventCategory::MouseEvent_c) | static_cast<int>(EventCategory::InputEvent_c))
     private:
         double m_OffsetX;
         double m_OffsetY;
@@ -64,14 +64,14 @@ namespace Graphite {
     /// <summary>
     /// Implementation of a mouse button event, on which the button up and down events are based upon, supports left, right, scroll click plus 5 additional buttons for use
     /// </summary>
-    class GRAPHITE_API grMouseButtonEvent : public grEvent {
+    class GRAPHITE_API MouseButtonEvent : public Event {
     public:
         inline int GetMouseButton() { return m_Button; }
 
-        GR_EVENT_CLASS_CATEGORY( static_cast<int>(grEventCategory::MouseButtonEvent_c) | static_cast<int>(grEventCategory::MouseEvent_c)
-                                            | static_cast<int>(grEventCategory::InputEvent_c))
+        GR_EVENT_CLASS_CATEGORY( static_cast<int>(EventCategory::MouseButtonEvent_c) | static_cast<int>(EventCategory::MouseEvent_c)
+                                            | static_cast<int>(EventCategory::InputEvent_c))
     protected:
-        grMouseButtonEvent(int button) : m_Button(button) {}
+        MouseButtonEvent(int button) : m_Button(button) {}
 
         int m_Button;
     };
@@ -79,9 +79,9 @@ namespace Graphite {
     /// <summary>
     /// Implementation of mouse button down event, dispatched when a mouse button is clicked
     /// </summary>
-    class GRAPHITE_API grMouseButtonDownEvent : public grMouseButtonEvent {
+    class GRAPHITE_API MouseButtonDownEvent : public MouseButtonEvent {
     public:
-        grMouseButtonDownEvent(int button) : grMouseButtonEvent(button) {}
+        MouseButtonDownEvent(int button) : MouseButtonEvent(button) {}
 
         std::string ToString() const override {
             std::stringstream ss;
@@ -95,9 +95,9 @@ namespace Graphite {
     /// <summary>
     /// Implementation of mouse button up event, dispatched when a mouse button is released
     /// </summary>
-    class GRAPHITE_API grMouseButtonUpEvent : public grMouseButtonEvent {
+    class GRAPHITE_API MouseButtonUpEvent : public MouseButtonEvent {
     public:
-        grMouseButtonUpEvent(int button) : grMouseButtonEvent(button) {}
+        MouseButtonUpEvent(int button) : MouseButtonEvent(button) {}
 
         std::string ToString() const override {
             std::stringstream ss;

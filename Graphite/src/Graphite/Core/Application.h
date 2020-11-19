@@ -10,7 +10,7 @@
 
 #include "Core.h"
 
-#include "grWindow.h"
+#include "Window.h"
 
 namespace Graphite {
 
@@ -34,21 +34,21 @@ namespace Graphite {
         /// Event callback function handling all events propagated to the application
         /// </summary>
         /// <param name="event"> Event to be handled </param>
-        void OnEvent(grEvent& event);
+        void OnEvent(Event& event);
 
         /// <summary>
-        /// Function to retrieve the window instance of type grWindow
+        /// Function to retrieve the window instance of type Window
         /// </summary>
         /// <returns> Returns the window reference </returns>
-        inline grWindow& GetWindow() { return *m_Window; }
+        inline Window& GetWindow() { return *m_Window; }
 
         /// <summary>
         /// Function that retrieves the active application instance
         /// </summary>
         /// <returns> Returns the active application instance </returns>
-        inline static Application& Get() { return *s_Instance; }
+        inline static Application* Get() { return s_Instance; }
     private:
-        std::unique_ptr<grWindow> m_Window;
+        std::unique_ptr<Window> m_Window;
 
         static Application* s_Instance;
     };

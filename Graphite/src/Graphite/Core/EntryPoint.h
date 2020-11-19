@@ -11,7 +11,7 @@
 #endif
 
 #include "Application.h"
-#include "grLog.h"
+#include "Log.h"
 
 /// <summary>
 /// The extern function defined by the Sandbox, used to retrieve a client specified instance of an Application
@@ -27,7 +27,7 @@ extern Graphite::Application * Graphite::CreateApp();
 /// <returns></returns>
 int main(int argc, char *argv[]) {
 
-    Graphite::grLog::init();
+    Graphite::Log::init();
 
     GR_CORE_LOG_WARN("Core logger init");
     GR_LOG_CRITICAL("Client app logger init");

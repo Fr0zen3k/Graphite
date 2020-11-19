@@ -5,7 +5,7 @@
 
 #include "grpch.h"
 
-#include "Graphite/EventCore/grEvents.h"
+#include "Graphite/EventCore/Events.h"
 #include "Graphite/Core/Core.h"
 #include "Graphite/Core/Application.h"
 
@@ -214,9 +214,9 @@
 namespace Graphite
 {
 	/// <summary>
-	/// grInput class, used for supporting the event polling
+	/// Input class, used for supporting the event polling
 	/// </summary>
-	class GRAPHITE_API grInput
+	class GRAPHITE_API Input
 	{
 	public:
 		static bool grIsKeyPressed(int keycode);

@@ -1,13 +1,13 @@
 #include "Graphite/Core/grpch.h"
 
-#include "grLayerStack.h"
+#include "LayerStack.h"
 
 namespace Graphite
 {
 
-	grLayerStack::grLayerStack() {}
+	LayerStack::LayerStack() {}
 	
-	grLayerStack::~grLayerStack()
+	LayerStack::~LayerStack()
 	{
 		for(auto layer : m_Layers)
 		{
@@ -19,12 +19,12 @@ namespace Graphite
 		}
 	}
 
-	void grLayerStack::AttachLayer(grLayer* layer)
+	void LayerStack::AttachLayer(Layer* layer)
 	{
 		m_Layers.emplace_back(layer);
 		layer->OnAttach();
 	}
-	void grLayerStack::DetachLayer(grLayer* layer)
+	void LayerStack::DetachLayer(Layer* layer)
 	{
 		auto target = std::find(m_Layers.begin(), m_Layers.end(), layer);
 
@@ -35,12 +35,12 @@ namespace Graphite
 
 		layer->OnDetach();
 	}
-	void grLayerStack::AttachOverlay(grLayer* layer)
+	void LayerStack::AttachOverlay(Layer* layer)
 	{
 		m_Overlays.emplace_back(layer);
 		layer->OnAttach();
 	}
-	void grLayerStack::DetachOvarlay(grLayer* layer)
+	void LayerStack::DetachOvarlay(Layer* layer)
 	{
 		auto target = std::find(m_Overlays.begin(), m_Overlays.end(), layer);
 
@@ -51,7 +51,7 @@ namespace Graphite
 		layer->OnDetach();
 	}
 
-	void grLayerStack::OnEvent(grEvent& event)
+	void LayerStack::OnEvent(Event& event)
 	{
 		for (auto it = m_Overlays.end(); it != m_Overlays.begin(); )
 		{
@@ -71,7 +71,7 @@ namespace Graphite
 		}
 	}
 	
-	void grLayerStack::Tick()
+	void LayerStack::Tick()
 	{
 		for(auto layer : m_Layers)
 		{

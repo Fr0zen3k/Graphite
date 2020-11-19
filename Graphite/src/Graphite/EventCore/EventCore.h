@@ -10,7 +10,7 @@
 
 #include "Graphite/Core/Core.h"
 
-// All the keycodes used for events are located in 'src/Graphite/Core/grInput.h'
+// All the keycodes used for events are located in 'src/Graphite/Core/Input.h'
 
 namespace Graphite {
 
@@ -18,7 +18,7 @@ namespace Graphite {
     /// <summary>
     /// Enum: different possible types of event, each with its own class implemented, might add more later (mainly for mouse enter and leave events)
     /// </summary>
-    enum class grEventType {
+    enum class EventType {
         None = 0,
         WindowClose, WindowResize, WindowFocus, WindowUnfocus,              // Window events
         Tick, Update, Render,                                               // Might deprecate or completely remove later
@@ -29,7 +29,7 @@ namespace Graphite {
     /// <summary>
     /// Enum: different types of single categories, an event can be of multiple types / a combination of types in the same time
     /// </summary>
-    enum class grEventCategory {
+    enum class EventCategory {
         None = 0,
         AppEvent_c          = GR_BIT(0),
         InputEvent_c        = GR_BIT(1),
@@ -42,21 +42,21 @@ namespace Graphite {
     /// <summary>
     /// Macros for easier definition of functions that are the same for each type of events
     /// </summary>
-#define GR_EVENT_CLASS_TYPE(type) static grEventType GetStaticType() { return grEventType::type; } \
-                                virtual grEventType GetEventType() const override { return GetStaticType(); } \
+#define GR_EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; } \
+                                virtual EventType GetEventType() const override { return GetStaticType(); } \
                                 virtual const char * GetName() const override { return #type; }
 
 
 #define GR_EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
     /// <summary>
-    /// Base event class, all event types are built on top of grEvent, a class can't be a valid working event if it doesn't extend grEvent class
+    /// Base event class, all event types are built on top of Event, a class can't be a valid working event if it doesn't extend Event class
     /// </summary>
-    class GRAPHITE_API grEvent {
-        friend class grEventDispatch;
+    class GRAPHITE_API Event {
+        friend class EventDispatch;
 
     public:
-        virtual grEventType GetEventType() const = 0;                       // Returns the type of event of an instance
+        virtual EventType GetEventType() const = 0;                       // Returns the type of event of an instance
         virtual const char * GetName() const = 0;                           // Returns the name of an event, mainly for debugging & logging
         virtual int GetCategoryFlags() const = 0;                           // Returns the flags representing the combination of categories of an event
         virtual std::string ToString() const { return GetName(); }          // Returns the name in std::string format, mainly for debugging and logging purposes
@@ -66,7 +66,7 @@ namespace Graphite {
         /// </summary>
         /// <param name="category"> The category the function checks for </param>
         /// <returns> Returns weather the event instance is a combination of categories containing the given category </returns>
-        inline bool isInCategory(grEventCategory category) {
+        inline bool isInCategory(EventCategory category) {
             return GetCategoryFlags() & static_cast<int>(category);
         }
 
@@ -82,11 +82,11 @@ namespace Graphite {
     /// <summary>
     /// Class used to call a callback function on a specific event, that determines weather the event is handled, or dispatched further
     /// </summary>
-    class GRAPHITE_API grEventDispatch {
+    class GRAPHITE_API EventDispatch {
         template<typename T> using EventFn = std::function<bool(T&)>;
 
     public:
-        grEventDispatch(grEvent &event): m_Event(event) { }
+        EventDispatch(Event &event): m_Event(event) { }
 
         /// <summary>
         /// Function used for dispatching the event, if an event the class instance was initialized with is of the type specified when calling the function, the callback will be called
@@ -105,7 +105,7 @@ namespace Graphite {
         }
 
     private:
-        grEvent &m_Event;
+        Event &m_Event;
     };
 
 }

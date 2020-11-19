@@ -6,21 +6,21 @@
 #define GRAPHITE_WINDOW_H
 
 #include "Core.h"
-#include "Graphite/EventCore/grEvents.h"
+#include "Graphite/EventCore/Events.h"
 
 #include "GLFW/glfw3.h"
 
 namespace Graphite {
 
 	/// <summary>
-	/// Struct used for easier window init, holds the needed info to init a non-default window, the values are passed to a WindowData instance within the grWindow class
+	/// Struct used for easier window init, holds the needed info to init a non-default window, the values are passed to a WindowData instance within the Window class
 	/// </summary>
-	struct grWindowInfo {
+	struct WindowInfo {
 		std::string Title;
 		unsigned int Width;
 		unsigned int Height;
 
-		grWindowInfo(const std::string & title = "Graphite Engine", 
+		WindowInfo(const std::string & title = "Graphite Engine", 
 					unsigned int width = 1280, 
 					unsigned int height = 720)
 			: Title(title), Width(width), Height(height) { }
@@ -29,19 +29,20 @@ namespace Graphite {
 	/// <summary>
 	/// Class representing a window for the renderer to use, holds a glfwWindow, as well as the width and height data and the window title, which is changeable
 	/// </summary>
-	class GRAPHITE_API grWindow {
+	class GRAPHITE_API Window {
+		friend class VkGraphicsContext;
 	public:
-		using EventCallbackFn = std::function<void(grEvent&)>;
+		using EventCallbackFn = std::function<void(Event&)>;
 
 		/// <summary>
 		/// Constructor, calls the Init() function
 		/// </summary>
 		/// <param name="props"> Used for the info needed to create a custom non-default window instance </param>
-		grWindow(const grWindowInfo& props);
+		Window(const WindowInfo& props);
 		/// <summary>
 		/// Destructor, calls the Shutdown() function
 		/// </summary>
-		~grWindow();
+		~Window();
 
 		/// <summary>
 		/// Function called once per tick, updated the frame with the newest information regarding rendering, events and such
@@ -52,8 +53,8 @@ namespace Graphite {
 		/// Getters for the dimensions of the window
 		/// </summary>
 		/// <returns> The dimensions of the window each </returns>
-		inline unsigned int GetHeight() { return m_Data.Height; }
-		inline unsigned int GetWidth() { return m_Data.Width; }
+		inline uint32_t GetHeight() { return m_Data.Height; }
+		inline uint32_t GetWidth() { return m_Data.Width; }
 
 		/// <summary>
 		/// Getter for the GLFW window instance, needed for the renderer
@@ -84,11 +85,11 @@ namespace Graphite {
 		inline bool IsVSyncOn() { return m_Data.VSync; }
 
 		/// <summary>
-		/// Static function for creating a grWindow instance
+		/// Static function for creating a Window instance
 		/// </summary>
-		/// <param name="props"> grWindowInfo needed for creating a non-default window </param>
+		/// <param name="props"> WindowInfo needed for creating a non-default window </param>
 		/// <returns> Returns the pointer to the window instance created, window needs to be deleted before closing the app </returns>
-		static grWindow* grCreateWindow(const grWindowInfo& props = grWindowInfo());
+		static Window* grCreateWindow(const WindowInfo& props = WindowInfo());
 
 	private:
 		/// <summary>
@@ -110,7 +111,7 @@ namespace Graphite {
 		/// </summary>
 		struct WindowData {
 			std::string Title;
-			unsigned int Width, Height;
+			uint32_t Width, Height;
 			bool VSync;
 
 			EventCallbackFn EventCallback;

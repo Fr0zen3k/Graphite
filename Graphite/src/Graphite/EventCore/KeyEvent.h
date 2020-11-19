@@ -8,7 +8,7 @@
 #ifndef GRAPHITE_GRKEYEVENT_H
 #define GRAPHITE_GRKEYEVENT_H
 
-#include "grEventCore.h"
+#include "EventCore.h"
 
 namespace Graphite {
 
@@ -16,15 +16,15 @@ namespace Graphite {
     /// <summary>
     /// An event implementation for key events, all different types of key events are built on top of this class
     /// </summary>
-    class GRAPHITE_API grKeyEvent : public grEvent {
+    class GRAPHITE_API KeyEvent : public Event {
 
     public:
         inline int GetKeyCode() const { return m_KeyCode; }
 
-        GR_EVENT_CLASS_CATEGORY(static_cast<int>(grEventCategory::KeyboardEvent_c) | static_cast<int>(grEventCategory::InputEvent_c))
+        GR_EVENT_CLASS_CATEGORY(static_cast<int>(EventCategory::KeyboardEvent_c) | static_cast<int>(EventCategory::InputEvent_c))
 
     protected:
-        grKeyEvent(int keycode) : m_KeyCode(keycode) {}
+        KeyEvent(int keycode) : m_KeyCode(keycode) {}
 
         int m_KeyCode;
     };
@@ -32,9 +32,9 @@ namespace Graphite {
     /// <summary>
     /// A key down event implementation, created and dispatched whenever a key is pressed or repeated
     /// </summary>
-    class GRAPHITE_API grKeyDownEvent : public grKeyEvent {
+    class GRAPHITE_API KeyDownEvent : public KeyEvent {
     public:
-        grKeyDownEvent(int keycode, int count) : grKeyEvent(keycode), m_RepeatCount(count) {}
+        KeyDownEvent(int keycode, int count) : KeyEvent(keycode), m_RepeatCount(count) {}
 
         inline int Repeated() const { return m_RepeatCount; }
 
@@ -53,9 +53,9 @@ namespace Graphite {
     /// <summary>
     /// A key up event implementation, created and dispatched whenever a key is released
     /// </summary>
-    class GRAPHITE_API grKeyUpEvent : public grKeyEvent {
+    class GRAPHITE_API KeyUpEvent : public KeyEvent {
     public:
-        grKeyUpEvent(int keycode) : grKeyEvent(keycode) {}
+        KeyUpEvent(int keycode) : KeyEvent(keycode) {}
 
         std::string ToString() const override {
             std::stringstream ss;
@@ -69,9 +69,9 @@ namespace Graphite {
     /// <summary>
     /// A key typed event implementation, created and dispatched whenever a key with a keycode value of a character is pressed, used for typing input
     /// </summary>
-    class GRAPHITE_API grKeyTypedEvent : public grKeyEvent {
+    class GRAPHITE_API KeyTypedEvent : public KeyEvent {
     public:
-        grKeyTypedEvent(int keycode) : grKeyEvent(keycode) {}
+        KeyTypedEvent(int keycode) : KeyEvent(keycode) {}
 
         std::string ToString() const override {
             std::stringstream ss;

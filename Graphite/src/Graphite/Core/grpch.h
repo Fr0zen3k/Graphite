@@ -11,7 +11,22 @@
 #include <functional>
 #include <cmath>
 #include <stdexcept>
+#include <exception>
 #include <limits>
+#include <execution>
+#include <iomanip>
+#include <filesystem>
+#include <regex>
+#include <complex>
+#include <iterator>
+#include <new>
+#include <memory>
+#include <scoped_allocator>
+#include <memory_resource>
+#include <chrono>
+#include <bitset>
+#include <typeinfo>
+#include <optional>
 
 #include <vector>
 #include <stack>
@@ -23,12 +38,18 @@
 #include <map>
 #include <set>
 #include <mutex>
+#include <shared_mutex>
 #include <atomic>
+#include <thread>
+#include <condition_variable>
 #include <deque>
 #include <list>
 #include <array>
+#include <future>
+#include <string_view>
+#include <tuple>
 
-#include "Graphite/Core/grLog.h"
+#include "Graphite/Core/Log.h"
 
 #ifdef GR_PLATFORM_WINDOWS
 	#include <Windows.h>

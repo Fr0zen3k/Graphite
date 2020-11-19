@@ -7,7 +7,7 @@
 #define GRAPHITE_GRAPHITE_H
 
 #include "Graphite/Core/Application.h"
-#include "Graphite/Core/grLog.h"
+#include "Graphite/Core/Log.h"
 
 //------------Entry Point-------------------------------------------
 #include "Graphite/Core/EntryPoint.h"

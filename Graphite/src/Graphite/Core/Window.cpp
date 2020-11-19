@@ -1,35 +1,36 @@
 #include "Graphite/Core/grpch.h"
 
-#include "grWindow.h"
+#include "Window.h"
 
 
 namespace Graphite {
 	
 	static bool s_GLFWInitialized = false;
 
-	grWindow * grWindow::grCreateWindow(const grWindowInfo& props)
+	Window * Window::grCreateWindow(const WindowInfo& props)
 	{
-		return new grWindow(props);
+		return new Window(props);
 	}
 
-	grWindow::grWindow(const grWindowInfo& props) {
+	Window::Window(const WindowInfo& props) {
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
+		m_Data.VSync = false;
 
 		Init();
 	}
 
-	grWindow::~grWindow() {
+	Window::~Window() {
 		Shutdown();
 	}
 
-	void grWindow::Update() {
+	void Window::Update() {
 		glfwPollEvents();
 		//glfwSwapBuffers(m_WindowInstance);
 	}
 
-	void grWindow::SetVSync(bool status) {
+	void Window::SetVSync(bool status) {
 		if(status) {
 			glfwSwapInterval(1);
 		}
@@ -41,14 +42,14 @@ namespace Graphite {
 		m_Data.VSync = status;
 	}
 
-	void grWindow::ChangeTitle(const std::string& newTitle)
+	void Window::ChangeTitle(const std::string& newTitle)
 	{
 		m_Data.Title = newTitle;
 		glfwSetWindowTitle(m_WindowInstance, newTitle.c_str());
 	}
 
 
-	void grWindow::Init() {
+	void Window::Init() {
 
 		GR_CORE_LOG_INFO("Creating a window {0} ({1} x {2})", m_Data.Title, m_Data.Width, m_Data.Height);
 		
@@ -83,7 +84,7 @@ namespace Graphite {
 			data.Height = height;
 			data.Height = height;
 
-			grWindowResizeEvent event(width, height);
+			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
 		});
 
@@ -91,7 +92,7 @@ namespace Graphite {
 		glfwSetWindowCloseCallback(m_WindowInstance, [](GLFWwindow* window)
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			grWindowCloseEvent event;
+			WindowCloseEvent event;
 			data.EventCallback(event);
 		});
 
@@ -104,19 +105,19 @@ namespace Graphite {
 			{
 				case GLFW_PRESS:
 				{
-					grKeyDownEvent event(key, 0);
+					KeyDownEvent event(key, 0);
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					grKeyUpEvent event(key);
+					KeyUpEvent event(key);
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_REPEAT:
 				{
-					grKeyDownEvent event(key, 1);			//implement repeats later
+					KeyDownEvent event(key, 1);			//implement repeats later
 					data.EventCallback(event);
 					break;
 				}
@@ -132,13 +133,13 @@ namespace Graphite {
 			{
 				case GLFW_PRESS:
 				{
-					grMouseButtonDownEvent event(button);
+					MouseButtonDownEvent event(button);
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					grMouseButtonUpEvent event(button);
+					MouseButtonUpEvent event(button);
 					data.EventCallback(event);
 					break;
 				}
@@ -150,7 +151,7 @@ namespace Graphite {
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			grMouseScrollEvent event((float)xOffset, (float)yOffset);
+			MouseScrollEvent event((float)xOffset, (float)yOffset);
 			data.EventCallback(event);
 		});
 
@@ -159,7 +160,7 @@ namespace Graphite {
 		{
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-			grMouseMovEvent event(xPos, yPos);
+			MouseMovEvent event(xPos, yPos);
 			data.EventCallback(event);
 		});
 
@@ -169,7 +170,7 @@ namespace Graphite {
 
 	}
 
-	void grWindow::Shutdown() {
+	void Window::Shutdown() {
 		glfwDestroyWindow(m_WindowInstance);
 	}
 

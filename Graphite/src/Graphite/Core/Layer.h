@@ -7,22 +7,22 @@
 
 #include "Graphite/Core/Core.h"
 
-#include "Graphite/EventCore/grEvents.h"
+#include "Graphite/EventCore/Events.h"
 
 namespace Graphite
 {
 
-	class grLayer
+	class Layer
 	{
 	public:
-		grLayer();
-		grLayer(const std::string& name);
-		~grLayer();
+		Layer();
+		Layer(const std::string& name);
+		~Layer();
 
 		virtual void OnAttach() const = 0;
 		virtual void OnDetach() const = 0;
 		virtual void OnTick() const = 0;
-		virtual void OnEvent(grEvent& event) const = 0;
+		virtual void OnEvent(Event& event) const = 0;
 
 		inline const std::string& GetName() const { return m_Name; }
 

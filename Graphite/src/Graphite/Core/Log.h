@@ -17,7 +17,7 @@ namespace Graphite {
     /// <summary>
     /// Class that handles all the logging for Graphite, both on the engine and the Sandbox side, using spdlog for all logging
     /// </summary>
-    class GRAPHITE_API grLog {
+    class GRAPHITE_API Log {
     public:
         /// <summary>
         /// Initializes the class and spdlog
@@ -45,17 +45,17 @@ namespace Graphite {
 /// <summary>
 /// Logging macros for different levels of necessity, stripped in release build for memory saving
 /// </summary>
-#define GR_LOG_TRACE(...)                       ::Graphite::grLog::getClientLogger()->trace(__VA_ARGS__)
-#define GR_LOG_INFO(...)                        ::Graphite::grLog::getClientLogger()->info(__VA_ARGS__)
-#define GR_LOG_WARN(...)                        ::Graphite::grLog::getClientLogger()->warn(__VA_ARGS__)
-#define GR_LOG_ERROR(...)                       ::Graphite::grLog::getClientLogger()->error(__VA_ARGS__)
-#define GR_LOG_CRITICAL(...)                    ::Graphite::grLog::getClientLogger()->critical(__VA_ARGS__)
+#define GR_LOG_TRACE(...)                       ::Graphite::Log::getClientLogger()->trace(__VA_ARGS__)
+#define GR_LOG_INFO(...)                        ::Graphite::Log::getClientLogger()->info(__VA_ARGS__)
+#define GR_LOG_WARN(...)                        ::Graphite::Log::getClientLogger()->warn(__VA_ARGS__)
+#define GR_LOG_ERROR(...)                       ::Graphite::Log::getClientLogger()->error(__VA_ARGS__)
+#define GR_LOG_CRITICAL(...)                    ::Graphite::Log::getClientLogger()->critical(__VA_ARGS__)
 
 
-#define GR_CORE_LOG_TRACE(...)                  ::Graphite::grLog::getCoreLogger()->trace(__VA_ARGS__)
-#define GR_CORE_LOG_INFO(...)                   ::Graphite::grLog::getCoreLogger()->info(__VA_ARGS__)
-#define GR_CORE_LOG_WARN(...)                   ::Graphite::grLog::getCoreLogger()->warn(__VA_ARGS__)
-#define GR_CORE_LOG_ERROR(...)                  ::Graphite::grLog::getCoreLogger()->error(__VA_ARGS__)
-#define GR_CORE_LOG_CRITICAL(...)               ::Graphite::grLog::getCoreLogger()->critical(__VA_ARGS__)
+#define GR_CORE_LOG_TRACE(...)                  ::Graphite::Log::getCoreLogger()->trace(__VA_ARGS__)
+#define GR_CORE_LOG_INFO(...)                   ::Graphite::Log::getCoreLogger()->info(__VA_ARGS__)
+#define GR_CORE_LOG_WARN(...)                   ::Graphite::Log::getCoreLogger()->warn(__VA_ARGS__)
+#define GR_CORE_LOG_ERROR(...)                  ::Graphite::Log::getCoreLogger()->error(__VA_ARGS__)
+#define GR_CORE_LOG_CRITICAL(...)               ::Graphite::Log::getCoreLogger()->critical(__VA_ARGS__)
 
 #endif //GRAPHITE_GRLOG_H

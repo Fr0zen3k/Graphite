@@ -14,7 +14,7 @@ namespace Graphite {
     {
         s_Instance = this;
     	
-        m_Window = std::unique_ptr<grWindow>(grWindow::grCreateWindow());
+        m_Window = std::unique_ptr<Window>(Window::grCreateWindow());
         m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
     }
 
@@ -27,11 +27,11 @@ namespace Graphite {
         }
     }
 
-	void Application::OnEvent(grEvent& e)
+	void Application::OnEvent(Event& e)
 	{
         GR_CORE_LOG_TRACE("{0}", e.ToString());
-        grEventDispatch d(e);
-        d.Dispatch<grKeyDownEvent>([](grKeyDownEvent e)
+        EventDispatch d(e);
+        d.Dispatch<KeyDownEvent>([](KeyDownEvent e)
             {
                 return true;
             });

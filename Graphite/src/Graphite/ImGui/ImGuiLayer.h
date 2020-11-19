@@ -3,14 +3,14 @@
 
 #include "Graphite/Core/Core.h"
 
-#include "Graphite/Core/grLayer.h"
+#include "Graphite/Core/Layer.h"
 
 
 
 namespace Graphite
 {
 
-	class ImGuiLayer : public grLayer
+	class ImGuiLayer : public Layer
 	{
 		ImGuiLayer();
 		ImGuiLayer(const std::string& name);
@@ -19,7 +19,7 @@ namespace Graphite
 		void OnAttach() const override;
 		void OnDetach() const override;
 		void OnTick() const override;
-		void OnEvent(grEvent& event) const override;
+		void OnEvent(Event& event) const override;
 	};
 	
 }

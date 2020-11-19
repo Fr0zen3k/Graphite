@@ -3,9 +3,9 @@
 
 namespace Graphite
 {
-	ImGuiLayer::ImGuiLayer(): grLayer() {}
+	ImGuiLayer::ImGuiLayer(): Layer() {}
 
-	ImGuiLayer::ImGuiLayer(const std::string& name): grLayer(name) {}
+	ImGuiLayer::ImGuiLayer(const std::string& name): Layer(name) {}
 
 	ImGuiLayer::~ImGuiLayer() {}
 
@@ -23,7 +23,7 @@ namespace Graphite
 		
 	}
 	
-	void ImGuiLayer::OnEvent(grEvent& event) const
+	void ImGuiLayer::OnEvent(Event& event) const
 	{
 		
 	}

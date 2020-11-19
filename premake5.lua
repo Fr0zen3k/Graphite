@@ -68,7 +68,8 @@ project "Graphite"
 		{
 			"GR_PLATFORM_WINDOWS",
 			"_CRT_SECURE_NO_WARNINGS",
-			"GR_BUILD_DLL"
+			"GR_BUILD_DLL",
+			"GRAPHITE_RENDERER_VULKAN"
 		}
 		
 		postbuildcommands
