@@ -35,6 +35,8 @@ namespace Graphite
 				m_FrameSize.second = static_cast<uint32_t>(e.GetWidth());
 				return true; 
 		});
+
+		return true;
 	}
 
 

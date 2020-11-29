@@ -2,8 +2,8 @@
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 
-#ifndef GRAPHITE_RENDERCONTEX_H
-#define GRAPHITE_RENDERCONTEX_H
+#ifndef GRAPHITE_VULKANGRAPHICSCONTEXT_H
+#define GRAPHITE_VULKANGRAPHICSCONTEXT_H
 
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
@@ -15,26 +15,29 @@
 
 #include "GLFW/glfw3.h"
 
+#include "Graphite/Renderer/RendererCore/GraphicsContext.h"
+
 namespace Graphite
 {
-	class GRAPHITE_API VulkanGraphicsContext
+	class GRAPHITE_API VulkanGraphicsContext : public GraphicsContext
 	{
 		friend class Renderer2D;
 		friend class Renderer3D;
+		friend class VulkanFrameBuffer;
 	public:
 		VulkanGraphicsContext();
 		~VulkanGraphicsContext();
 
-		bool OnEvent(Event& e);
+		bool OnEvent(Event& e) override;
 
-		inline void SetFrameSize(uint32_t width, uint32_t height)
+		inline void SetFrameSize(uint32_t width, uint32_t height) override
 		{
 			m_FrameSize.first = width;
 			m_FrameSize.second = height;
 		}
 
-		inline std::pair<uint32_t, uint32_t> GetFrameSize() { return m_FrameSize; }
-		inline GLFWwindow* GetNativeWindow() { return m_ActiveApplication->GetWindow().GetNativeWindow(); }
+		inline std::pair<uint32_t, uint32_t> GetFrameSize() const override { return m_FrameSize; }
+		inline GLFWwindow* GetNativeWindow() const override { return m_ActiveApplication->GetWindow().GetNativeWindow(); }
 		
 	private:
 		void Init();
@@ -65,6 +68,7 @@ namespace Graphite
 		VkSurfaceKHR m_Surface;
 		VkFormat m_SwapchainImageFormat;
 		VkExtent2D m_SwapchainExtent;
+		VkColorSpaceKHR m_SwapchainColorSpace;
 		
 		std::pair<uint32_t, uint32_t> m_FrameSize;
 		QueueFamilies m_QueueFamilies;
