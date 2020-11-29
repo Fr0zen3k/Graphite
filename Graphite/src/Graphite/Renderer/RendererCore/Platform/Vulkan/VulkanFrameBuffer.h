@@ -123,7 +123,7 @@ namespace Graphite
 
 			VkCommandPool m_CommandPool;
 
-			std::vector<Pipeline&> m_Pipelines;
+			std::vector<Pipeline> m_Pipelines;
 		};
 
 		std::vector<Frame> m_Frames;
