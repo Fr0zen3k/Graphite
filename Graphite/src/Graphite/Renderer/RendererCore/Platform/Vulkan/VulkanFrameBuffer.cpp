@@ -106,9 +106,7 @@ namespace Graphite
 		
 		for(VkImage image : images)
 		{
-			Frame frame;
-			frame.m_Image = image;
-			frame.m_ImageView; // create the image view
+			Frame frame(image);
 
 			m_Frames.push_back(frame);
 		}
@@ -116,7 +114,7 @@ namespace Graphite
 
 	// ---------------- Frame -----------------
 
-	VulkanFrameBuffer::Frame::Frame()
+	VulkanFrameBuffer::Frame::Frame(VkImage image)
 	{
 		Init();
 	}
@@ -133,18 +131,52 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::Init()
 	{
-		
+		try
+		{
+			CreateImage();
+			CreateImageView();
+		}
+		catch(const std::runtime_error &e)
+		{
+			throw e;
+		}
 	}
 
 	void VulkanFrameBuffer::Frame::Shutdown()
 	{
-		
+		// Destroy image views
 	}
 
 	void VulkanFrameBuffer::Frame::CreateImage()
 	{
-		
+		// Add functionality later or remove completely
 	}
+
+	void VulkanFrameBuffer::Frame::CreateImageView()
+	{
+		VkImageViewCreateInfo imageViewCreateInfo = {};
+		imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		imageViewCreateInfo.image = m_Image;
+		imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		imageViewCreateInfo.format = m_GraphicsContext->m_SwapchainImageFormat;
+		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+		imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+		imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+		imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+		imageViewCreateInfo.subresourceRange.levelCount = 1;
+		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+		imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+		VkResult result = vkCreateImageView(m_GraphicsContext->m_LogicalDevice, &imageViewCreateInfo, nullptr, &m_ImageView);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create an image view!");
+		}
+	}
+
 
 	void VulkanFrameBuffer::Frame::CreateColorImage()
 	{

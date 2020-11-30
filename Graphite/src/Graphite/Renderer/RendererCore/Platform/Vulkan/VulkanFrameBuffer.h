@@ -35,7 +35,7 @@ namespace Graphite
 		void CreateFrames();
 		
 	private:
-		VulkanGraphicsContext* m_GraphicsContext;
+		static VulkanGraphicsContext* m_GraphicsContext;
 		
 		VkSwapchainKHR m_Swapchain;
 
@@ -51,18 +51,28 @@ namespace Graphite
 			friend class Renderer3D;
 			friend class VulkanFrameBuffer;
 		public:
-			Frame();
+			Frame(VkImage image);
 			~Frame();
 
 			bool OnEvent(Event& e);
 
+			inline Frame operator = (const Frame& f)
+			{
+				Frame res(f.m_Image);
+				return res;
+			}
+			
 		private:
 			void Init();
 			void Shutdown();
 
 			void CreateImage();
+			void CreateImageView();
+			
 			void CreateColorImage();
+			
 			void CreateDepthBufferImage();
+
 			void CreateSynchronisation();
 
 		private:
