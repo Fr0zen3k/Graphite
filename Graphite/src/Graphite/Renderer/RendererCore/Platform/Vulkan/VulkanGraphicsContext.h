@@ -24,6 +24,7 @@ namespace Graphite
 		friend class Renderer2D;
 		friend class Renderer3D;
 		friend class VulkanFrameBuffer;
+		friend class VulkanShader;
 	public:
 		VulkanGraphicsContext();
 		~VulkanGraphicsContext();

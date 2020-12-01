@@ -9,6 +9,17 @@
 namespace Graphite
 {
 
+	enum class ShaderType
+	{
+		None,
+		Vertex,
+		Tessellation,
+		Geometry,
+		Fragment
+		// Add support for compute shaders as well
+	};
+
+
 	struct QueueFamilies
 	{
 		int m_GraphicsFamily = -1;
