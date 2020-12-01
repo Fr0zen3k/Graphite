@@ -76,7 +76,12 @@ namespace Graphite
 				m_ShaderStageCreateInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
 				break;
 			}
-			// Add support for compute shaders
+			
+			case(ShaderType::Compute):
+			{
+				m_ShaderStageCreateInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+				break;
+			}
 			
 			default:
 			{

@@ -15,8 +15,8 @@ namespace Graphite
 		Vertex,
 		Tessellation,
 		Geometry,
-		Fragment
-		// Add support for compute shaders as well
+		Fragment,
+		Compute
 	};
 
 
