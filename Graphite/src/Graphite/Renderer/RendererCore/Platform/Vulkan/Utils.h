@@ -6,6 +6,8 @@
 #include "GLFW/glfw3.h"
 #include "Graphite/Core/grpch.h"
 
+#include "glm/glm.hpp"
+
 namespace Graphite
 {
 
@@ -19,6 +21,13 @@ namespace Graphite
 		Compute
 	};
 
+	struct Vertex
+	{
+		glm::vec3 position;			// Position (x, y, z)
+		glm::vec4 color;			// Color (r, g, b)
+		float textureID;			// Texture ID
+		glm::vec2 textureCoords;	// Texture Coordinates (u, v)
+	};
 
 	struct QueueFamilies
 	{

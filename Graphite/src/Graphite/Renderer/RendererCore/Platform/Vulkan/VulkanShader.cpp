@@ -2,10 +2,21 @@
 #include "VulkanShader.h"
 
 
+#ifdef GRAPHITE_RENDERER_VULKAN
+
 namespace Graphite
 {
-	VulkanShader::VulkanShader(ShaderType type): m_Type(type), m_Filepath("")
+	VulkanGraphicsContext * VulkanShader::s_GraphicsContext = VulkanFrameBuffer::GetGraphicsContext();
+
+	VulkanShader::VulkanShader()
 	{
+		m_Type = ShaderType::None;
+		m_Filepath = "";
+	}
+
+	
+	VulkanShader::VulkanShader(ShaderType type): m_Type(type), m_Filepath("")
+	{		
 		m_ShaderStageCreateInfo = {};
 
 		m_ShaderStageCreateInfo.pName = nullptr;
@@ -42,7 +53,7 @@ namespace Graphite
 		shaderModuleCreateInfo.codeSize = m_BytecodeBuffer.size();
 		shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(m_BytecodeBuffer.data());
 
-		VkResult result = vkCreateShaderModule(m_GraphicsContext->m_LogicalDevice, &shaderModuleCreateInfo, nullptr, &m_ShaderModule);
+		VkResult result = vkCreateShaderModule(s_GraphicsContext->m_LogicalDevice, &shaderModuleCreateInfo, nullptr, &m_ShaderModule);
 
 		if(result != VK_SUCCESS)
 		{
@@ -96,7 +107,7 @@ namespace Graphite
 
 	void VulkanShader::Shutdown()
 	{
-		vkDestroyShaderModule(m_GraphicsContext->m_LogicalDevice, m_ShaderModule, nullptr);
+		vkDestroyShaderModule(s_GraphicsContext->m_LogicalDevice, m_ShaderModule, nullptr);
 	}
 
 	void VulkanShader::LoadBytecode()
@@ -112,3 +123,5 @@ namespace Graphite
 		file.close();
 	}
 }
+
+#endif

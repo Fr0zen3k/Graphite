@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef GRAPHITE_RENDERER_VULKAN
+
 #ifndef GRAPHITE_VULKANSHADER_H
 #define GRAPHITE_VULKANSHADER_H
 
@@ -12,6 +14,7 @@
 
 #include "Utils.h"
 #include "VulkanGraphicsContext.h"
+#include "VulkanFrameBuffer.h"
 
 namespace Graphite
 {
@@ -19,15 +22,19 @@ namespace Graphite
 	class GRAPHITE_API VulkanShader
 	{
 	public:
+		VulkanShader();
 		VulkanShader(ShaderType type);
 		VulkanShader(ShaderType type, const std::string& filepath);
 		~VulkanShader();
 
-		inline VkShaderModule GetShader()
-		{
-			
-		}
+		inline VkShaderModule GetShader() { return m_ShaderModule; }
+		inline ShaderType GetShaderType() { return m_Type; }
+		inline VkPipelineShaderStageCreateInfo GetCreateInfo() { return m_ShaderStageCreateInfo; }
 		void SetShaderFilepath(const std::string& filepath);
+		inline void SetShaderType(ShaderType type)
+		{
+			m_Type = type;
+		}
 		
 	private:
 		void Init();
@@ -35,7 +42,7 @@ namespace Graphite
 		void LoadBytecode();
 
 	private:
-		static VulkanGraphicsContext* m_GraphicsContext;
+		static VulkanGraphicsContext* s_GraphicsContext;
 		
 		ShaderType m_Type;
 		
@@ -50,3 +57,6 @@ namespace Graphite
 
 
 #endif
+
+#endif
+

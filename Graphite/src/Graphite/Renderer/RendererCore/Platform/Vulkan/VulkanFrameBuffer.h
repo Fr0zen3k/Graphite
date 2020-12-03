@@ -14,6 +14,7 @@
 #include "Utils.h"
 
 #include "VulkanGraphicsContext.h"
+#include "VulkanShader.h"
 
 #include "GLFW/glfw3.h"
 
@@ -27,6 +28,8 @@ namespace Graphite
 
 		bool OnEvent(Event& e);
 
+		inline static VulkanGraphicsContext* GetGraphicsContext() { return s_GraphicsContext; }
+
 	private:
 		void Init();
 		void Shutdown();
@@ -35,7 +38,7 @@ namespace Graphite
 		void CreateFrames();
 		
 	private:
-		static VulkanGraphicsContext* m_GraphicsContext;
+		static VulkanGraphicsContext* s_GraphicsContext;
 		
 		VkSwapchainKHR m_Swapchain;
 
@@ -56,7 +59,7 @@ namespace Graphite
 
 			bool OnEvent(Event& e);
 
-			inline Frame operator = (const Frame& f)
+			inline Frame operator =  (Frame f)
 			{
 				Frame res(f.m_Image);
 				return res;
@@ -94,26 +97,6 @@ namespace Graphite
 			VkFence m_DrawFence;
 		};
 
-		class Pipeline
-		{
-		public:
-			Pipeline();
-			~Pipeline();
-
-			bool OnEvent(Event& e);
-
-		private:
-			void Init();
-			void Shutdown();
-
-			void CreatePipeline();
-
-		private:
-			VkPipeline m_Pipeline;
-			VkPipelineLayout m_PipelineLayout;
-			
-		};
-
 		class RenderPass
 		{
 		public:
@@ -122,18 +105,45 @@ namespace Graphite
 
 			bool OnEvent(Event& e);
 
-			bool BindPipeline(const Pipeline& pipeline);
-			
+			VkRenderPass GetNativeRenderPass() { return m_RenderPass; }
+
 		private:
 			void Init();
 			void Shutdown();
-			
+
 		private:
 			VkRenderPass m_RenderPass;
 
 			VkCommandPool m_CommandPool;
+		};
 
-			std::vector<Pipeline> m_Pipelines;
+		// Later add support for usage of compute pipelines as well
+		class Pipeline
+		{
+		public:
+			Pipeline();
+			~Pipeline();
+
+			bool OnEvent(Event& e);
+
+			bool BindShader(VulkanShader& shader);
+
+		private:
+			void Init();
+			void Shutdown();
+
+			void CreatePipeline();
+			void RecreatePipeline();
+
+		private:
+			VkPipeline m_Pipeline;
+			VkPipelineLayout m_PipelineLayout;
+
+			VulkanShader m_VertexShader;
+			VulkanShader m_FragmentShader;
+			// Add support for more different shaders including compute shaders
+
+			RenderPass m_RenderPass;
 		};
 
 		std::vector<Frame> m_Frames;
