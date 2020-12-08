@@ -26,12 +26,13 @@ namespace Graphite
 	void VulkanFrameBuffer::Init()
 	{
 		CreateSwapchain();
+		CreateCommandPool();
 		CreateFrames();
 	}
 
 	void VulkanFrameBuffer::Shutdown()
 	{
-		
+		// Destroy frames, pipeline, renderpass and vulkan components
 	}
 
 	void VulkanFrameBuffer::CreateSwapchain()
@@ -106,9 +107,27 @@ namespace Graphite
 		
 		for(VkImage image : images)
 		{
-			m_Frames.emplace_back(Frame(image));
+			Frame* frame = new Frame(image);
+			frame->AssignCommandPool(m_CommandPool);
+			m_Frames.emplace_back(frame);
 		}
 	}
+
+	void VulkanFrameBuffer::CreateCommandPool()
+	{
+		VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+		commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		commandPoolCreateInfo.queueFamilyIndex = VulkanFrameBuffer::GetGraphicsContext()->m_QueueFamilies.m_GraphicsFamily;
+		commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+		VkResult result = vkCreateCommandPool(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &commandPoolCreateInfo, nullptr, &m_CommandPool);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a command pool!");
+		}
+	}
+
 
 	// ---------------- Frame -----------------
 
@@ -131,7 +150,6 @@ namespace Graphite
 	{
 		try
 		{
-			CreateImage();
 			CreateImageView();
 		}
 		catch(const std::runtime_error &e)
@@ -142,12 +160,8 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::Shutdown()
 	{
-		// Destroy image views
-	}
-
-	void VulkanFrameBuffer::Frame::CreateImage()
-	{
-		// Add functionality later or remove completely
+		vkDestroyImageView(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_ColorImageView, nullptr);
+		vkDestroyFramebuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_Framebuffer, nullptr);
 	}
 
 	void VulkanFrameBuffer::Frame::CreateImageView()
@@ -174,6 +188,44 @@ namespace Graphite
 			throw std::runtime_error("Failed to create an image view!");
 		}
 	}
+
+	void VulkanFrameBuffer::Frame::CreateFramebuffer()
+	{
+		VkImageView attachments[] = { m_ColorImageView };
+
+		VkFramebufferCreateInfo framebufferCreateInfo = {};
+		framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferCreateInfo.renderPass = m_RenderPass->GetNativeRenderPass();
+		framebufferCreateInfo.attachmentCount = 1;
+		framebufferCreateInfo.pAttachments = attachments;
+		framebufferCreateInfo.width = VulkanFrameBuffer::GetGraphicsContext()->m_SwapchainExtent.width;
+		framebufferCreateInfo.height = VulkanFrameBuffer::GetGraphicsContext()->m_SwapchainExtent.height;
+		framebufferCreateInfo.layers = 1;
+
+		VkResult result = vkCreateFramebuffer(s_GraphicsContext->m_LogicalDevice, &framebufferCreateInfo, nullptr, &m_Framebuffer);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a framebuffer!");
+		}
+	}
+
+	void VulkanFrameBuffer::Frame::CreateCommandBuffer(VkCommandPool& commandPool)
+	{
+		VkCommandBufferAllocateInfo commandBufferAllocInfo = {};
+		commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		commandBufferAllocInfo.commandPool = commandPool;
+		commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		commandBufferAllocInfo.commandBufferCount = 1;
+
+		VkResult result = vkAllocateCommandBuffers(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &commandBufferAllocInfo, &m_CommandBuffer);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to allocate a command buffer!");
+		}
+	}
+
 
 
 	void VulkanFrameBuffer::Frame::CreateColorImage()
@@ -366,12 +418,12 @@ namespace Graphite
 
 	VulkanFrameBuffer::RenderPass::RenderPass()
 	{
-		
+		Init();
 	}
 
 	VulkanFrameBuffer::RenderPass::~RenderPass()
 	{
-		
+		Shutdown();
 	}
 
 	bool VulkanFrameBuffer::RenderPass::OnEvent(Event& e)
@@ -381,10 +433,56 @@ namespace Graphite
 
 	void VulkanFrameBuffer::RenderPass::Init()
 	{
-		
+		CreateRenderPass();
+		CreateCommandPool();
 	}
 
 	void VulkanFrameBuffer::RenderPass::Shutdown()
+	{
+		vkDestroyRenderPass(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_RenderPass, nullptr);
+		vkDestroyCommandPool(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_CommandPool, nullptr);
+	}
+
+	void VulkanFrameBuffer::RenderPass::CreateRenderPass()
+	{
+		VkAttachmentDescription colorAttachment = {};
+		colorAttachment.format = VulkanFrameBuffer::GetGraphicsContext()->m_SwapchainImageFormat;
+		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		// Add depth description later
+
+		// Add subpasses if necessary when adding multiple subpass support
+
+		VkAttachmentReference colorRef = {};
+		colorRef.attachment = 0;
+		colorRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		VkSubpassDescription subpass = {};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &colorRef;
+
+		VkRenderPassCreateInfo renderPassCreateInfo = {};
+		renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassCreateInfo.attachmentCount = 1;
+		renderPassCreateInfo.pAttachments = &colorAttachment;
+		renderPassCreateInfo.subpassCount = 1;
+		renderPassCreateInfo.pSubpasses = &subpass;
+
+		VkResult result = vkCreateRenderPass(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &renderPassCreateInfo, nullptr, &m_RenderPass);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a render pass!");
+		}
+	}
+
+	void VulkanFrameBuffer::RenderPass::CreateCommandPool()
 	{
 		
 	}
