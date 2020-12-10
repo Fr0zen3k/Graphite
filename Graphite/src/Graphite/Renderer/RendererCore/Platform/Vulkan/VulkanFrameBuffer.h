@@ -30,6 +30,8 @@ namespace Graphite
 
 		inline static VulkanGraphicsContext* GetGraphicsContext() { return s_GraphicsContext; }
 
+		void DrawFrame();
+
 	private:
 		void Init();
 		void Shutdown();

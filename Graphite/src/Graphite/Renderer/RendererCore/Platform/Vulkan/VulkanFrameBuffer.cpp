@@ -23,6 +23,11 @@ namespace Graphite
 		
 	}
 
+	void VulkanFrameBuffer::DrawFrame()
+	{
+		
+	}
+	
 	void VulkanFrameBuffer::Init()
 	{
 		CreateSwapchain();
@@ -31,7 +36,7 @@ namespace Graphite
 	}
 
 	void VulkanFrameBuffer::Shutdown()
-	{
+	{ 
 		// Destroy frames, pipeline, renderpass and vulkan components
 	}
 
