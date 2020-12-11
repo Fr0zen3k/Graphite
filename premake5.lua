@@ -47,6 +47,7 @@ project "Graphite"
 	libdirs 
 	{
 		"%{prj.name}/vendor/Vulkan/1.2.148.1/Lib",
+		"C:/VulkanSDK/1.2.148.1/Lib",
 		"%{prj.name}/vendor/glfw_x64/lib-vc2019"
 	}
 	
