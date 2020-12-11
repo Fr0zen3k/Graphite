@@ -10,6 +10,9 @@
 
 #include "glm/glm.hpp"
 
+#include "VulkanGraphicsContext.h"
+#include "VulkanGraphicsContext.h"
+
 namespace Graphite
 {
 
@@ -192,6 +195,23 @@ namespace Graphite
 		}
 
 		return score;
+	}
+
+	static uint32_t FindMemoryTypeIndex(uint32_t type, VkMemoryPropertyFlags properties)
+	{
+		VkPhysicalDeviceMemoryProperties memProps;
+
+		vkGetPhysicalDeviceMemoryProperties(DeviceFromRenderer, &memProps);
+
+		for(uint32_t i = 0; i < memProps.memoryTypeCount; i++)
+		{
+			if((type & GR_BIT(i)) && ((memProps.memoryTypes[i].propertyFlags & properties) == properties))
+			{
+				return i;
+			}
+		}
+
+		throw std::runtime_error("Failed to find suitable memory type on the physical device!");
 	}
 	
 }
