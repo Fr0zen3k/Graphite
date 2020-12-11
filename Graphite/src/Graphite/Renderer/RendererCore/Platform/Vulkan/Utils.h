@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef GRAPHITE_RENDERER_VULKAN
+
 #ifndef GRAPHITE_UTILS_H
 #define GRAPHITE_UTILS_H
 
@@ -195,3 +197,6 @@ namespace Graphite
 }
 
 #endif
+
+#endif
+
