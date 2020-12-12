@@ -7,50 +7,39 @@
 namespace Graphite
 {
 	
-	VulkanVertexBuffer::VulkanVertexBuffer(Vertex* pVertices, size_t size): m_BufferData(pVertices), m_Size(size) { }
+	VulkanVertexBuffer::VulkanVertexBuffer(Vertex* pVertices, size_t size):m_Size(size)
+	{
+		AllocateNativeBuffer(pVertices);
+	}
 
 	VulkanVertexBuffer::~VulkanVertexBuffer()
 	{
 		FreeNativeBuffer();
 	}
 
-	void VulkanVertexBuffer::MapMemory()
+
+	void VulkanVertexBuffer::AllocateNativeBuffer(Vertex* pVertices)
 	{
+		VkDeviceSize bufferSize = sizeof(Vertex) * m_Size;
 		
-	}
+		CreateBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_PhysicalDevice, VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+			| VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &m_NativeBuffer, &m_BufferMemory);
 
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingBufferMemory;
 
-	void VulkanVertexBuffer::AllocateNativeBuffer()
-	{
-		VkBufferCreateInfo bufferCreateInfo = {};
-		bufferCreateInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferCreateInfo.size = sizeof(Vertex) * m_Size;
-		bufferCreateInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-		bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		CreateBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_PhysicalDevice, VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, bufferSize, 
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory);
 
-		VkResult result = vkCreateBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &bufferCreateInfo, nullptr, &m_NativeBuffer);
+		void* data;
+		vkMapMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+		memcpy(data, pVertices, m_Size * sizeof(Vertex));
+		vkUnmapMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBufferMemory);
 
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create a vertex buffer!");
-		}
+		CopyBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, transferQueue, transferCommandPool, stagingBuffer, m_NativeBuffer, bufferSize);
 
-		VkMemoryRequirements memReq = {};
-		vkGetBufferMemoryRequirements(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_NativeBuffer, &memReq);
-
-		VkMemoryAllocateInfo memAllocInfo = {};
-		memAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		memAllocInfo.allocationSize = memReq.size;
-		memAllocInfo.memoryTypeIndex = FindMemoryTypeIndex(memReq.memoryTypeBits,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-		result = vkAllocateMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &memAllocInfo, nullptr, &m_BufferMemory);
-
-		if (result != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to allocate a vertex buffer to device memory!");
-		}
+		vkDestroyBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBuffer, nullptr);
+		vkFreeMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBufferMemory, nullptr);
 	}
 
 	void VulkanVertexBuffer::FreeNativeBuffer()

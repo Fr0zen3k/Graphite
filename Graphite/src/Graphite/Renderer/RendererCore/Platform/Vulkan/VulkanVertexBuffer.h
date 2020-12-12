@@ -24,21 +24,15 @@ namespace Graphite
 		VulkanVertexBuffer(Vertex* pVertices, size_t size);
 		~VulkanVertexBuffer();
 
-		inline Vertex* GetBufferData() { return m_BufferData; }
-		inline size_t Size() { return m_Size; }
+		inline size_t Size() const { return m_Size; }
 
-		inline void SetData(Vertex* pVertices, size_t size) { m_BufferData = pVertices; m_Size = size; }
-
-		inline VkBuffer GetNativeBuffer() { return m_NativeBuffer; }
-
-		void MapMemory();
+		inline VkBuffer GetNativeBuffer() const { return m_NativeBuffer; }
 
 	private:
-		void AllocateNativeBuffer();
+		void AllocateNativeBuffer(Vertex* pVertices);
 		void FreeNativeBuffer();
 		
 	private:
-		Vertex* m_BufferData;
 		size_t m_Size;
 
 		VkBuffer m_NativeBuffer;
