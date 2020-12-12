@@ -6,8 +6,6 @@
 
 namespace Graphite
 {
-	VulkanGraphicsContext * VulkanShader::s_GraphicsContext = VulkanFrameBuffer::GetGraphicsContext();
-
 	VulkanShader::VulkanShader()
 	{
 		m_Type = ShaderType::None;
@@ -53,7 +51,7 @@ namespace Graphite
 		shaderModuleCreateInfo.codeSize = m_BytecodeBuffer.size();
 		shaderModuleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(m_BytecodeBuffer.data());
 
-		VkResult result = vkCreateShaderModule(s_GraphicsContext->m_LogicalDevice, &shaderModuleCreateInfo, nullptr, &m_ShaderModule);
+		VkResult result = vkCreateShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &shaderModuleCreateInfo, nullptr, &m_ShaderModule);
 
 		if(result != VK_SUCCESS)
 		{
@@ -107,7 +105,7 @@ namespace Graphite
 
 	void VulkanShader::Shutdown()
 	{
-		vkDestroyShaderModule(s_GraphicsContext->m_LogicalDevice, m_ShaderModule, nullptr);
+		vkDestroyShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_ShaderModule, nullptr);
 	}
 
 	void VulkanShader::LoadBytecode()

@@ -22,30 +22,30 @@ namespace Graphite
 	{
 		VkDeviceSize bufferSize = sizeof(Vertex) * m_Size;
 		
-		CreateBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_PhysicalDevice, VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+		CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 			| VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &m_NativeBuffer, &m_BufferMemory);
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
 
-		CreateBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_PhysicalDevice, VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, bufferSize, 
+		CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory);
 
 		void* data;
-		vkMapMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBufferMemory, 0, bufferSize, 0, &data);
+		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
 		memcpy(data, pVertices, m_Size * sizeof(Vertex));
-		vkUnmapMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBufferMemory);
+		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBufferMemory);
 
-		CopyBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, transferQueue, transferCommandPool, stagingBuffer, m_NativeBuffer, bufferSize);
+		CopyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), transferQueue, transferCommandPool, stagingBuffer, m_NativeBuffer, bufferSize);
 
-		vkDestroyBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBuffer, nullptr);
-		vkFreeMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, stagingBufferMemory, nullptr);
+		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBuffer, nullptr);
+		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBufferMemory, nullptr);
 	}
 
 	void VulkanVertexBuffer::FreeNativeBuffer()
 	{
-		vkDestroyBuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_NativeBuffer, nullptr);
-		vkFreeMemory(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_BufferMemory, nullptr);
+		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_NativeBuffer, nullptr);
+		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_BufferMemory, nullptr);
 	}
 	
 }

@@ -28,8 +28,6 @@ namespace Graphite
 
 		bool OnEvent(Event& e);
 
-		inline static VulkanGraphicsContext* GetGraphicsContext() { return s_GraphicsContext; }
-
 		void DrawFrame();
 
 	private:
@@ -42,9 +40,7 @@ namespace Graphite
 
 		void CreateCommandPool();
 		
-	private:
-		static VulkanGraphicsContext* s_GraphicsContext;
-		
+	private:		
 		VkSwapchainKHR m_Swapchain;
 
 		// Add appropriate descriptor set layouts and push constants for the needed functionality

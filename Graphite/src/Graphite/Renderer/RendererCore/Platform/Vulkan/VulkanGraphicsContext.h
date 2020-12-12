@@ -21,13 +21,6 @@ namespace Graphite
 {
 	class GRAPHITE_API VulkanGraphicsContext : public GraphicsContext
 	{
-		friend class Renderer2D;
-		friend class Renderer3D;
-		friend class VulkanFrameBuffer;
-		friend class VulkanShader;
-		friend class RenderPass;
-		friend class VulkanVertexBuffer;
-		friend class VulkanIndexBuffer;
 	public:
 		VulkanGraphicsContext();
 		~VulkanGraphicsContext();
@@ -42,6 +35,27 @@ namespace Graphite
 
 		inline std::pair<uint32_t, uint32_t> GetFrameSize() const override { return m_FrameSize; }
 		inline GLFWwindow* GetNativeWindow() const override { return m_ActiveApplication->GetWindow().GetNativeWindow(); }
+
+		// Getters
+		inline VkInstance GetInstance() const { return m_Instance; }
+		
+		inline VkPhysicalDevice GetPhysicalDevice() const { return m_PhysicalDevice; }
+		inline VkDevice GetLogicalDevice() const { return m_LogicalDevice; }
+		
+		inline VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
+		inline VkQueue GetPresentationQueue() const { return m_PresentationQueue; }
+
+		inline VkSurfaceKHR GetSurface() const { return m_Surface; }
+		inline VkFormat GetSwapchainImageFormat() const { return m_SwapchainImageFormat; }
+		inline VkExtent2D GetSwapchainExtent() const { return m_SwapchainExtent; }
+		inline VkColorSpaceKHR GetSwapchainColorSpace() const { return m_SwapchainColorSpace; }
+
+		inline QueueFamilies GetQueueFamiliesIndices() { return m_QueueFamilies; }
+
+		// Setters
+		inline void SetSwapchainExtent(VkExtent2D extent) { m_SwapchainExtent = extent; }
+		inline void SetSwapchainImageFormat(VkFormat format) { m_SwapchainImageFormat = format; }
+		inline void SetSwapchainColorSpace(VkColorSpaceKHR colorSpace) { m_SwapchainColorSpace = colorSpace; }
 		
 	private:
 		void Init();

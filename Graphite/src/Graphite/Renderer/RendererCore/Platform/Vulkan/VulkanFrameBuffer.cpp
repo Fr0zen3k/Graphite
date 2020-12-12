@@ -42,11 +42,11 @@ namespace Graphite
 
 	void VulkanFrameBuffer::CreateSwapchain()
 	{
-		SwapchainInfo swapchainInfo = GetSwapchainDetails(s_GraphicsContext->m_PhysicalDevice, s_GraphicsContext->m_Surface);
+		SwapchainInfo swapchainInfo = GetSwapchainDetails(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetSurface());
 
 		VkSurfaceFormatKHR surfaceFormat = swapchainInfo.ChooseBestSurfaceFormat();
 		VkPresentModeKHR presentMode = swapchainInfo.ChooseBestPresentMode();
-		VkExtent2D extent = swapchainInfo.ChooseSwapchainExtent(s_GraphicsContext->GetNativeWindow());
+		VkExtent2D extent = swapchainInfo.ChooseSwapchainExtent(GR_GRAPHICS_CONTEXT->GetNativeWindow());
 
 		uint32_t imageNum = swapchainInfo.m_SurfaceCapabilities.minImageCount + 1;
 
@@ -58,7 +58,7 @@ namespace Graphite
 
 		VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
 		swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		swapchainCreateInfo.surface = s_GraphicsContext->m_Surface;
+		swapchainCreateInfo.surface = GR_GRAPHICS_CONTEXT->GetSurface();
 		swapchainCreateInfo.imageFormat = surfaceFormat.format;
 		swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
 		swapchainCreateInfo.presentMode = presentMode;
@@ -70,11 +70,11 @@ namespace Graphite
 		swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		swapchainCreateInfo.clipped = VK_TRUE;
 
-		if(s_GraphicsContext->m_QueueFamilies.m_GraphicsFamily != s_GraphicsContext->m_QueueFamilies.m_PresentationFamily)
+		if(GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily != GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_PresentationFamily)
 		{
 			uint32_t familyIndices[] = {
-				(uint32_t)s_GraphicsContext->m_QueueFamilies.m_GraphicsFamily,
-				(uint32_t)s_GraphicsContext->m_QueueFamilies.m_PresentationFamily
+				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily,
+				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_PresentationFamily
 			};
 
 			swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -90,25 +90,25 @@ namespace Graphite
 
 		swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
-		VkResult result = vkCreateSwapchainKHR(s_GraphicsContext->m_LogicalDevice, &swapchainCreateInfo, nullptr, &m_Swapchain);
+		VkResult result = vkCreateSwapchainKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &swapchainCreateInfo, nullptr, &m_Swapchain);
 
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a swapchain!");
 		}
 
-		s_GraphicsContext->m_SwapchainExtent = extent;
-		s_GraphicsContext->m_SwapchainImageFormat = surfaceFormat.format;
-		s_GraphicsContext->m_SwapchainColorSpace = surfaceFormat.colorSpace;
+		GR_GRAPHICS_CONTEXT->SetSwapchainExtent(extent);
+		GR_GRAPHICS_CONTEXT->SetSwapchainImageFormat(surfaceFormat.format);
+		GR_GRAPHICS_CONTEXT->SetSwapchainColorSpace(surfaceFormat.colorSpace);
 		
 	}
 
 	void VulkanFrameBuffer::CreateFrames()
 	{
 		uint32_t frameCount;
-		vkGetSwapchainImagesKHR(s_GraphicsContext->m_LogicalDevice, m_Swapchain, &frameCount, nullptr);
+		vkGetSwapchainImagesKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Swapchain, &frameCount, nullptr);
 		std::vector<VkImage> images(frameCount);
-		vkGetSwapchainImagesKHR(s_GraphicsContext->m_LogicalDevice, m_Swapchain, &frameCount, images.data());
+		vkGetSwapchainImagesKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Swapchain, &frameCount, images.data());
 		
 		for(VkImage image : images)
 		{
@@ -122,10 +122,10 @@ namespace Graphite
 	{
 		VkCommandPoolCreateInfo commandPoolCreateInfo = {};
 		commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		commandPoolCreateInfo.queueFamilyIndex = VulkanFrameBuffer::GetGraphicsContext()->m_QueueFamilies.m_GraphicsFamily;
+		commandPoolCreateInfo.queueFamilyIndex = GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily;
 		commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-		VkResult result = vkCreateCommandPool(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &commandPoolCreateInfo, nullptr, &m_CommandPool);
+		VkResult result = vkCreateCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool);
 
 		if(result != VK_SUCCESS)
 		{
@@ -165,8 +165,8 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::Shutdown()
 	{
-		vkDestroyImageView(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_ColorImageView, nullptr);
-		vkDestroyFramebuffer(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_Framebuffer, nullptr);
+		vkDestroyImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_ColorImageView, nullptr);
+		vkDestroyFramebuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Framebuffer, nullptr);
 	}
 
 	void VulkanFrameBuffer::Frame::CreateImageView()
@@ -175,7 +175,7 @@ namespace Graphite
 		imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		imageViewCreateInfo.image = m_Image;
 		imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		imageViewCreateInfo.format = s_GraphicsContext->m_SwapchainImageFormat;
+		imageViewCreateInfo.format = GR_GRAPHICS_CONTEXT->GetSwapchainImageFormat();
 		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
 		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
 		imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
@@ -186,7 +186,7 @@ namespace Graphite
 		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 		imageViewCreateInfo.subresourceRange.layerCount = 1;
 
-		VkResult result = vkCreateImageView(s_GraphicsContext->m_LogicalDevice, &imageViewCreateInfo, nullptr, &m_ImageView);
+		VkResult result = vkCreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &imageViewCreateInfo, nullptr, &m_ImageView);
 
 		if(result != VK_SUCCESS)
 		{
@@ -203,11 +203,11 @@ namespace Graphite
 		framebufferCreateInfo.renderPass = m_RenderPass->GetNativeRenderPass();
 		framebufferCreateInfo.attachmentCount = 1;
 		framebufferCreateInfo.pAttachments = attachments;
-		framebufferCreateInfo.width = VulkanFrameBuffer::GetGraphicsContext()->m_SwapchainExtent.width;
-		framebufferCreateInfo.height = VulkanFrameBuffer::GetGraphicsContext()->m_SwapchainExtent.height;
+		framebufferCreateInfo.width = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width;
+		framebufferCreateInfo.height = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height;
 		framebufferCreateInfo.layers = 1;
 
-		VkResult result = vkCreateFramebuffer(s_GraphicsContext->m_LogicalDevice, &framebufferCreateInfo, nullptr, &m_Framebuffer);
+		VkResult result = vkCreateFramebuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &framebufferCreateInfo, nullptr, &m_Framebuffer);
 
 		if(result != VK_SUCCESS)
 		{
@@ -223,7 +223,7 @@ namespace Graphite
 		commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		commandBufferAllocInfo.commandBufferCount = 1;
 
-		VkResult result = vkAllocateCommandBuffers(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &commandBufferAllocInfo, &m_CommandBuffer);
+		VkResult result = vkAllocateCommandBuffers(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &commandBufferAllocInfo, &m_CommandBuffer);
 
 		if(result != VK_SUCCESS)
 		{
@@ -299,8 +299,8 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Pipeline::Shutdown()
 	{
-		vkDestroyPipeline(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_Pipeline, nullptr);
-		vkDestroyPipelineLayout(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_PipelineLayout, nullptr);
+		vkDestroyPipeline(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Pipeline, nullptr);
+		vkDestroyPipelineLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_PipelineLayout, nullptr);
 	}
 
 
@@ -371,7 +371,7 @@ namespace Graphite
 		// Bind descriptor set layouts
 		// Bind push constants
 
-		VkResult result = vkCreatePipelineLayout(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &pipelineLayoutCreateInfo, nullptr, &m_PipelineLayout);
+		VkResult result = vkCreatePipelineLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &pipelineLayoutCreateInfo, nullptr, &m_PipelineLayout);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a pipeline layout!");
@@ -404,7 +404,7 @@ namespace Graphite
 		pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 		pipelineCreateInfo.basePipelineIndex = -1;
 
-		result = vkCreateGraphicsPipelines(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &m_Pipeline);
+		result = vkCreateGraphicsPipelines(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &m_Pipeline);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a pipeline");
@@ -444,14 +444,14 @@ namespace Graphite
 
 	void VulkanFrameBuffer::RenderPass::Shutdown()
 	{
-		vkDestroyRenderPass(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_RenderPass, nullptr);
-		vkDestroyCommandPool(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, m_CommandPool, nullptr);
+		vkDestroyRenderPass(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_RenderPass, nullptr);
+		vkDestroyCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_CommandPool, nullptr);
 	}
 
 	void VulkanFrameBuffer::RenderPass::CreateRenderPass()
 	{
 		VkAttachmentDescription colorAttachment = {};
-		colorAttachment.format = VulkanFrameBuffer::GetGraphicsContext()->m_SwapchainImageFormat;
+		colorAttachment.format = GR_GRAPHICS_CONTEXT->GetSwapchainImageFormat();
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -480,7 +480,7 @@ namespace Graphite
 		renderPassCreateInfo.subpassCount = 1;
 		renderPassCreateInfo.pSubpasses = &subpass;
 
-		VkResult result = vkCreateRenderPass(VulkanFrameBuffer::GetGraphicsContext()->m_LogicalDevice, &renderPassCreateInfo, nullptr, &m_RenderPass);
+		VkResult result = vkCreateRenderPass(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a render pass!");

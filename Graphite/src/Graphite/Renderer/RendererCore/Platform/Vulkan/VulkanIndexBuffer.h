@@ -12,9 +12,8 @@
 #include "vulkan/vulkan.h"
 
 #include "Utils.h"
-
 #include "VulkanGraphicsContext.h"
-#include "VulkanFrameBuffer.h"
+#include "../../../Renderer2D/Renderer2D.h"
 
 namespace Graphite
 {

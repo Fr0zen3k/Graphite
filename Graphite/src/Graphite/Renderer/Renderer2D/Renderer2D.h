@@ -7,6 +7,8 @@
 
 #include "Graphite/Core/Core.h"
 
+#include "../RendererCore/GraphicsContext.h"
+
 #include "../RendererCore/Platform/Vulkan/VulkanGraphicsContext.h"
 #include "../RendererCore/Platform/Vulkan/VulkanFrameBuffer.h"
 
@@ -15,7 +17,11 @@ namespace Graphite
 
 	class GRAPHITE_API Renderer2D
 	{
+	public:
+		static GraphicsContext* GetGraphicsContext();
 		
+	private:
+		static GraphicsContext* s_GraphicsContext;
 	};
 
 }

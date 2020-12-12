@@ -15,6 +15,7 @@
 #include "Utils.h"
 #include "VulkanGraphicsContext.h"
 #include "VulkanFrameBuffer.h"
+#include "../../../Renderer2D/Renderer2D.h"
 
 namespace Graphite
 {
@@ -41,9 +42,7 @@ namespace Graphite
 		void Shutdown();
 		void LoadBytecode();
 
-	private:
-		static VulkanGraphicsContext* s_GraphicsContext;
-		
+	private:		
 		ShaderType m_Type;
 		
 		std::string m_Filepath;

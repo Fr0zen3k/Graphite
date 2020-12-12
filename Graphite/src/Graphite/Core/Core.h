@@ -28,5 +28,9 @@
 	#define GR_ASSERT(x, ...)
 #endif
 
+#ifdef GRAPHITE_RENDERER_VULKAN
+	#define GR_GRAPHICS_CONTEXT dynamic_cast<VulkanGraphicsContext*>(Renderer2D::GetGraphicsContext())
+#endif
+
 
 #endif //GRAPHITE_CORE_H
