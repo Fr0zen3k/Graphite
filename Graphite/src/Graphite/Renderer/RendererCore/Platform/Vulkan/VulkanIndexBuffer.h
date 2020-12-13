@@ -11,20 +11,18 @@
 
 #include "vulkan/vulkan.h"
 
-#include "Utils.h"
-#include "VulkanGraphicsContext.h"
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../IndexBuffer.h"
 
 namespace Graphite
 {
 
-	class VulkanIndexBuffer
+	class GRAPHITE_API VulkanIndexBuffer: public IndexBuffer
 	{
 	public:
 		VulkanIndexBuffer(uint32_t* pIndices, size_t size);
 		~VulkanIndexBuffer();
 
-		inline size_t Size() const { return m_Size; }
+		inline size_t Size() const override { return m_Size; }
 
 		inline VkBuffer GetNativeBuffer() const { return m_NativeBuffer; }
 	private:

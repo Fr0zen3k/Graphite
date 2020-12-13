@@ -15,7 +15,7 @@
 
 #include "GLFW/glfw3.h"
 
-#include "Graphite/Renderer/RendererCore/GraphicsContext.h"
+#include "../../GraphicsContext.h"
 
 namespace Graphite
 {

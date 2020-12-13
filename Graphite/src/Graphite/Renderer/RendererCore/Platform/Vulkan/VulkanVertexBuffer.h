@@ -8,25 +8,22 @@
 #include "Graphite/Core/grpch.h"
 
 #include "Graphite/Core/Core.h"
-#include "Utils.h"
-
-#include "VulkanFrameBuffer.h"
-#include "VulkanGraphicsContext.h"
-
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../Utilities.h"
 
 #include "vulkan/vulkan.h"
+
+#include "../../VertexBuffer.h"
 
 namespace Graphite
 {
 
-	class GRAPHITE_API VulkanVertexBuffer
+	class GRAPHITE_API VulkanVertexBuffer: public VertexBuffer
 	{
 	public:
 		VulkanVertexBuffer(Vertex* pVertices, size_t size);
 		~VulkanVertexBuffer();
 
-		inline size_t Size() const { return m_Size; }
+		inline size_t Size() const override { return m_Size; }
 
 		inline VkBuffer GetNativeBuffer() const { return m_NativeBuffer; }
 

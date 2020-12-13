@@ -10,17 +10,14 @@
 #include "vulkan/vulkan.h"
 
 #include "Graphite/Core/Core.h"
-#include "Graphite/EventCore/Events.h"
+#include "../../Utilities.h"
 
-#include "Utils.h"
-#include "VulkanGraphicsContext.h"
-#include "VulkanFrameBuffer.h"
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../Shader.h"
 
 namespace Graphite
 {
 
-	class GRAPHITE_API VulkanShader
+	class GRAPHITE_API VulkanShader: public Shader
 	{
 	public:
 		VulkanShader();
@@ -29,13 +26,11 @@ namespace Graphite
 		~VulkanShader();
 
 		inline VkShaderModule GetShader() { return m_ShaderModule; }
-		inline ShaderType GetShaderType() { return m_Type; }
 		inline VkPipelineShaderStageCreateInfo GetCreateInfo() { return m_ShaderStageCreateInfo; }
-		void SetShaderFilepath(const std::string& filepath);
-		inline void SetShaderType(ShaderType type)
-		{
-			m_Type = type;
-		}
+
+		inline ShaderType GetShaderType() const override { return m_Type; }
+		void SetShaderFilepath(const std::string& filepath) override;
+		inline void SetShaderType(ShaderType type) override { m_Type = type; }
 		
 	private:
 		void Init();

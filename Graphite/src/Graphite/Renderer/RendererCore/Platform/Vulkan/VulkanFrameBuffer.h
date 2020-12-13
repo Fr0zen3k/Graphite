@@ -8,15 +8,10 @@
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
 #include "Graphite/EventCore/Events.h"
-#include "Graphite/Core/Application.h"
-#include "Graphite/Core/Window.h"
 
-#include "Utils.h"
-
-#include "VulkanGraphicsContext.h"
 #include "VulkanShader.h"
 
-#include "GLFW/glfw3.h"
+#include "vulkan/vulkan.h"
 
 namespace Graphite
 {

@@ -2,8 +2,10 @@
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 
-
 #include "VulkanFrameBuffer.h"
+
+#include "VulkanGraphicsContext.h"
+#include "../../../Renderer2D/Renderer2D.h"
 
 namespace Graphite
 {

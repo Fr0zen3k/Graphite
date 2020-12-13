@@ -4,9 +4,13 @@
 
 #include "VulkanIndexBuffer.h"
 
+#include "Utils.h"
+#include "VulkanGraphicsContext.h"
+#include "../../../Renderer2D/Renderer2D.h"
+
 namespace Graphite
 {
-	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* pIndices, size_t size): m_Size(size)
+	VulkanIndexBuffer::VulkanIndexBuffer(uint32_t* pIndices, size_t size): m_Size(size), IndexBuffer()
 	{
 		AllocateNativeBuffer(pIndices);
 	}

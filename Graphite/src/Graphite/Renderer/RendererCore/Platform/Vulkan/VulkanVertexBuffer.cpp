@@ -4,10 +4,15 @@
 
 #include "VulkanVertexBuffer.h"
 
+#include "Utils.h"
+#include "VulkanFrameBuffer.h"
+#include "VulkanGraphicsContext.h"
+#include "../../../Renderer2D/Renderer2D.h"
+
 namespace Graphite
 {
 	
-	VulkanVertexBuffer::VulkanVertexBuffer(Vertex* pVertices, size_t size):m_Size(size)
+	VulkanVertexBuffer::VulkanVertexBuffer(Vertex* pVertices, size_t size):m_Size(size), VertexBuffer()
 	{
 		AllocateNativeBuffer(pVertices);
 	}

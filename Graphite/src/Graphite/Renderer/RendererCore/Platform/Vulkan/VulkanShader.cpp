@@ -4,23 +4,26 @@
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 
+#include "VulkanGraphicsContext.h"
+#include "../../../Renderer2D/Renderer2D.h"
+
 namespace Graphite
 {
-	VulkanShader::VulkanShader()
+	VulkanShader::VulkanShader(): Shader()
 	{
 		m_Type = ShaderType::None;
 		m_Filepath = "";
 	}
 
 	
-	VulkanShader::VulkanShader(ShaderType type): m_Type(type), m_Filepath("")
+	VulkanShader::VulkanShader(ShaderType type): m_Type(type), m_Filepath(""), Shader()
 	{		
 		m_ShaderStageCreateInfo = {};
 
 		m_ShaderStageCreateInfo.pName = nullptr;
 	}
 
-	VulkanShader::VulkanShader(ShaderType type, const std::string& filepath): m_Type(type)
+	VulkanShader::VulkanShader(ShaderType type, const std::string& filepath): m_Type(type), Shader()
 	{
 		SetShaderFilepath(filepath);
 	}
