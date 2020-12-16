@@ -11,3 +11,7 @@
 *.filters
 *.vcxproj
 /.vs
+
+Makefile
+bin-int
+*.a
