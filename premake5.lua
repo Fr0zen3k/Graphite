@@ -40,6 +40,7 @@ project "Graphite"
 		"%{prj.name}/vendor/glfw_x64/include/",
 		"%{prj.name}/vendor/glm",
 		"%{prj.name}/vendor/Vulkan/1.2.148.1/Include/",
+		"%{prj.name}/vendor/RapidJSON/include",
 		"%{prj.name}/vendor/imgui"
 	}
 	
