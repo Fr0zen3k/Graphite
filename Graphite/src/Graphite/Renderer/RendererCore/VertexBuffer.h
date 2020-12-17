@@ -12,13 +12,14 @@ namespace Graphite
 	class GRAPHITE_API VertexBuffer
 	{
 	public:
+		virtual ~VertexBuffer() = default;
+
 		virtual size_t Size() const = 0;
 
 		static VertexBuffer* CreateVertexBuffer(Vertex* pVertices, size_t size);
 		
 	protected:
 		VertexBuffer() = default;
-		virtual ~VertexBuffer() = default;
 	};
 	
 }

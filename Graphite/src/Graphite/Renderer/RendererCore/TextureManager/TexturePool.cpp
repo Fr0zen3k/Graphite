@@ -24,5 +24,5 @@ namespace Graphite
 
 		return static_cast<uint32_t>(m_Textures.size() - 1);
 	}
-	
+
 }

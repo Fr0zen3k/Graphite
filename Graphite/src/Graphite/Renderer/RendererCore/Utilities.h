@@ -23,6 +23,7 @@ namespace Graphite
 		glm::vec3 position;			// Position (x, y, z)
 		glm::vec4 color;			// Color (r, g, b)
 		glm::vec2 textureCoords;	// Texture Coordinates (u, v)
+		glm::vec3 normal;
 	};
 	
 }
