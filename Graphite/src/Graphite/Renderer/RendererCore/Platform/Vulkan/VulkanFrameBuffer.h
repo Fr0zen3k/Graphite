@@ -136,12 +136,6 @@ namespace Graphite
 				return m_CommandBuffer;
 			}
 
-		private:
-			void Init();
-			void Shutdown();
-
-			void CreateImageView();
-
 			void CreateFramebuffer();
 
 			void CreateCommandBuffer(VkCommandPool& commandPool);
@@ -150,7 +144,11 @@ namespace Graphite
 
 			void CreateDepthBufferImage();
 
-			void CreateSynchronisation();
+		private:
+			void Init();
+			void Shutdown();
+
+			void CreateImageView();
 
 		private:
 			VkImage m_Image;
@@ -167,10 +165,6 @@ namespace Graphite
 			VkImage m_DepthBufferImage;
 			VkDeviceMemory m_DepthBufferImageMemory;
 			VkImageView m_DepthBufferImageView;
-
-			VkSemaphore m_ImageAvailabilitySemaphore;
-			VkSemaphore m_ImageRenderFinish;
-			VkFence m_DrawFence;
 
 			RenderPass* m_RenderPass;
 		};
