@@ -42,6 +42,7 @@ project "Graphite"
 		"%{prj.name}/vendor/Vulkan/1.2.148.1/Include/",
 		"C:/VulkanSDK/1.2.148.1/Include",
 		"%{prj.name}/vendor/imgui",
+		"%{prj.name}/vendor/RapidJSON/include",
 		"%{prj.name}/vendor/STBI"
 	}
 	
@@ -128,7 +129,9 @@ project "Sandbox"
 		"Graphite/vendor/Vulkan/1.2.148.1/Include/",
 		"C:/VulkanSDK/1.2.148.1/Include",
 		"Graphite/vendor/imgui",
-		"Graphite/vendor/STBI"
+		"Graphite/vendor/STBI",
+		"Graphite/vendor/RapidJSON/include",
+		"Graphite/vendor/imgui"
 	}
 	links 
 	{
