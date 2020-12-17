@@ -27,13 +27,13 @@ namespace Graphite
 	{
 		VkDeviceSize bufferSize = sizeof(Vertex) * m_Size;
 		
-		CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
 			| VK_BUFFER_USAGE_TRANSFER_DST_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &m_NativeBuffer, &m_BufferMemory);
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
 
-		CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize,
+		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingBufferMemory);
 
 		void* data;
@@ -41,7 +41,7 @@ namespace Graphite
 		memcpy(data, pVertices, m_Size * sizeof(Vertex));
 		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBufferMemory);
 
-		CopyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), transferQueue, transferCommandPool, stagingBuffer, m_NativeBuffer, bufferSize);
+		VulkanUtilities::CopyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), transferQueue, transferCommandPool, stagingBuffer, m_NativeBuffer, bufferSize);
 
 		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBuffer, nullptr);
 		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBufferMemory, nullptr);

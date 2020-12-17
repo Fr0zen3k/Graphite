@@ -44,7 +44,7 @@ namespace Graphite
 
 	void VulkanFrameBuffer::CreateSwapchain()
 	{
-		SwapchainInfo swapchainInfo = GetSwapchainDetails(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetSurface());
+		VulkanUtilities::SwapchainInfo swapchainInfo = VulkanUtilities::GetSwapchainDetails(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetSurface());
 
 		VkSurfaceFormatKHR surfaceFormat = swapchainInfo.ChooseBestSurfaceFormat();
 		VkPresentModeKHR presentMode = swapchainInfo.ChooseBestPresentMode();
@@ -241,11 +241,6 @@ namespace Graphite
 	}
 
 	void VulkanFrameBuffer::Frame::CreateDepthBufferImage()
-	{
-		
-	}
-
-	void VulkanFrameBuffer::Frame::CreateSynchronisation()
 	{
 		
 	}

@@ -45,4 +45,3 @@ namespace Graphite
 #endif
 
 #endif
-

@@ -21,6 +21,7 @@ namespace Graphite
 
 	void VulkanTexture::DestroyCommonSampler()
 	{
+		s_SampleInitialized = false;
 		vkDestroySampler(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_CommonTextureSampler, nullptr);
 	}
 

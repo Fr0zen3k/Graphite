@@ -21,7 +21,7 @@ namespace Graphite
 	{
 	public:
 		VulkanTexture(const std::string& filePath);
-		~VulkanTexture();
+		~VulkanTexture() override;
 
 		inline VkImage GetNativeImage() const { return m_Image; }
 		inline VkImageView GetImageView() const { return m_ImageView; }
