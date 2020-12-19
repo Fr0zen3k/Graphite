@@ -40,6 +40,7 @@ project "Graphite"
 		"%{prj.name}/vendor/glfw_x64/include/",
 		"%{prj.name}/vendor/glm",
 		"%{prj.name}/vendor/Vulkan/1.2.148.1/Include/",
+		"%{prj.name}/vendor/RapidJSON/include",
 		"%{prj.name}/vendor/imgui"
 	}
 	
@@ -123,6 +124,7 @@ project "Sandbox"
 		"Graphite/vendor/glfw_x64/include/",
 		"Graphite/vendor/glm",
 		"Graphite/vendor/Vulkan/1.2.148.1/Include/",
+		"Graphite/vendor/RapidJSON/include",
 		"Graphite/vendor/imgui"
 	}
 	links 
