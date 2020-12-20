@@ -1,3 +1,8 @@
+//
+// Created by Mauricio Smit
+//
+#include "Graphite/Core/grpch.h"
+
 #pragma once
 
 #include "ComponentContainer.h"
@@ -11,10 +16,10 @@ namespace Graphite
 {
 	class Component;
 
-	class Entity
+	class GRAPHITE_API Entity
 	{
 	public:
-		Entity(std::vector<ComponentContainer> components);
+		Entity(const std::vector<ComponentContainer>& components);
 		virtual ~Entity() = 0;
 
 		// Returns a component. If the component doesn't exist throws std::out_of_range

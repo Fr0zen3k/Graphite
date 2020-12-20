@@ -1,6 +1,9 @@
-#pragma once
-
+//
+// Created by Mauricio Smit
+//
 #include "Graphite/Core/grpch.h"
+
+#pragma once
 
 #include "../Component.h"
 #include "Bounds2D.h"
@@ -12,7 +15,7 @@
 namespace Graphite
 {
 
-	class Node2DComponent : Component
+	class GRAPHITE_API Node2DComponent : Component
 	{
 	public:
 		Node2DComponent(
@@ -34,7 +37,7 @@ namespace Graphite
 		inline float GetRotationDegrees() const { return glm::degrees(mRotation); }
 		inline glm::vec2 GetScaling() const { return mScaling; }
 
-		inline glm::mat3x3 GetAbsoluteTransformation() const { return mAbsTransform; }
+		inline glm::mat4x4 GetAbsoluteTransformation() const { return mAbsTransform; }
 		inline bool NeedsUpdate() const { return mNeedsUpdate; }
 
 		void SetParent(Node2DComponent* parent);
@@ -54,7 +57,7 @@ namespace Graphite
 		float mRotation;
 		glm::vec2 mScaling;
 
-		glm::mat3x3 mAbsTransform;
+		glm::mat4x4 mAbsTransform;
 		bool mNeedsUpdate;
 
 		// Marks for updating

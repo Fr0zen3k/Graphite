@@ -29,7 +29,7 @@ namespace Graphite {
 
 	void Application::OnEvent(Event& e)
 	{
-        GR_CORE_LOG_TRACE("{0}", e.ToString());
+        //GR_CORE_LOG_TRACE("{0}", e.ToString());
         EventDispatch d(e);
         d.Dispatch<KeyDownEvent>([](KeyDownEvent e)
             {

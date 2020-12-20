@@ -2,7 +2,7 @@
 
 namespace Graphite
 {
-	Entity::Entity(std::vector<ComponentContainer> components)
+	Entity::Entity(const std::vector<ComponentContainer>& components)
 	{
 		for (auto& compCont : components)
 		{

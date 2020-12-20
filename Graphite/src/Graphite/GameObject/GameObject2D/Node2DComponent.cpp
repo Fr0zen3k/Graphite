@@ -71,28 +71,32 @@ namespace Graphite
 	{
 		// calculate new transformation
 
-		glm::mat3x3 tr = glm::transpose(glm::make_mat3x3(// translate
+		/*glm::mat4x4 tr = glm::transpose(glm::make_mat3x3(// translate
 			{
 				1.0f, 0.0f, mPosition.x,
 				0.0f, 1.0f, mPosition.y,
 				0.0f, 0.0f, 1.0f
 			}
 		));
-		glm::mat3x3 rot = glm::transpose(glm::make_mat3x3(// rotate
+		glm::mat4x4 rot = glm::transpose(glm::make_mat3x3(// rotate
 			{
 				glm::cos(mRotation), -glm::sin(mRotation), 0.0f,
 				glm::sin(mRotation), glm::cos(mRotation),  0.0f,
 				0.0f,                0.0f,                 1.0f
 			}
 		));
-		glm::mat3x3 sc = glm::transpose(glm::make_mat3x3(// scale
+		glm::mat4x4 sc = glm::transpose(glm::make_mat3x3(// scale
 			{
 				mScaling.x, 0.0f,       0.0f,
 				0.0f,       mScaling.y, 0.0f,
 				0.0f,       0.0f,       1.0f
 			}
 		));
-		glm::mat3x3 m = tr*rot*sc;
+		glm::mat4x4 m = tr*rot*sc;*/
+		glm::mat4x4 m = glm::mat4x4(1.0f);
+		glm::scale(m, { mScaling.x , mScaling.y, 1.0f });
+		glm::rotate(m, mRotation, {0, 0, 1});
+		glm::translate(m, { mPosition.x , mPosition.y, 1.0f });
 		
 		if (mParent)
 		{

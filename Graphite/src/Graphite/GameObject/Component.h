@@ -1,3 +1,8 @@
+//
+// Created by Mauricio Smit
+//
+#include "Graphite/Core/grpch.h"
+
 #pragma once
 
 #include "Entity.h"
@@ -10,7 +15,7 @@
 namespace Graphite
 {
 
-	class Component
+	class GRAPHITE_API Component
 	{
 	public:
 		Component(Entity* e);
