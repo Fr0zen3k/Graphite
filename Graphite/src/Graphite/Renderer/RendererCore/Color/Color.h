@@ -58,7 +58,7 @@ namespace Graphite
 	/// A type of numeric nature must be used, otherwise the class might not function
 	/// If not using the official supported types, the class will not be compatible with the renderer and Vulkan API, therefore unusable for rendering purposes, only computation
 	/// </typeparam>
-	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> class GRAPHITE_API grColor
+	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> class GRAPHITE_API Color
 	{
 		
 	public:
@@ -72,9 +72,9 @@ namespace Graphite
 		/// <param name="green"> Raw data for the green value either in integer or float format </param>
 		/// <param name="blue"> Raw data for the blue value either in integer or float format </param>
 		/// <param name="alpha"> Raw data for the alpha value either in integer or float format </param>
-		grColor();
-		grColor(_GR_COLOR_SIZE red, _GR_COLOR_SIZE green, _GR_COLOR_SIZE blue, _GR_COLOR_SIZE alpha);
-		grColor(float red, float green, float blue, float alpha);
+		Color();
+		Color(_GR_COLOR_SIZE red, _GR_COLOR_SIZE green, _GR_COLOR_SIZE blue, _GR_COLOR_SIZE alpha);
+		Color(float red, float green, float blue, float alpha);
 
 		/// <summary>
 		/// glm::vec4 format for use with the renderer and the Vulkan API
@@ -116,7 +116,7 @@ namespace Graphite
 		/// </summary>
 		/// <param name="topColor"> The top of the two colors</param>
 		/// <returns></returns>
-		grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> operator + (grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> topColor);
+		Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> operator + (Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> topColor);
 		
 	private:
 		/// <summary>
