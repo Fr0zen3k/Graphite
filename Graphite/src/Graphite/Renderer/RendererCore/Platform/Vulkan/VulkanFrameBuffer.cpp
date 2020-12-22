@@ -2,8 +2,10 @@
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 
-
 #include "VulkanFrameBuffer.h"
+
+#include "VulkanGraphicsContext.h"
+#include "../../../Renderer2D/Renderer2D.h"
 
 namespace Graphite
 {
@@ -23,24 +25,30 @@ namespace Graphite
 		
 	}
 
+	void VulkanFrameBuffer::DrawFrame()
+	{
+		
+	}
+	
 	void VulkanFrameBuffer::Init()
 	{
 		CreateSwapchain();
+		CreateCommandPool();
 		CreateFrames();
 	}
 
 	void VulkanFrameBuffer::Shutdown()
-	{
-		
+	{ 
+		// Destroy frames, pipeline, renderpass and vulkan components
 	}
 
 	void VulkanFrameBuffer::CreateSwapchain()
 	{
-		SwapchainInfo swapchainInfo = GetSwapchainDetails(m_GraphicsContext->m_PhysicalDevice, m_GraphicsContext->m_Surface);
+		VulkanUtilities::SwapchainInfo swapchainInfo = VulkanUtilities::GetSwapchainDetails(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetSurface());
 
 		VkSurfaceFormatKHR surfaceFormat = swapchainInfo.ChooseBestSurfaceFormat();
 		VkPresentModeKHR presentMode = swapchainInfo.ChooseBestPresentMode();
-		VkExtent2D extent = swapchainInfo.ChooseSwapchainExtent(m_GraphicsContext->GetNativeWindow());
+		VkExtent2D extent = swapchainInfo.ChooseSwapchainExtent(GR_GRAPHICS_CONTEXT->GetNativeWindow());
 
 		uint32_t imageNum = swapchainInfo.m_SurfaceCapabilities.minImageCount + 1;
 
@@ -52,7 +60,7 @@ namespace Graphite
 
 		VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
 		swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		swapchainCreateInfo.surface = m_GraphicsContext->m_Surface;
+		swapchainCreateInfo.surface = GR_GRAPHICS_CONTEXT->GetSurface();
 		swapchainCreateInfo.imageFormat = surfaceFormat.format;
 		swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
 		swapchainCreateInfo.presentMode = presentMode;
@@ -64,11 +72,11 @@ namespace Graphite
 		swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		swapchainCreateInfo.clipped = VK_TRUE;
 
-		if(m_GraphicsContext->m_QueueFamilies.m_GraphicsFamily != m_GraphicsContext->m_QueueFamilies.m_PresentationFamily)
+		if(GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily != GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_PresentationFamily)
 		{
 			uint32_t familyIndices[] = {
-				(uint32_t)m_GraphicsContext->m_QueueFamilies.m_GraphicsFamily,
-				(uint32_t)m_GraphicsContext->m_QueueFamilies.m_PresentationFamily
+				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily,
+				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_PresentationFamily
 			};
 
 			swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -84,39 +92,53 @@ namespace Graphite
 
 		swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
-		VkResult result = vkCreateSwapchainKHR(m_GraphicsContext->m_LogicalDevice, &swapchainCreateInfo, nullptr, &m_Swapchain);
+		VkResult result = vkCreateSwapchainKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &swapchainCreateInfo, nullptr, &m_Swapchain);
 
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a swapchain!");
 		}
 
-		m_GraphicsContext->m_SwapchainExtent = extent;
-		m_GraphicsContext->m_SwapchainImageFormat = surfaceFormat.format;
-		m_GraphicsContext->m_SwapchainColorSpace = surfaceFormat.colorSpace;
+		GR_GRAPHICS_CONTEXT->SetSwapchainExtent(extent);
+		GR_GRAPHICS_CONTEXT->SetSwapchainImageFormat(surfaceFormat.format);
+		GR_GRAPHICS_CONTEXT->SetSwapchainColorSpace(surfaceFormat.colorSpace);
 		
 	}
 
 	void VulkanFrameBuffer::CreateFrames()
 	{
 		uint32_t frameCount;
-		vkGetSwapchainImagesKHR(m_GraphicsContext->m_LogicalDevice, m_Swapchain, &frameCount, nullptr);
+		vkGetSwapchainImagesKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Swapchain, &frameCount, nullptr);
 		std::vector<VkImage> images(frameCount);
-		vkGetSwapchainImagesKHR(m_GraphicsContext->m_LogicalDevice, m_Swapchain, &frameCount, images.data());
+		vkGetSwapchainImagesKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Swapchain, &frameCount, images.data());
 		
 		for(VkImage image : images)
 		{
-			Frame frame;
-			frame.m_Image = image;
-			frame.m_ImageView; // create the image view
-
-			m_Frames.push_back(frame);
+			Frame* frame = new Frame(image);
+			frame->AssignCommandPool(m_CommandPool);
+			m_Frames.emplace_back(frame);
 		}
 	}
 
+	void VulkanFrameBuffer::CreateCommandPool()
+	{
+		VkCommandPoolCreateInfo commandPoolCreateInfo = {};
+		commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		commandPoolCreateInfo.queueFamilyIndex = GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily;
+		commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+
+		VkResult result = vkCreateCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &commandPoolCreateInfo, nullptr, &m_CommandPool);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a command pool!");
+		}
+	}
+
+
 	// ---------------- Frame -----------------
 
-	VulkanFrameBuffer::Frame::Frame()
+	VulkanFrameBuffer::Frame::Frame(VkImage image)
 	{
 		Init();
 	}
@@ -133,18 +155,85 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::Init()
 	{
-		
+		try
+		{
+			CreateImageView();
+		}
+		catch(const std::runtime_error &e)
+		{
+			throw e;
+		}
 	}
 
 	void VulkanFrameBuffer::Frame::Shutdown()
 	{
-		
+		vkDestroyImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_ColorImageView, nullptr);
+		vkDestroyFramebuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Framebuffer, nullptr);
 	}
 
-	void VulkanFrameBuffer::Frame::CreateImage()
+	void VulkanFrameBuffer::Frame::CreateImageView()
 	{
-		
+		VkImageViewCreateInfo imageViewCreateInfo = {};
+		imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		imageViewCreateInfo.image = m_Image;
+		imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		imageViewCreateInfo.format = GR_GRAPHICS_CONTEXT->GetSwapchainImageFormat();
+		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
+		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
+		imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
+		imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
+		imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
+		imageViewCreateInfo.subresourceRange.levelCount = 1;
+		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
+		imageViewCreateInfo.subresourceRange.layerCount = 1;
+
+		VkResult result = vkCreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &imageViewCreateInfo, nullptr, &m_ImageView);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create an image view!");
+		}
 	}
+
+	void VulkanFrameBuffer::Frame::CreateFramebuffer()
+	{
+		VkImageView attachments[] = { m_ColorImageView };
+
+		VkFramebufferCreateInfo framebufferCreateInfo = {};
+		framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferCreateInfo.renderPass = m_RenderPass->GetNativeRenderPass();
+		framebufferCreateInfo.attachmentCount = 1;
+		framebufferCreateInfo.pAttachments = attachments;
+		framebufferCreateInfo.width = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width;
+		framebufferCreateInfo.height = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height;
+		framebufferCreateInfo.layers = 1;
+
+		VkResult result = vkCreateFramebuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &framebufferCreateInfo, nullptr, &m_Framebuffer);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a framebuffer!");
+		}
+	}
+
+	void VulkanFrameBuffer::Frame::CreateCommandBuffer(VkCommandPool& commandPool)
+	{
+		VkCommandBufferAllocateInfo commandBufferAllocInfo = {};
+		commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		commandBufferAllocInfo.commandPool = commandPool;
+		commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		commandBufferAllocInfo.commandBufferCount = 1;
+
+		VkResult result = vkAllocateCommandBuffers(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &commandBufferAllocInfo, &m_CommandBuffer);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to allocate a command buffer!");
+		}
+	}
+
+
 
 	void VulkanFrameBuffer::Frame::CreateColorImage()
 	{
@@ -152,11 +241,6 @@ namespace Graphite
 	}
 
 	void VulkanFrameBuffer::Frame::CreateDepthBufferImage()
-	{
-		
-	}
-
-	void VulkanFrameBuffer::Frame::CreateSynchronisation()
 	{
 		
 	}
@@ -175,34 +259,173 @@ namespace Graphite
 
 	bool VulkanFrameBuffer::Pipeline::OnEvent(Event& e)
 	{
-		
+		if(e.GetEventType() == EventType::WindowResize)
+		{
+			RecreatePipeline();
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
+
+	bool VulkanFrameBuffer::Pipeline::BindShader(VulkanShader& shader)
+	{
+		if(shader.GetShaderType() == ShaderType::Vertex)
+		{
+			m_VertexShader = shader;
+			return true;
+		}
+		else if(shader.GetShaderType() == ShaderType::Fragment)
+		{
+			m_FragmentShader = shader;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 
 	void VulkanFrameBuffer::Pipeline::Init()
 	{
-		
+		CreatePipeline();
 	}
 
 	void VulkanFrameBuffer::Pipeline::Shutdown()
 	{
-		
+		vkDestroyPipeline(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Pipeline, nullptr);
+		vkDestroyPipelineLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_PipelineLayout, nullptr);
 	}
 
+
+	// -------------------------------------------------- Make sure to also recreate the pipeline whenever some renderer settings change, to enable dynamic settings (after implementing renderer settings)
 	void VulkanFrameBuffer::Pipeline::CreatePipeline()
+	{
+		VkPipelineShaderStageCreateInfo shaderInfos[] = { m_VertexShader.GetCreateInfo(), m_FragmentShader.GetCreateInfo() };
+
+		// .............................. ADD VERTEX BINDING DESCRIPTIONS AND VERTEX INPUT ....................................
+
+		// .......................................
+
+		VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = {};
+		inputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+		inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+		inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;				// Check if the restart is worth turning on
+
+		// .............................. ADD VIEWPORT AND SCISSORS FROM THE ACTIVE CAMERA ....................................
+		// Make sure to recreate the whole pipeline on window resize or camera switch!!!!!!!!!!!!
+		// .......................................
+
+		// .............................. ADD DYNAMIC STATES IF NEEDED AFTER WRITING THE SHADERS ..............................
+
+		// .......................................
+
+		VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = {};
+		rasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+		rasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
+		rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
+		rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;			// Make sure to modify for when creating a lvl editor
+		rasterizationStateCreateInfo.lineWidth = 1.0f;
+		rasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;				// Check if better exists
+		rasterizationStateCreateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;	// Look up clockwise vs counter clockwise
+		rasterizationStateCreateInfo.depthBiasEnable = VK_FALSE;
+
+
+		// Check out the best multisampling settings and recreate the pipeline every time they change
+		// EXPAND FUNCTIONALITY LATER
+		VkPipelineMultisampleStateCreateInfo multisampleStateCreateInfo = {};
+		multisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+		multisampleStateCreateInfo.sampleShadingEnable = VK_FALSE;
+		multisampleStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+
+
+		// Add support for choosing different blending options for interesting color driven effects
+		VkPipelineColorBlendAttachmentState colorState = {};
+		colorState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+		colorState.blendEnable = VK_TRUE;
+		
+		colorState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+		colorState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorState.alphaBlendOp = VK_BLEND_OP_ADD;
+
+		colorState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		colorState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		colorState.colorBlendOp = VK_BLEND_OP_ADD;
+
+		VkPipelineColorBlendStateCreateInfo colorBlendCreateInfo = {};
+		colorBlendCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+		colorBlendCreateInfo.logicOpEnable = VK_FALSE;
+		colorBlendCreateInfo.attachmentCount = 1;
+		colorBlendCreateInfo.pAttachments = &colorState;
+
+		// Make an array of descriptor set layouts;
+
+		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
+		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		// Bind descriptor set layouts
+		// Bind push constants
+
+		VkResult result = vkCreatePipelineLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &pipelineLayoutCreateInfo, nullptr, &m_PipelineLayout);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a pipeline layout!");
+		}
+
+		
+		VkPipelineDepthStencilStateCreateInfo depthStencilStateCreateInfo = {};
+		depthStencilStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencilStateCreateInfo.depthTestEnable = VK_TRUE;
+		depthStencilStateCreateInfo.depthWriteEnable = VK_TRUE;
+		depthStencilStateCreateInfo.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencilStateCreateInfo.depthBoundsTestEnable = VK_FALSE;
+		depthStencilStateCreateInfo.stencilTestEnable = VK_FALSE;
+
+		
+		VkGraphicsPipelineCreateInfo pipelineCreateInfo = {};
+		pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+		pipelineCreateInfo.stageCount = 2;
+		pipelineCreateInfo.pStages = shaderInfos;
+		// Add vertex input state
+		// Add viewport and dynamic state if needed
+		pipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
+		pipelineCreateInfo.pMultisampleState = &multisampleStateCreateInfo;
+		pipelineCreateInfo.pColorBlendState = &colorBlendCreateInfo;
+		pipelineCreateInfo.pDepthStencilState = &depthStencilStateCreateInfo;
+		pipelineCreateInfo.layout = m_PipelineLayout;
+		pipelineCreateInfo.renderPass = m_RenderPass.GetNativeRenderPass();
+		pipelineCreateInfo.subpass = 0;
+
+		pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineCreateInfo.basePipelineIndex = -1;
+
+		result = vkCreateGraphicsPipelines(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &m_Pipeline);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a pipeline");
+		}
+	}
+
+
+	// Implement later
+	void VulkanFrameBuffer::Pipeline::RecreatePipeline()
 	{
 		
 	}
+
 
 	// --------------- Render Pass ---------------------
 
 	VulkanFrameBuffer::RenderPass::RenderPass()
 	{
-		
+		Init();
 	}
 
 	VulkanFrameBuffer::RenderPass::~RenderPass()
 	{
-		
+		Shutdown();
 	}
 
 	bool VulkanFrameBuffer::RenderPass::OnEvent(Event& e)
@@ -210,17 +433,58 @@ namespace Graphite
 		
 	}
 
-	bool VulkanFrameBuffer::RenderPass::BindPipeline(const Pipeline& pipeline)
-	{
-		
-	}
-
 	void VulkanFrameBuffer::RenderPass::Init()
 	{
-		
+		CreateRenderPass();
+		CreateCommandPool();
 	}
 
 	void VulkanFrameBuffer::RenderPass::Shutdown()
+	{
+		vkDestroyRenderPass(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_RenderPass, nullptr);
+		vkDestroyCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_CommandPool, nullptr);
+	}
+
+	void VulkanFrameBuffer::RenderPass::CreateRenderPass()
+	{
+		VkAttachmentDescription colorAttachment = {};
+		colorAttachment.format = GR_GRAPHICS_CONTEXT->GetSwapchainImageFormat();
+		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		// Add depth description later
+
+		// Add subpasses if necessary when adding multiple subpass support
+
+		VkAttachmentReference colorRef = {};
+		colorRef.attachment = 0;
+		colorRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		VkSubpassDescription subpass = {};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &colorRef;
+
+		VkRenderPassCreateInfo renderPassCreateInfo = {};
+		renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		renderPassCreateInfo.attachmentCount = 1;
+		renderPassCreateInfo.pAttachments = &colorAttachment;
+		renderPassCreateInfo.subpassCount = 1;
+		renderPassCreateInfo.pSubpasses = &subpass;
+
+		VkResult result = vkCreateRenderPass(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &renderPassCreateInfo, nullptr, &m_RenderPass);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a render pass!");
+		}
+	}
+
+	void VulkanFrameBuffer::RenderPass::CreateCommandPool()
 	{
 		
 	}

@@ -8,14 +8,10 @@
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
 #include "Graphite/EventCore/Events.h"
-#include "Graphite/Core/Application.h"
-#include "Graphite/Core/Window.h"
 
-#include "Utils.h"
+#include "VulkanShader.h"
 
-#include "VulkanGraphicsContext.h"
-
-#include "GLFW/glfw3.h"
+#include "vulkan/vulkan.h"
 
 namespace Graphite
 {
@@ -27,16 +23,19 @@ namespace Graphite
 
 		bool OnEvent(Event& e);
 
+		void DrawFrame();
+
 	private:
 		void Init();
 		void Shutdown();
 
 		void CreateSwapchain();
 		void CreateFrames();
+
+
+		void CreateCommandPool();
 		
-	private:
-		VulkanGraphicsContext* m_GraphicsContext;
-		
+	private:		
 		VkSwapchainKHR m_Swapchain;
 
 		// Add appropriate descriptor set layouts and push constants for the needed functionality
@@ -44,65 +43,6 @@ namespace Graphite
 		// Add corresponding descriptor pools for the used layouts
 
 		// Add uniform buffer if needed		
-		
-		class GRAPHITE_API Frame
-		{
-			friend class Renderer2D;
-			friend class Renderer3D;
-			friend class VulkanFrameBuffer;
-		public:
-			Frame();
-			~Frame();
-
-			bool OnEvent(Event& e);
-
-		private:
-			void Init();
-			void Shutdown();
-
-			void CreateImage();
-			void CreateColorImage();
-			void CreateDepthBufferImage();
-			void CreateSynchronisation();
-
-		private:
-			VkImage m_Image;
-			VkImageView m_ImageView;
-			VkFramebuffer m_Framebuffer;
-			VkCommandBuffer m_CommandBuffer;
-
-			VkImage m_ColorBufferImage;
-			VkDeviceMemory m_ColorBufferImageMemory;
-			VkImageView m_ColorImageViews;
-
-			VkImage m_DepthBufferImage;
-			VkDeviceMemory m_DepthBufferImageMemory;
-			VkImageView m_DepthBufferImageView;
-
-			VkSemaphore m_ImageAvailabilitySemaphore;
-			VkSemaphore m_ImageRenderFinish;
-			VkFence m_DrawFence;
-		};
-
-		class Pipeline
-		{
-		public:
-			Pipeline();
-			~Pipeline();
-
-			bool OnEvent(Event& e);
-
-		private:
-			void Init();
-			void Shutdown();
-
-			void CreatePipeline();
-
-		private:
-			VkPipeline m_Pipeline;
-			VkPipelineLayout m_PipelineLayout;
-			
-		};
 
 		class RenderPass
 		{
@@ -112,25 +52,133 @@ namespace Graphite
 
 			bool OnEvent(Event& e);
 
-			bool BindPipeline(const Pipeline& pipeline);
-			
+			inline VkRenderPass GetNativeRenderPass() { return m_RenderPass; }
+
 		private:
 			void Init();
 			void Shutdown();
-			
+
+			void CreateRenderPass();
+			void CreateCommandPool();
+
 		private:
 			VkRenderPass m_RenderPass;
 
 			VkCommandPool m_CommandPool;
-
-			std::vector<Pipeline> m_Pipelines;
 		};
 
-		std::vector<Frame> m_Frames;
+		// Later add support for usage of compute pipelines as well
+		// Add connection with the render pass used for the pipeline
+		class Pipeline
+		{
+		public:
+			Pipeline();
+			~Pipeline();
+
+			bool OnEvent(Event& e);
+
+			bool BindShader(VulkanShader& shader);
+
+		private:
+			void Init();
+			void Shutdown();
+
+			void CreatePipeline();
+			void RecreatePipeline();
+
+		private:
+			VkPipeline m_Pipeline;
+			VkPipelineLayout m_PipelineLayout;
+
+			VulkanShader m_VertexShader;
+			VulkanShader m_FragmentShader;
+			// Add support for more different shaders including compute shaders
+
+			RenderPass m_RenderPass;
+		};
+
+		class GRAPHITE_API Frame
+		{
+			friend class Renderer2D;
+			friend class Renderer3D;
+			friend class VulkanFrameBuffer;
+		public:
+			Frame(VkImage image);
+			~Frame();
+
+			bool OnEvent(Event& e);
+
+			inline void SetImage(VkImage& image)
+			{
+				m_Image = image;
+			}
+
+			inline void AssignCommandPool(VkCommandPool& commandPool)
+			{
+				CreateCommandBuffer(commandPool);
+			}
+
+			inline void BindRenderPass(RenderPass* renderPass)
+			{
+				m_RenderPass = renderPass;
+				CreateFramebuffer();
+			}
+
+			
+			inline Frame operator =  (Frame f)
+			{
+				Frame res(f.m_Image);
+				return res;
+			}
+
+			inline VkCommandBuffer GetCommandBuffer()
+			{
+				return m_CommandBuffer;
+			}
+
+			void CreateFramebuffer();
+
+			void CreateCommandBuffer(VkCommandPool& commandPool);
+
+			void CreateColorImage();
+
+			void CreateDepthBufferImage();
+
+		private:
+			void Init();
+			void Shutdown();
+
+			void CreateImageView();
+
+		private:
+			VkImage m_Image;
+			VkImageView m_ImageView;
+			
+			VkFramebuffer m_Framebuffer;
+			
+			VkCommandBuffer m_CommandBuffer;
+
+			VkImage m_ColorBufferImage;
+			VkDeviceMemory m_ColorBufferImageMemory;
+			VkImageView m_ColorImageView;
+
+			VkImage m_DepthBufferImage;
+			VkDeviceMemory m_DepthBufferImageMemory;
+			VkImageView m_DepthBufferImageView;
+
+			RenderPass* m_RenderPass;
+		};
+		
+		std::vector<Frame*> m_Frames;
 		size_t m_BufferSize = 0;
 
-		Pipeline m_MainPipeline;
-		RenderPass m_MainRenderPass;
+		Pipeline* m_MainPipeline;
+		RenderPass* m_MainRenderPass;
+
+		VulkanShader* m_VertexShader;
+		VulkanShader* m_FragmentShader;
+
+		VkCommandPool m_CommandPool;
 	};
 }
 

@@ -40,13 +40,16 @@ project "Graphite"
 		"%{prj.name}/vendor/glfw_x64/include/",
 		"%{prj.name}/vendor/glm",
 		"%{prj.name}/vendor/Vulkan/1.2.148.1/Include/",
+		"C:/VulkanSDK/1.2.148.1/Include",
+		"%{prj.name}/vendor/imgui",
 		"%{prj.name}/vendor/RapidJSON/include",
-		"%{prj.name}/vendor/imgui"
+		"%{prj.name}/vendor/STBI"
 	}
 	
 	libdirs 
 	{
 		"%{prj.name}/vendor/Vulkan/1.2.148.1/Lib",
+		"C:/VulkanSDK/1.2.148.1/Lib",
 		"%{prj.name}/vendor/glfw_x64/lib-vc2019"
 	}
 	
@@ -124,6 +127,9 @@ project "Sandbox"
 		"Graphite/vendor/glfw_x64/include/",
 		"Graphite/vendor/glm",
 		"Graphite/vendor/Vulkan/1.2.148.1/Include/",
+		"C:/VulkanSDK/1.2.148.1/Include",
+		"Graphite/vendor/imgui",
+		"Graphite/vendor/STBI",
 		"Graphite/vendor/RapidJSON/include",
 		"Graphite/vendor/imgui"
 	}

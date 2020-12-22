@@ -95,7 +95,7 @@ namespace Graphite
 
 		// ------------------ add a validation extension when used ------------------------
 
-		if(!CheckInstanceExtensions(extensions))
+		if(!VulkanUtilities::CheckInstanceExtensions(extensions))
 		{
 			throw std::runtime_error("Renderer extensions not supported!");
 		}
@@ -134,7 +134,7 @@ namespace Graphite
 		std::multimap<int, VkPhysicalDevice> candidates;
 
 		for (const auto& device : devices) {
-			int score = RatePhysicalDevice(device);
+			int score = VulkanUtilities::RatePhysicalDevice(device);
 			candidates.insert(std::make_pair(score, device));
 		}
 		
