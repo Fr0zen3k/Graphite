@@ -10,22 +10,19 @@
 
 #include "glm/glm.hpp"
 
-#include <set>
-
 namespace Graphite
 {
 
-	class GRAPHITE_API Node2DComponent : Component
+	class GRAPHITE_API Node2DComponent : public Component
 	{
 	public:
 		Node2DComponent(
-			Entity* entity,
-			Node2DComponent* parent,
+			Node2DComponent* parent = nullptr,
 			glm::vec2 position = glm::vec2(0.0f, 0.0f),
 			float rotation = 0.0f, 
 			glm::vec2 scaling = glm::vec2(1.0f, 1.0f)
 		);
-		Node2DComponent() = delete;
+		Node2DComponent(const rapidjson::Value& params);
 
 		~Node2DComponent();
 

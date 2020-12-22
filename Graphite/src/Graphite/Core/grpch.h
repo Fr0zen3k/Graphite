@@ -3,6 +3,8 @@
 #ifndef GRAPHITE_GRPCH_H
 #define GRAPHITE_GRPCH_H
 
+#include "rapidjson/document.h"
+
 #include <iostream>
 #include <cstdio>
 #include <memory>
@@ -27,6 +29,7 @@
 #include <bitset>
 #include <typeinfo>
 #include <optional>
+#include <typeinfo>
 
 #include <vector>
 #include <stack>

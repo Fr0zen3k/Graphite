@@ -9,14 +9,13 @@ namespace Graphite
 	class ComponentContainer
 	{
 	public:
-		ComponentContainer() = 0;
+		ComponentContainer() = delete;
 
-		template <class _CompT>
-		ComponentContainer(_CompT* c) :
+		ComponentContainer(Component* c) :
 			mComponentPtr(c),
-			mTypeInfoPtr(&typeid(_CompT))
+			mTypeInfoPtr(&typeid(*c))
 		{
-			static_assert(std::is_base_of<Component, _CompT>::value, "Component container can only contain Component objects");
+			//static_assert(std::is_base_of<Component, _CompT>::value, "Component container can only contain Component objects");
 		};
 
 		inline Component* componentPtr() const { return mComponentPtr; }

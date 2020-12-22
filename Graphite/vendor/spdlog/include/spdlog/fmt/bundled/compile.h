@@ -125,10 +125,10 @@ FMT_CONSTEXPR unsigned count_parts(basic_string_view<Char> format_str) {
 template <typename Char, typename PartHandler>
 class format_string_compiler : public error_handler {
  private:
-  using part = format_part<Char>;
+  using Comp = format_part<Char>;
 
   PartHandler handler_;
-  part part_;
+  Comp part_;
   basic_string_view<Char> format_str_;
   basic_format_parse_context<Char> parse_context_;
 
@@ -141,22 +141,22 @@ class format_string_compiler : public error_handler {
 
   FMT_CONSTEXPR void on_text(const Char* begin, const Char* end) {
     if (begin != end)
-      handler_(part::make_text({begin, to_unsigned(end - begin)}));
+      handler_(Comp::make_text({begin, to_unsigned(end - begin)}));
   }
 
   FMT_CONSTEXPR int on_arg_id() {
-    part_ = part::make_arg_index(parse_context_.next_arg_id());
+    part_ = Comp::make_arg_index(parse_context_.next_arg_id());
     return 0;
   }
 
   FMT_CONSTEXPR int on_arg_id(int id) {
     parse_context_.check_arg_id(id);
-    part_ = part::make_arg_index(id);
+    part_ = Comp::make_arg_index(id);
     return 0;
   }
 
   FMT_CONSTEXPR int on_arg_id(basic_string_view<Char> id) {
-    part_ = part::make_arg_name(id);
+    part_ = Comp::make_arg_name(id);
     return 0;
   }
 
@@ -167,17 +167,17 @@ class format_string_compiler : public error_handler {
 
   FMT_CONSTEXPR const Char* on_format_specs(int, const Char* begin,
                                             const Char* end) {
-    auto repl = typename part::replacement();
+    auto repl = typename Comp::replacement();
     dynamic_specs_handler<basic_format_parse_context<Char>> handler(
         repl.specs, parse_context_);
     auto it = parse_format_specs(begin, end, handler);
     if (*it != '}') on_error("missing '}' in format string");
-    repl.arg_id = part_.part_kind == part::kind::arg_index
+    repl.arg_id = part_.part_kind == Comp::kind::arg_index
                       ? arg_ref<Char>(part_.val.arg_index)
                       : arg_ref<Char>(part_.val.str);
-    auto part = part::make_replacement(repl);
-    part.arg_id_end = begin;
-    handler_(part);
+    auto Comp = Comp::make_replacement(repl);
+    Comp.arg_id_end = begin;
+    handler_(Comp);
     return it;
   }
 };
@@ -213,11 +213,11 @@ auto vformat_to(OutputIt out, CompiledFormat& cf,
   const auto& parts = cf.parts();
   for (auto part_it = std::begin(parts); part_it != std::end(parts);
        ++part_it) {
-    const auto& part = *part_it;
-    const auto& value = part.val;
+    const auto& Comp = *part_it;
+    const auto& value = Comp.val;
 
     using format_part_t = format_part<char_type>;
-    switch (part.part_kind) {
+    switch (Comp.part_kind) {
     case format_part_t::kind::text: {
       const auto text = value.str;
       auto output = ctx.out();
@@ -228,12 +228,12 @@ auto vformat_to(OutputIt out, CompiledFormat& cf,
     }
 
     case format_part_t::kind::arg_index:
-      advance_to(parse_ctx, part.arg_id_end);
+      advance_to(parse_ctx, Comp.arg_id_end);
       detail::format_arg<OutputIt>(parse_ctx, ctx, value.arg_index);
       break;
 
     case format_part_t::kind::arg_name:
-      advance_to(parse_ctx, part.arg_id_end);
+      advance_to(parse_ctx, Comp.arg_id_end);
       detail::format_arg<OutputIt>(parse_ctx, ctx, value.str);
       break;
 
@@ -256,7 +256,7 @@ auto vformat_to(OutputIt out, CompiledFormat& cf,
       if (specs.alt) checker.require_numeric_argument();
       if (specs.precision >= 0) checker.check_precision();
 
-      advance_to(parse_ctx, part.arg_id_end);
+      advance_to(parse_ctx, Comp.arg_id_end);
       ctx.advance_to(
           visit_format_arg(arg_formatter<OutputIt, typename Context::char_type>(
                                ctx, nullptr, &specs),
@@ -280,8 +280,8 @@ struct compiled_format_base : basic_compiled_format {
 
   explicit compiled_format_base(basic_string_view<char_type> format_str) {
     compile_format_string<false>(format_str,
-                                 [this](const format_part<char_type>& part) {
-                                   compiled_parts.push_back(part);
+                                 [this](const format_part<char_type>& Comp) {
+                                   compiled_parts.push_back(Comp);
                                  });
   }
 
@@ -302,8 +302,8 @@ FMT_CONSTEXPR format_part_array<Char, N> compile_to_parts(
   struct {
     format_part<Char>* parts;
     unsigned* counter;
-    FMT_CONSTEXPR void operator()(const format_part<Char>& part) {
-      parts[(*counter)++] = part;
+    FMT_CONSTEXPR void operator()(const format_part<Char>& Comp) {
+      parts[(*counter)++] = Comp;
     }
   } collector{parts.data, &counter};
   compile_format_string<true>(format_str, collector);

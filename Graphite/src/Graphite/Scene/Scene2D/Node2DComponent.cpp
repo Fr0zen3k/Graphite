@@ -6,13 +6,11 @@ namespace Graphite
 {
 
 	Node2DComponent::Node2DComponent(
-		Entity* entity,
 		Node2DComponent* parent,
 		glm::vec2 position,
 		float rotation,
 		glm::vec2 scaling
 	):
-		Component(entity),
 		mParent(nullptr),// it will be set in definition
 		mPosition(position),
 		mRotation(rotation),
@@ -21,6 +19,16 @@ namespace Graphite
 	{
 		Invalidate();
 		SetParent(parent);
+	}
+
+	Node2DComponent::Node2DComponent(const rapidjson::Value& params)
+		: Node2DComponent(
+			nullptr,
+			glm::vec2(params["position"][0].GetFloat(), params["position"][1].GetFloat()),
+			params["rotation"].GetFloat(),
+			glm::vec2(params["scaling"][0].GetFloat(), params["scaling"][1].GetFloat())
+		)
+	{
 	}
 
 	Node2DComponent::~Node2DComponent()
