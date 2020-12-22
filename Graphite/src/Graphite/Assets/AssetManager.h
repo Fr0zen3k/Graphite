@@ -9,8 +9,8 @@ namespace Graphite
 {
 	class Asset;
 
-	class Texture;
-	class Animation2D;
+	class TextureAsset;
+	class Animation2DAsset;
 	class Scene;
 
 	class AssetManager
@@ -18,14 +18,26 @@ namespace Graphite
 	public:
 		static AssetManager& instance();
 
-		Texture* GetTexture(const std::string& filename);
-		Animation2D* GetAnimation(const std::string& filename);
+		// Returns the asset corresponding to the given filename. The asset isn't necessarily loaded.
+		// If it doesn't exist returns nullptr
+		Asset* GetAsset(const std::string& filename);
+
+		TextureAsset* GetTexture(const std::string& filename);
+		Animation2DAsset* GetAnimation(const std::string& filename);
 		Scene* GetScene(const std::string& filename);
 
+		void LoadAsset(const std::string& filename);
 		void FreeAsset(const std::string& filename);
 
 	private:
 		std::map<std::string, std::unique_ptr<Asset>> mAssetsPerFilename;
+	};
+
+	template<class _AssT>
+	class AssetReference
+	{
+	public:
+
 	};
 
 }

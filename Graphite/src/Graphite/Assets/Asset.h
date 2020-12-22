@@ -10,10 +10,16 @@ namespace Graphite
 	class GRAPHITE_API Asset
 	{
 	public:
-		Asset();
+		Asset() : mLoaded(false) {};
 		virtual ~Asset() = 0;
 
+
+		bool IsLoaded() { return mLoaded; }
+		virtual void Load(std::istream& source) = 0;
+		virtual void Unload() = 0;
+
 	protected:
+		bool mLoaded;
 	};
 
 }

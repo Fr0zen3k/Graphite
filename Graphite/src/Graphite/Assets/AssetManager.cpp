@@ -7,6 +7,10 @@ namespace Graphite
 		static AssetManager in;
 		return in;
 	}
+	Asset* AssetManager::GetAsset(const std::string& filename)
+	{
+		return nullptr;
+	}
 	Texture* AssetManager::GetTexture(const std::string& filename)
 	{
 		return nullptr;
@@ -18,6 +22,9 @@ namespace Graphite
 	Scene* AssetManager::GetScene(const std::string& filename)
 	{
 		return nullptr;
+	}
+	void AssetManager::LoadAsset(const std::string& filename)
+	{
 	}
 	void AssetManager::FreeAsset(const std::string& filename)
 	{
