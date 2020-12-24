@@ -22,6 +22,8 @@ namespace Graphite
 		~Mesh();
 
 		void SetTextureCoordinates(glm::vec2* uvCoords);
+		void SetMeshColor(const glm::vec4& color);
+		void SetVertexColors(glm::vec4* colors);
 
 		inline size_t VertexCount() const { return m_VertexBuffer->Size(); }
 		inline size_t IndexCount() const { return m_IndexBuffer->Size(); }

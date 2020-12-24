@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef GRAPHITE_QUAD_H
-#define GRAPHITE_QUAD_H
+#ifndef GRAPHITE_POINT_H
+#define GRAPHITE_POINT_H
 
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
@@ -13,19 +13,19 @@
 namespace Graphite
 {
 
-	class GRAPHITE_API Quad : public Mesh
+	class GRAPHITE_API Point : public Mesh
 	{
 	public:
-		Quad() : Mesh(s_QuadVertices, s_QuadIndices) {}
-		~Quad() = default;
-
+		Point() : Mesh(s_QuadVertices, s_QuadIndices) {}
+		~Point() = default;
+	
 		static void Init();
 
 	private:
 		static std::vector<Vertex> s_QuadVertices;
 		static std::vector<uint32_t> s_QuadIndices;
 	};
-	
+
 }
 
 

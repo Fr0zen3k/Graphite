@@ -30,6 +30,7 @@
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 	#define GR_GRAPHICS_CONTEXT dynamic_cast<VulkanGraphicsContext*>(Renderer2D::GetGraphicsContext())
+	#define RENDERER_API VulkanRendererAPI
 #endif
 
 

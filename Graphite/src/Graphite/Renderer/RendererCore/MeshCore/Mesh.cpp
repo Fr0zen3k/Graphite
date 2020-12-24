@@ -43,4 +43,34 @@ namespace Graphite
 
 		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, size);
 	}
+
+	void Mesh::SetMeshColor(const glm::vec4& color)
+	{
+		size_t size = m_VertexBuffer->Size();
+
+		for(int i = 0; i < size; i++)
+		{
+			m_Vertices[i].color = color;
+		}
+
+		delete m_VertexBuffer;
+
+		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, size);
+	}
+
+	void Mesh::SetVertexColors(glm::vec4* colors)
+	{
+		size_t size = m_VertexBuffer->Size();
+
+		for (int i = 0; i < size; i++)
+		{
+			m_Vertices[i].color = colors[i];
+		}
+
+		delete m_VertexBuffer;
+
+		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, size);
+	}
+
+
 }
