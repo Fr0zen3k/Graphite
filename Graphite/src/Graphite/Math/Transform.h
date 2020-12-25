@@ -25,9 +25,9 @@ namespace Graphite
 			virtual ~Transform() = default;
 			
 			void Rotate(glm::vec3& vec, float angle);
-			void Rotate(std::vector<Rotation>& rotations);
+			void Rotate(const std::vector<Rotation>& rotations);
 			void Rotate(glm::quat& quaternion);
-			void Rotate(std::vector<glm::quat>& quaternions);
+			void Rotate(const std::vector<glm::quat>& quaternions);
 
 			inline void Translate(glm::vec3& translation) { m_Position = translation; }
 
