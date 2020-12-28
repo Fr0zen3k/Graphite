@@ -162,7 +162,7 @@ namespace Graphite
 	void VulkanGraphicsContext::CreateLogicalDevice()
 	{
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-		std::set<int> queueFamilyIndices = { m_QueueFamilies.m_GraphicsFamily, m_QueueFamilies.m_PresentationFamily };
+		std::set<int> queueFamilyIndices = { m_QueueFamilies.GraphicsFamily, m_QueueFamilies.PresentationFamily };
 
 		for(int index : queueFamilyIndices)
 		{
@@ -194,8 +194,8 @@ namespace Graphite
 			throw std::runtime_error("Failed to create a logical device!");
 		}
 
-		vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilies.m_GraphicsFamily, 0, &m_GraphicsQueue);
-		vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilies.m_PresentationFamily, 0, &m_PresentationQueue);
+		vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilies.GraphicsFamily, 0, &m_GraphicsQueue);
+		vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilies.PresentationFamily, 0, &m_PresentationQueue);
 	}
 
 	void VulkanGraphicsContext::CreateSurface()
@@ -221,7 +221,7 @@ namespace Graphite
 		{
 			if(properties[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
 			{
-				m_QueueFamilies.m_GraphicsFamily = i;
+				m_QueueFamilies.GraphicsFamily = i;
 			}
 
 			VkBool32 presentationSupport = false;
@@ -229,7 +229,7 @@ namespace Graphite
 			
 			if(properties[i].queueCount > 0 && presentationSupport)
 			{
-				m_QueueFamilies.m_PresentationFamily = i;
+				m_QueueFamilies.PresentationFamily = i;
 			}
 
 			if(m_QueueFamilies.areFamiliesValid())

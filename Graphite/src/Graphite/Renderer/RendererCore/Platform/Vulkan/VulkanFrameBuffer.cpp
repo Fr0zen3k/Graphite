@@ -8,6 +8,7 @@
 #include "../../../Renderer2D/Renderer2D.h"
 #include "VulkanOrthographicCamera.h"
 #include "VulkanRendererAPI.h"
+#include "Utils.h"
 
 namespace Graphite
 {
@@ -147,6 +148,15 @@ namespace Graphite
 			throw std::runtime_error("Failed to allocate a command buffer!");
 		}
 	}
+
+	void VulkanFrameBuffer::Frame::CreateUniformBuffer()
+	{
+		VkDeviceSize bufferSize = sizeof(VulkanUtilities::ViewProjection);
+
+		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
+										VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &m_UniformBufferVP, &m_UniformBufferMemVP);
+	}
+
 
 	void VulkanFrameBuffer::Frame::InitDepthTesting()
 	{

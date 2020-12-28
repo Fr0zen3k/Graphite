@@ -8,6 +8,7 @@
 #include "VulkanFrameBuffer.h"
 #include "VulkanGraphicsContext.h"
 #include "../../../Renderer2D/Renderer2D.h"
+#include "VulkanRendererAPI.h"
 
 namespace Graphite
 {
@@ -41,7 +42,8 @@ namespace Graphite
 		memcpy(data, pVertices, m_Size * sizeof(Vertex));
 		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBufferMemory);
 
-		VulkanUtilities::CopyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), transferQueue, transferCommandPool, stagingBuffer, m_NativeBuffer, bufferSize);
+		VulkanUtilities::CopyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), VulkanRendererAPI::GetGraphicsCommandPool(),
+								stagingBuffer, m_NativeBuffer, bufferSize);
 
 		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBuffer, nullptr);
 		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBufferMemory, nullptr);

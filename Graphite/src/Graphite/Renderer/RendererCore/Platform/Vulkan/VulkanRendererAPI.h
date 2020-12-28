@@ -33,6 +33,8 @@ namespace Graphite
 		inline static VkCommandPool GetGraphicsCommandPool() { return s_GraphicsCommandPool; }
 		inline static VkSwapchainKHR GetSwapchain() { return s_Swapchain; }
 		inline static VkRenderPass GetRenderPass() { return s_RenderPass; }
+		inline static VkDescriptorPool GetDescriptorPool() { return s_DescriptorPool; }
+		inline static VkDescriptorPool GetSamplerDescriptorPool() { return s_SamplerDescriptorPool; }
 
 	private:
 		static void CreateSwapchain();
@@ -40,9 +42,15 @@ namespace Graphite
 		static void CreateGraphicsPipeline();
 		static void RecreateGraphicsPipeline();
 		static void CreateCommandPool();
+		static void CreateDescriptorPools();
+		static void CreatePushConstantRange();
+		static void CreateSynchronisation();
 		
 	private:
-		static VulkanFrameBuffer* s_VulkanFrameBuffer;
+		static const int MAX_OBJECTS = 10000;
+		static const int MAX_FRAME_DRAWS = 2;
+		
+		static VulkanFrameBuffer* s_FrameBuffer;
 
 		static VkSwapchainKHR s_Swapchain;
 		
@@ -55,6 +63,15 @@ namespace Graphite
 		static VulkanShader* s_FragmentShader;
 
 		static VkCommandPool s_GraphicsCommandPool;
+
+		static VkDescriptorPool s_DescriptorPool;
+		static VkDescriptorPool s_SamplerDescriptorPool;
+
+		static VkPushConstantRange s_PushConstantRange;
+
+		static std::vector<VkSemaphore> s_ImageAvailableSemaphores;
+		static std::vector<VkSemaphore> s_RenderFinishSemaphores;
+		static std::vector<VkFence> s_DrawFences;
 	};
 	
 }

@@ -4,6 +4,7 @@
 
 #include "VulkanTexture.h"
 #include "../../../Renderer2D/Renderer2D.h"
+#include "VulkanRendererAPI.h"
 
 namespace Graphite
 {
@@ -68,10 +69,11 @@ namespace Graphite
 		VulkanUtilities::CreateImage(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Width, m_Height, VK_FORMAT_R8G8B8A8_UNORM,
 										VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &m_ImageMemory);
 
-		VulkanUtilities::TransitionImageLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), graphicsCommandPool, m_Image,
+		VulkanUtilities::TransitionImageLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), VulkanRendererAPI::GetGraphicsCommandPool(), m_Image,
 								VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-		VulkanUtilities::CopyImageBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), graphicsCommandPool, stagingBuffer, m_Image, m_Width, m_Height);
+		VulkanUtilities::CopyImageBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), VulkanRendererAPI::GetGraphicsCommandPool(), stagingBuffer,
+										m_Image, m_Width, m_Height);
 
 		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBuffer, nullptr);
 		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem, nullptr);

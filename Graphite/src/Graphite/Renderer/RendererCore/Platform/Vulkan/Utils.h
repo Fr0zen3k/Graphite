@@ -10,21 +10,18 @@
 
 #include "glm/glm.hpp"
 
-#include "VulkanGraphicsContext.h"
-#include "VulkanGraphicsContext.h"
-
 namespace Graphite
 {
 	namespace VulkanUtilities
 	{
 		struct QueueFamilies
 		{
-			int m_GraphicsFamily = -1;
-			int m_PresentationFamily = -1;
+			int GraphicsFamily = -1;
+			int PresentationFamily = -1;
 
 			inline bool areFamiliesValid()
 			{
-				if(m_GraphicsFamily >= 0 && m_PresentationFamily >= 0)
+				if(GraphicsFamily >= 0 && PresentationFamily >= 0)
 				{
 					return true;
 				}
@@ -33,6 +30,12 @@ namespace Graphite
 					return false;
 				}
 			}
+		};
+
+		struct ViewProjection
+		{
+			glm::mat4 ViewMatrix;
+			glm::mat4 ProjectionMatrix;
 		};
 
 		struct SwapchainInfo

@@ -76,11 +76,11 @@ namespace Graphite
 		swapchainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 		swapchainCreateInfo.clipped = VK_TRUE;
 
-		if (GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily != GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_PresentationFamily)
+		if (GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().GraphicsFamily != GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().PresentationFamily)
 		{
 			uint32_t familyIndices[] = {
-				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily,
-				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_PresentationFamily
+				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().GraphicsFamily,
+				(uint32_t)GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().PresentationFamily
 			};
 
 			swapchainCreateInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
@@ -287,7 +287,7 @@ namespace Graphite
 	{
 		VkCommandPoolCreateInfo commandPoolCreateInfo = {};
 		commandPoolCreateInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		commandPoolCreateInfo.queueFamilyIndex = GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().m_GraphicsFamily;
+		commandPoolCreateInfo.queueFamilyIndex = GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().GraphicsFamily;
 		commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
 		VkResult result = vkCreateCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &commandPoolCreateInfo, nullptr, &s_GraphicsCommandPool);
@@ -297,6 +297,80 @@ namespace Graphite
 			throw std::runtime_error("Failed to create a command pool!");
 		}
 	}
+
+	void VulkanRendererAPI::CreateDescriptorPools()
+	{
+		VkDescriptorPoolSize vpPoolSize = {};
+		vpPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		vpPoolSize.descriptorCount = static_cast<uint32_t>(s_FrameBuffer->Size());
+
+		std::vector<VkDescriptorPoolSize> poolSizes = { vpPoolSize };
+
+		VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
+		descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(s_FrameBuffer->Size());
+		descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(poolSizes.size());
+		descriptorPoolCreateInfo.pPoolSizes = poolSizes.data();
+
+		VkResult result = vkCreateDescriptorPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &descriptorPoolCreateInfo, nullptr, &s_DescriptorPool);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a descriptor set pool!");
+		}
+
+		VkDescriptorPoolSize samplerPoolSize = {};
+		vpPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		vpPoolSize.descriptorCount = static_cast<uint32_t>(s_FrameBuffer->Size());
+
+		VkDescriptorPoolCreateInfo samplerDescriptorPoolCreateInfo = {};
+		samplerDescriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		samplerDescriptorPoolCreateInfo.maxSets = MAX_OBJECTS;
+		samplerDescriptorPoolCreateInfo.maxSets = 1;
+		samplerDescriptorPoolCreateInfo.pPoolSizes = &samplerPoolSize;
+
+		vkCreateDescriptorPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &samplerDescriptorPoolCreateInfo, nullptr, &s_SamplerDescriptorPool);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a descriptor set pool!");
+		}
+	}
+
+	void VulkanRendererAPI::CreatePushConstantRange()
+	{
+		s_PushConstantRange = {};
+		s_PushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		s_PushConstantRange.offset = 0;
+		s_PushConstantRange.size = sizeof(glm::mat4);
+	}
+
+	void VulkanRendererAPI::CreateSynchronisation()
+	{
+		s_ImageAvailableSemaphores.resize(MAX_FRAME_DRAWS);
+		s_RenderFinishSemaphores.resize(MAX_FRAME_DRAWS);
+		s_DrawFences.resize(MAX_FRAME_DRAWS);
+
+		VkSemaphoreCreateInfo semInfo = {};
+		semInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+		VkFenceCreateInfo fenceInfo = {};
+		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+		for(int i = 0; i < MAX_FRAME_DRAWS; i++)
+		{
+			if(vkCreateSemaphore(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &semInfo, nullptr, &s_ImageAvailableSemaphores[i]) != VK_SUCCESS || 
+				vkCreateSemaphore(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &semInfo, nullptr, &s_RenderFinishSemaphores[i]))
+			{
+				throw std::runtime_error("Failed to create a semaphore!");
+			}
+
+			if(vkCreateFence(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &fenceInfo, nullptr, &s_DrawFences[i]) != VK_SUCCESS)
+			{
+				throw std::runtime_error("Failed to create a fence!");
+			}
+		}
+	}
+
 }
 
 #endif

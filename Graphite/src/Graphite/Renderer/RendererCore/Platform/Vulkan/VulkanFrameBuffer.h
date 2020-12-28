@@ -8,8 +8,6 @@
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
 #include "Graphite/EventCore/Events.h"
-#include "Utils.h"
-#include "VulkanShader.h"
 
 #include "vulkan/vulkan.h"
 
@@ -50,10 +48,9 @@ namespace Graphite
 			void Shutdown();
 
 			void CreateImageView();
-
 			void CreateFramebuffer();
-
 			void CreateCommandBuffer();
+			void CreateUniformBuffer();
 
 		private:
 			VkImage m_Image;
@@ -62,6 +59,9 @@ namespace Graphite
 			VkFramebuffer m_Framebuffer;
 
 			VkCommandBuffer m_CommandBuffer;
+
+			VkBuffer m_UniformBufferVP;
+			VkDeviceMemory m_UniformBufferMemVP;
 
 			static VkImage s_DepthBufferImage;
 			static VkDeviceMemory s_DepthBufferDeviceMemory;
@@ -73,6 +73,8 @@ namespace Graphite
 		~VulkanFrameBuffer();
 
 		bool OnEvent(Event& e);
+
+		inline size_t Size() const { return m_BufferSize; }
 
 		inline Frame* operator [] (int i) { return m_Frames[i]; }
 	private:
