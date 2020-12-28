@@ -62,6 +62,41 @@ namespace Graphite
 			func(instance, callback, pAllocator);
 		}
 	}
+
+	bool VulkanValidator::CheckValidationSupport()
+	{
+		uint32_t validationLayerCount;
+		vkEnumerateInstanceLayerProperties(&validationLayerCount, nullptr);
+
+		if (validationLayerCount == 0 && s_ValidationLayers.size() > 0)
+		{
+			return false;
+		}
+
+		std::vector<VkLayerProperties> availableLayers(validationLayerCount);
+		vkEnumerateInstanceLayerProperties(&validationLayerCount, availableLayers.data());
+
+		for (const auto& validationLayer : s_ValidationLayers)
+		{
+			bool hasLayer = false;
+			for (const auto& availableLayer : availableLayers)
+			{
+				if (strcmp(validationLayer, availableLayer.layerName) == 0)
+				{
+					hasLayer = true;
+					break;
+				}
+			}
+
+			if (!hasLayer)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 }
 
 

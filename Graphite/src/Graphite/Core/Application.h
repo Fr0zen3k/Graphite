@@ -12,6 +12,8 @@
 
 #include "Window.h"
 
+#include "Graphite/Renderer/RendererCore/Camera.h"
+
 namespace Graphite {
 
     /// <summary>
@@ -41,6 +43,8 @@ namespace Graphite {
         /// </summary>
         /// <returns> Returns the window reference </returns>
         inline Window& GetWindow() { return *m_Window; }
+
+        Camera* GetActiveCameraInstance();
 
         /// <summary>
         /// Function that retrieves the active application instance

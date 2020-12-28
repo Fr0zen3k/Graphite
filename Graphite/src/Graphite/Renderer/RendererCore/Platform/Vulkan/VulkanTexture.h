@@ -56,6 +56,7 @@ namespace Graphite
 		VkDescriptorSet m_DescriptorSet;
 		
 		static VkSampler s_CommonTextureSampler;
+		static VkDescriptorSetLayout s_TextureSamplerDescriptorSetLayout;
 		static bool s_SampleInitialized;
 	};
 	

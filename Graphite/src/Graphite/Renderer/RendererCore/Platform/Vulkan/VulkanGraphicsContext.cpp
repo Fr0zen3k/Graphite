@@ -3,6 +3,7 @@
 #ifdef GRAPHITE_RENDERER_VULKAN
 
 #include "VulkanGraphicsContext.h"
+#include "VulkanValidator.h"
 
 namespace Graphite
 {
@@ -93,7 +94,10 @@ namespace Graphite
 			extensions.push_back(glfwExtensions[i]);
 		}
 
-		// ------------------ add a validation extension when used ------------------------
+		if(VulkanValidator::Status())
+		{
+			extensions.push_back(VulkanValidator::GetExtensionName());
+		}
 
 		if(!VulkanUtilities::CheckInstanceExtensions(extensions))
 		{
@@ -103,10 +107,16 @@ namespace Graphite
 		instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		instanceInfo.ppEnabledExtensionNames = extensions.data();
 
-		// ----------------- add later --------------------------
-		// related to validation
-		instanceInfo.enabledLayerCount = 0;
-		// ------------------------------------------------------
+		if(VulkanValidator::Status())
+		{
+			instanceInfo.enabledLayerCount = static_cast<uint32_t>(VulkanValidator::GetValidationLayers().size());
+			instanceInfo.ppEnabledLayerNames = VulkanValidator::GetValidationLayers().data();
+		}
+		else
+		{
+			instanceInfo.enabledLayerCount = 0;
+			instanceInfo.ppEnabledLayerNames = nullptr;
+		}
 		
 		VkResult result = vkCreateInstance(&instanceInfo, nullptr, &m_Instance);
 

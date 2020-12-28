@@ -50,7 +50,7 @@ namespace Graphite
 		inline VkExtent2D GetSwapchainExtent() const { return m_SwapchainExtent; }
 		inline VkColorSpaceKHR GetSwapchainColorSpace() const { return m_SwapchainColorSpace; }
 
-		inline QueueFamilies GetQueueFamiliesIndices() { return m_QueueFamilies; }
+		inline VulkanUtilities::QueueFamilies GetQueueFamiliesIndices() { return m_QueueFamilies; }
 
 		// Setters
 		inline void SetSwapchainExtent(VkExtent2D extent) { m_SwapchainExtent = extent; }
@@ -89,7 +89,7 @@ namespace Graphite
 		VkColorSpaceKHR m_SwapchainColorSpace;
 		
 		std::pair<uint32_t, uint32_t> m_FrameSize;
-		QueueFamilies m_QueueFamilies;
+		VulkanUtilities::QueueFamilies m_QueueFamilies;
 	};
 }
 

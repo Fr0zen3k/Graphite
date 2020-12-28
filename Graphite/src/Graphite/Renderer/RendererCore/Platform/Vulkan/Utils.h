@@ -125,6 +125,26 @@ namespace Graphite
 			return info;
 		}
 
+		static VkFormat ChooseSupportedFormat(VkPhysicalDevice device, const std::vector<VkFormat>& formats, VkImageTiling tiling, VkFormatFeatureFlagBits fetureFlags)
+		{
+			for(VkFormat f : formats)
+			{
+				VkFormatProperties props;
+				vkGetPhysicalDeviceFormatProperties(device, f, &props);
+
+				if(tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & fetureFlags) == fetureFlags)
+				{
+					return f;
+				}
+				else if(tiling == VK_IMAGE_TILING_OPTIMAL && (props.linearTilingFeatures & fetureFlags) == fetureFlags)
+				{
+					return f;
+				}
+			}
+
+			throw std::runtime_error("Failed to find a supported format!");
+		}
+
 		static bool CheckInstanceExtensions(std::vector<const char*>& extensions)
 		{
 			uint32_t extensionCount = 0;

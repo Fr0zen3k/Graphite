@@ -7,6 +7,7 @@
 
 Graphite::VulkanPerspectiveCamera::VulkanPerspectiveCamera()
 {
+	// Initialize the projection matrix
 	Init();
 	m_Transform = Math::Transform();
 }

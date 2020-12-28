@@ -18,7 +18,7 @@ namespace Graphite
 	public:
 		inline static const char* GetExtensionName() { return VK_EXT_DEBUG_REPORT_EXTENSION_NAME; }
 
-		inline bool Status() { return s_Status; }
+		inline static bool Status() { return s_Status; }
 		
 		static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
 			VkDebugReportFlagsEXT flags,
@@ -34,6 +34,10 @@ namespace Graphite
 														const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
 
 		static void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
+
+		static bool CheckValidationSupport();
+
+		inline static const std::vector<const char*>& GetValidationLayers() { return s_ValidationLayers; }
 		
 	private:
 		static bool s_Status;
