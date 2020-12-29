@@ -239,6 +239,24 @@ namespace Graphite
 		}
 	}
 
+	void VulkanGraphicsContext::CreateDebugCallback()
+	{
+		if (!VulkanValidator::Status()) { return; }
+
+		VkDebugReportCallbackCreateInfoEXT callbackInfo = {};
+		callbackInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+		callbackInfo.flags = VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT;
+		callbackInfo.pfnCallback = VulkanValidator::DebugCallback;
+
+		VkResult result = VulkanValidator::CreateDebugReportCallbackEXT(m_Instance, &callbackInfo, nullptr, &m_DebugCallback);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a Vulkan debug callback!");
+		}
+	}
+
+
 }
 
 #endif

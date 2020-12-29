@@ -369,7 +369,52 @@ namespace Graphite
 				throw std::runtime_error("Failed to create a fence!");
 			}
 		}
+		
 	}
+
+	void VulkanRendererAPI::CreateDescriptorSetLayouts()
+	{
+		// ViewProjection Binding Info
+		VkDescriptorSetLayoutBinding vpLayoutBinding = {};
+		vpLayoutBinding.binding = 0;											// Binding point in shader (designated by binding number in shader)
+		vpLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;	// Type of descriptor (uniform, dynamic uniform, image sampler, etc)
+		vpLayoutBinding.descriptorCount = 1;									// Number of descriptors for binding
+		vpLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;				// Shader stage to bind to
+		vpLayoutBinding.pImmutableSamplers = nullptr;							// For Texture: Can make sampler data unchangeable (immutable) by specifying in layout
+
+		std::vector<VkDescriptorSetLayoutBinding> layoutBindings = { vpLayoutBinding };
+
+		VkDescriptorSetLayoutCreateInfo layoutCreateInfo = {};
+		layoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutCreateInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());	// Number of binding infos
+		layoutCreateInfo.pBindings = layoutBindings.data();								// Array of binding infos
+
+		VkResult result = vkCreateDescriptorSetLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &layoutCreateInfo, nullptr, &s_DescriptorSetLayout);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a Descriptor Set Layout!");
+		}
+
+		// Texture binding info
+		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+		samplerLayoutBinding.binding = 0;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+
+		VkDescriptorSetLayoutCreateInfo textureLayoutCreateInfo = {};
+		textureLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		textureLayoutCreateInfo.bindingCount = 1;
+		textureLayoutCreateInfo.pBindings = &samplerLayoutBinding;
+
+		result = vkCreateDescriptorSetLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &textureLayoutCreateInfo, nullptr, &s_SamplerDescriptorSetLayout);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a Descriptor Set Layout!");
+		}
+	}
+	
 
 }
 

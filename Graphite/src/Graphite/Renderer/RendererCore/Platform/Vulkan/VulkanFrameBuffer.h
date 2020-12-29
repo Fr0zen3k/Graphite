@@ -39,6 +39,8 @@ namespace Graphite
 				return m_CommandBuffer;
 			}
 
+			void UpdateViewProjectionUniform();
+
 			static void InitDepthTesting();
 			static void ShutdownDepthTesting();
 			static void UpdateDepthTesting();
@@ -73,6 +75,8 @@ namespace Graphite
 		~VulkanFrameBuffer();
 
 		bool OnEvent(Event& e);
+
+		inline void UpdateViewProjectionUniform(uint32_t currentFrame) { m_Frames[currentFrame]->UpdateViewProjectionUniform(); }
 
 		inline size_t Size() const { return m_BufferSize; }
 

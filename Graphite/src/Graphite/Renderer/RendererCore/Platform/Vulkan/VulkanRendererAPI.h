@@ -45,6 +45,7 @@ namespace Graphite
 		static void CreateDescriptorPools();
 		static void CreatePushConstantRange();
 		static void CreateSynchronisation();
+		static void CreateDescriptorSetLayouts();
 		
 	private:
 		static const int MAX_OBJECTS = 10000;
@@ -66,6 +67,9 @@ namespace Graphite
 
 		static VkDescriptorPool s_DescriptorPool;
 		static VkDescriptorPool s_SamplerDescriptorPool;
+
+		static VkDescriptorSetLayout s_DescriptorSetLayout;
+		static VkDescriptorSetLayout s_SamplerDescriptorSetLayout;
 
 		static VkPushConstantRange s_PushConstantRange;
 

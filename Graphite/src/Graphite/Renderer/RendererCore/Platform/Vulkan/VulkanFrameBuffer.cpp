@@ -70,6 +70,19 @@ namespace Graphite
 		
 	}
 
+	void VulkanFrameBuffer::Frame::UpdateViewProjectionUniform()
+	{
+		VulkanUtilities::ViewProjection vp;
+		vp.ViewMatrix = Application::Get()->GetActiveCameraInstance()->GetViewMatrix();
+		vp.ProjectionMatrix = Application::Get()->GetActiveCameraInstance()->GetProjectionMatrix();
+		
+		void* data;
+		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_UniformBufferMemVP, 0, sizeof(VulkanUtilities::ViewProjection), 0, &data);
+		memcpy(data, &vp, sizeof(VulkanUtilities::ViewProjection));
+		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_UniformBufferMemVP);
+	}
+
+
 	void VulkanFrameBuffer::Frame::Init()
 	{
 		try
