@@ -153,9 +153,45 @@ namespace Graphite
 		VkPipelineShaderStageCreateInfo shaderInfos[] = { s_VertexShader->GetCreateInfo(), s_FragmentShader->GetCreateInfo() };
 
 		// .............................. ADD VERTEX BINDING DESCRIPTIONS AND VERTEX INPUT ....................................
+		VkVertexInputBindingDescription vertexBindingDescription = {};
+		vertexBindingDescription.binding = 0;			// Defaault binding for all the vertex data in the vert shader
+		vertexBindingDescription.stride = sizeof(Vertex);
+		vertexBindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		// .......................................
+		std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions;
 
+		// Position Attribute
+		attributeDescriptions[0].binding = 0;
+		attributeDescriptions[0].location = 0;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[0].offset = offsetof(Vertex, position);
+
+		// Color Attribute
+		attributeDescriptions[1].binding = 0;
+		attributeDescriptions[1].location = 1;
+		attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(Vertex, color);
+		
+		// Texture uv-s Attribute
+		attributeDescriptions[2].binding = 0;
+		attributeDescriptions[2].location = 2;
+		attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(Vertex, textureCoords);
+
+		// Normal Attribute
+		attributeDescriptions[3].binding = 0;
+		attributeDescriptions[3].location = 3;
+		attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[3].offset = offsetof(Vertex, normal);
+
+		VkPipelineVertexInputStateCreateInfo vertexInputCreateInfo = {};
+		vertexInputCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputCreateInfo.vertexBindingDescriptionCount = 1;
+		vertexInputCreateInfo.pVertexBindingDescriptions = &vertexBindingDescription;
+		vertexInputCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		
+		
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = {};
 		inputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -182,13 +218,7 @@ namespace Graphite
 		viewportInfo.pViewports = &viewport;
 		viewportInfo.scissorCount = 1;
 		viewportInfo.pScissors = &scissors;
-
-		// Make sure to recreate the whole pipeline on window resize or camera switch!!!!!!!!!!!!
-		// .......................................
-
-		// .............................. ADD DYNAMIC STATES IF NEEDED AFTER WRITING THE SHADERS ..............................
-
-		// .......................................
+		
 
 		VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = {};
 		rasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -228,12 +258,15 @@ namespace Graphite
 		colorBlendCreateInfo.attachmentCount = 1;
 		colorBlendCreateInfo.pAttachments = &colorState;
 
-		// Make an array of descriptor set layouts;
+		// Make an array of descriptor set layouts
+		std::array<VkDescriptorSetLayout, 2> descriptorSetLayouts = {s_DescriptorSetLayout, s_SamplerDescriptorSetLayout};
 
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = {};
 		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		// Bind descriptor set layouts
-		// Bind push constants
+		pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+		pipelineLayoutCreateInfo.pSetLayouts = descriptorSetLayouts.data();
+		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
+		pipelineLayoutCreateInfo.pPushConstantRanges = &s_PushConstantRange;
 
 		VkResult result = vkCreatePipelineLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &pipelineLayoutCreateInfo, nullptr, &s_GraphicsPipelineLayout);
 		if (result != VK_SUCCESS)
@@ -255,8 +288,8 @@ namespace Graphite
 		pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineCreateInfo.stageCount = 2;
 		pipelineCreateInfo.pStages = shaderInfos;
-		// Add vertex input state
-		// Add viewport and dynamic state if needed
+		pipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
+		pipelineCreateInfo.pDynamicState = nullptr;
 		pipelineCreateInfo.pViewportState = &viewportInfo;
 		pipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
 		pipelineCreateInfo.pMultisampleState = &multisampleStateCreateInfo;
