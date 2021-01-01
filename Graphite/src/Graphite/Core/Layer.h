@@ -1,4 +1,7 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_LAYER_H
 #define GRAPHITE_LAYER_H

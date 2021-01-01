@@ -1,4 +1,7 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_GRPCH_H
 #define GRAPHITE_GRPCH_H

@@ -24,7 +24,7 @@ namespace Graphite
 
 	bool VulkanRendererAPI::OnEvent(const Event& e)
 	{
-		
+		return false;
 	}
 
 	bool VulkanRendererAPI::BindShader(VulkanShader* shader)
@@ -161,7 +161,6 @@ namespace Graphite
 		inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;				// Check if the restart is worth turning on
 
-		// .............................. ADD VIEWPORT AND SCISSORS FROM THE ACTIVE CAMERA ....................................
 		VkViewport viewport;
 		VkRect2D scissors;
 		Camera* camera = Application::Get()->GetActiveCameraInstance();

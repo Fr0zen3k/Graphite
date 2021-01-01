@@ -20,7 +20,11 @@
 //   the back-end itself (ImGuiVulkanRenderer), but should PROBABLY NOT be used by your own engine/app code.
 // Read comments in ImGuiVulkanRendererh.
 
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(disable: 4251)
+#endif
+
 #include "imgui.h"      // IMGUI_IMPL_API
 #include <vulkan/vulkan.h>
 

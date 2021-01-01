@@ -25,7 +25,7 @@ namespace Graphite
 
 	bool VulkanFrameBuffer::OnEvent(Event& e)
 	{
-		
+		return false;
 	}
 	
 	void VulkanFrameBuffer::Init()
@@ -67,7 +67,7 @@ namespace Graphite
 
 	bool VulkanFrameBuffer::Frame::OnEvent(Event& e)
 	{
-		
+		return false;
 	}
 
 	void VulkanFrameBuffer::Frame::UpdateViewProjectionUniform()

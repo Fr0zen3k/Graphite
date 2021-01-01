@@ -1,7 +1,10 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_ENTRYPOINT_H
 #define GRAPHITE_ENTRYPOINT_H
