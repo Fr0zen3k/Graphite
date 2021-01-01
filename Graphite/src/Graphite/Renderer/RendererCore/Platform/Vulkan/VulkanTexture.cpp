@@ -45,7 +45,7 @@ namespace Graphite
 	{
 		vkDestroyImage(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Image, nullptr);
 		vkDestroyImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_ImageView, nullptr);
-		vkFreeDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), samplerDescriptorPool, 1, &m_DescriptorSet);
+		vkFreeDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), VulkanRendererAPI::GetSamplerDescriptorPool(), 1, &m_DescriptorSet);
 	}
 
 	void VulkanTexture::CreateImage(const std::string& filePath)
@@ -86,11 +86,13 @@ namespace Graphite
 
 	void VulkanTexture::CreateDescriptorSet()
 	{
+		VkDescriptorSetLayout layout = VulkanRendererAPI::GetSamplerDescriptorSetLayout();
+		
 		VkDescriptorSetAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = samplerDescriptorPool; ////////////////// ADD ALL THE NECCESARRY POOLS TO THE RENDERING API
+		allocInfo.descriptorPool = VulkanRendererAPI::GetSamplerDescriptorPool();
 		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = samplerSetLayout; ////////////////////////////////////// ADD DESCRIPTOR SET LAYOUTS TO THE API
+		allocInfo.pSetLayouts = &layout;
 
 		VkResult result = vkAllocateDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &allocInfo, &m_DescriptorSet);
 

@@ -35,6 +35,8 @@ namespace Graphite
 		inline static VkRenderPass GetRenderPass() { return s_RenderPass; }
 		inline static VkDescriptorPool GetDescriptorPool() { return s_DescriptorPool; }
 		inline static VkDescriptorPool GetSamplerDescriptorPool() { return s_SamplerDescriptorPool; }
+		inline static VkDescriptorSetLayout GetDescriptorSetLayout() { return s_DescriptorSetLayout; }
+		inline static VkDescriptorSetLayout GetSamplerDescriptorSetLayout() { return s_SamplerDescriptorSetLayout; }
 
 	private:
 		static void CreateSwapchain();

@@ -53,6 +53,7 @@ namespace Graphite
 			void CreateFramebuffer();
 			void CreateCommandBuffer();
 			void CreateUniformBuffer();
+			void CreateDescriptorSet();
 
 		private:
 			VkImage m_Image;
@@ -64,6 +65,8 @@ namespace Graphite
 
 			VkBuffer m_UniformBufferVP;
 			VkDeviceMemory m_UniformBufferMemVP;
+
+			VkDescriptorSet m_DescriptorSet;
 
 			static VkImage s_DepthBufferImage;
 			static VkDeviceMemory s_DepthBufferDeviceMemory;

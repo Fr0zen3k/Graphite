@@ -32,12 +32,6 @@ namespace Graphite
 			}
 		};
 
-		struct ViewProjection
-		{
-			glm::mat4 ViewMatrix;
-			glm::mat4 ProjectionMatrix;
-		};
-
 		struct SwapchainInfo
 		{
 			VkSurfaceCapabilitiesKHR m_SurfaceCapabilities;

@@ -25,6 +25,12 @@ namespace Graphite
 		glm::vec2 textureCoords;	// Texture Coordinates (u, v)
 		glm::vec3 normal;
 	};
+
+	struct ViewProjection
+	{
+		glm::mat4 ViewMatrix;
+		glm::mat4 ProjectionMatrix;
+	};
 	
 }
 

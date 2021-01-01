@@ -72,13 +72,13 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::UpdateViewProjectionUniform()
 	{
-		VulkanUtilities::ViewProjection vp;
+		ViewProjection vp;
 		vp.ViewMatrix = Application::Get()->GetActiveCameraInstance()->GetViewMatrix();
 		vp.ProjectionMatrix = Application::Get()->GetActiveCameraInstance()->GetProjectionMatrix();
 		
 		void* data;
-		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_UniformBufferMemVP, 0, sizeof(VulkanUtilities::ViewProjection), 0, &data);
-		memcpy(data, &vp, sizeof(VulkanUtilities::ViewProjection));
+		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_UniformBufferMemVP, 0, sizeof(ViewProjection), 0, &data);
+		memcpy(data, &vp, sizeof(ViewProjection));
 		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_UniformBufferMemVP);
 	}
 
@@ -164,10 +164,48 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::CreateUniformBuffer()
 	{
-		VkDeviceSize bufferSize = sizeof(VulkanUtilities::ViewProjection);
+		VkDeviceSize bufferSize = sizeof(ViewProjection);
 
 		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
 										VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &m_UniformBufferVP, &m_UniformBufferMemVP);
+	}
+
+	void VulkanFrameBuffer::Frame::CreateDescriptorSet()
+	{
+		// Create descriptor set
+		VkDescriptorSetLayout layout = VulkanRendererAPI::GetDescriptorSetLayout();
+		
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = VulkanRendererAPI::GetDescriptorPool();
+		allocInfo.descriptorSetCount = 1;
+		allocInfo.pSetLayouts = &layout;
+
+		VkResult result = vkAllocateDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &allocInfo, &m_DescriptorSet);
+
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a frame descriptor set!");
+		}
+
+		// Update the descriptor set buffer bindings
+		VkDescriptorBufferInfo bufferInfo = {};
+		bufferInfo.buffer = m_UniformBufferVP;
+		bufferInfo.offset = 0;
+		bufferInfo.range = sizeof(ViewProjection);
+
+		VkWriteDescriptorSet writeSet = {};
+		writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		writeSet.dstSet = m_DescriptorSet;
+		writeSet.dstBinding = 0;
+		writeSet.dstArrayElement = 0;
+		writeSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		writeSet.descriptorCount = 1;
+		writeSet.pBufferInfo = &bufferInfo;
+
+		// ADD A MATERIAL UNIFORM LATER WHEN IMPLEMENTED FOR 3D ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		vkUpdateDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), 1, &writeSet, 0, nullptr);
 	}
 
 
