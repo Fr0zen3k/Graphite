@@ -36,8 +36,10 @@ namespace Graphite
 		return VK_FALSE;
 	}
 
-	VkResult VulkanValidator::CreateDebugReportCallbackEXT(VkInstance instance,
-		const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator,
+	VkResult VulkanValidator::CreateDebugReportCallbackEXT(
+		VkInstance instance,
+		const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
+		const VkAllocationCallbacks* pAllocator,
 		VkDebugReportCallbackEXT* pCallback)
 	{
 		auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
@@ -52,7 +54,9 @@ namespace Graphite
 		}
 	}
 
-	void VulkanValidator::DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback,
+	void VulkanValidator::DestroyDebugReportCallbackEXT(
+		VkInstance instance,
+		VkDebugReportCallbackEXT callback,
 		const VkAllocationCallbacks* pAllocator)
 	{
 		auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
@@ -66,7 +70,9 @@ namespace Graphite
 	bool VulkanValidator::CheckValidationSupport()
 	{
 		uint32_t validationLayerCount;
-		vkEnumerateInstanceLayerProperties(&validationLayerCount, nullptr);
+		vkEnumerateInstanceLayerProperties(
+			&validationLayerCount,
+			nullptr);
 
 		if (validationLayerCount == 0 && s_ValidationLayers.size() > 0)
 		{
@@ -74,7 +80,9 @@ namespace Graphite
 		}
 
 		std::vector<VkLayerProperties> availableLayers(validationLayerCount);
-		vkEnumerateInstanceLayerProperties(&validationLayerCount, availableLayers.data());
+		vkEnumerateInstanceLayerProperties(
+			&validationLayerCount,
+			availableLayers.data());
 
 		for (const auto& validationLayer : s_ValidationLayers)
 		{

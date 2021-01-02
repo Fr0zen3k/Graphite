@@ -1,5 +1,6 @@
 #if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
@@ -25,7 +26,9 @@ namespace Graphite
 	public:
 		VulkanShader();
 		VulkanShader(ShaderType type);
-		VulkanShader(ShaderType type, const std::string& filepath);
+		VulkanShader(
+			ShaderType type,
+			const std::string& filepath);
 		~VulkanShader();
 
 		inline VkShaderModule GetShader() { return m_ShaderModule; }
@@ -57,3 +60,6 @@ namespace Graphite
 
 #endif
 
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

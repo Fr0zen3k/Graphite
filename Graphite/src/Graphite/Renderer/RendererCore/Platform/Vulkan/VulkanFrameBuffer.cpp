@@ -13,7 +13,7 @@
 namespace Graphite
 {
 	
-	VulkanFrameBuffer::VulkanFrameBuffer()
+	VulkanFrameBuffer::VulkanFrameBuffer() : FrameBuffer()
 	{
 		Init();
 	}
@@ -41,9 +41,17 @@ namespace Graphite
 	void VulkanFrameBuffer::CreateFrames()
 	{
 		uint32_t frameCount;
-		vkGetSwapchainImagesKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), VulkanRendererAPI::GetSwapchain(), &frameCount, nullptr);
+		vkGetSwapchainImagesKHR(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			VulkanRendererAPI::GetSwapchain(),
+			&frameCount,
+			nullptr);
 		std::vector<VkImage> images(frameCount);
-		vkGetSwapchainImagesKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), VulkanRendererAPI::GetSwapchain(), &frameCount, images.data());
+		vkGetSwapchainImagesKHR(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			VulkanRendererAPI::GetSwapchain(),
+			&frameCount,
+			images.data());
 		
 		for(VkImage image : images)
 		{
@@ -77,9 +85,20 @@ namespace Graphite
 		vp.ProjectionMatrix = Application::Get()->GetActiveCameraInstance()->GetProjectionMatrix();
 		
 		void* data;
-		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_UniformBufferMemVP, 0, sizeof(ViewProjection), 0, &data);
-		memcpy(data, &vp, sizeof(ViewProjection));
-		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_UniformBufferMemVP);
+		vkMapMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_UniformBufferMemVP,
+			0,
+			sizeof(ViewProjection),
+			0,
+			&data);
+		memcpy(
+			data,
+			&vp,
+			sizeof(ViewProjection));
+		vkUnmapMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_UniformBufferMemVP);
 	}
 
 
@@ -97,7 +116,10 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::Shutdown()
 	{
-		vkDestroyFramebuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Framebuffer, nullptr);
+		vkDestroyFramebuffer(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_Framebuffer,
+			nullptr);
 	}
 
 	void VulkanFrameBuffer::Frame::CreateImageView()
@@ -117,7 +139,11 @@ namespace Graphite
 		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
 		imageViewCreateInfo.subresourceRange.layerCount = 1;
 
-		VkResult result = vkCreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &imageViewCreateInfo, nullptr, &m_ImageView);
+		VkResult result = vkCreateImageView(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&imageViewCreateInfo,
+			nullptr,
+			&m_ImageView);
 
 		if(result != VK_SUCCESS)
 		{
@@ -138,7 +164,11 @@ namespace Graphite
 		framebufferCreateInfo.height = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height;
 		framebufferCreateInfo.layers = 1;
 
-		VkResult result = vkCreateFramebuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &framebufferCreateInfo, nullptr, &m_Framebuffer);
+		VkResult result = vkCreateFramebuffer(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&framebufferCreateInfo,
+			nullptr,
+			&m_Framebuffer);
 
 		if(result != VK_SUCCESS)
 		{
@@ -154,7 +184,10 @@ namespace Graphite
 		commandBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 		commandBufferAllocInfo.commandBufferCount = 1;
 
-		VkResult result = vkAllocateCommandBuffers(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &commandBufferAllocInfo, &m_CommandBuffer);
+		VkResult result = vkAllocateCommandBuffers(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&commandBufferAllocInfo,
+			&m_CommandBuffer);
 
 		if(result != VK_SUCCESS)
 		{
@@ -166,8 +199,14 @@ namespace Graphite
 	{
 		VkDeviceSize bufferSize = sizeof(ViewProjection);
 
-		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, 
-										VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &m_UniformBufferVP, &m_UniformBufferMemVP);
+		VulkanUtilities::CreateBuffer(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			bufferSize,
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			&m_UniformBufferVP,
+			&m_UniformBufferMemVP);
 	}
 
 	void VulkanFrameBuffer::Frame::CreateDescriptorSet()
@@ -181,7 +220,10 @@ namespace Graphite
 		allocInfo.descriptorSetCount = 1;
 		allocInfo.pSetLayouts = &layout;
 
-		VkResult result = vkAllocateDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &allocInfo, &m_DescriptorSet);
+		VkResult result = vkAllocateDescriptorSets(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&allocInfo,
+			&m_DescriptorSet);
 
 		if(result != VK_SUCCESS)
 		{
@@ -205,28 +247,55 @@ namespace Graphite
 
 		// ADD A MATERIAL UNIFORM LATER WHEN IMPLEMENTED FOR 3D ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		vkUpdateDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), 1, &writeSet, 0, nullptr);
+		vkUpdateDescriptorSets(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			1,
+			&writeSet,
+			0,
+			nullptr);
 	}
 
 
 	void VulkanFrameBuffer::Frame::InitDepthTesting()
 	{
-		VkFormat depthBufferFormat = VulkanUtilities::ChooseSupportedFormat(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), 
+		VkFormat depthBufferFormat = VulkanUtilities::ChooseSupportedFormat(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), 
 			{ VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D24_UNORM_S8_UINT }, 
-			VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT);
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT);
 
-		s_DepthBufferImage = VulkanUtilities::CreateImage(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), 
-			GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width, GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height, depthBufferFormat, VK_IMAGE_TILING_OPTIMAL,
-			VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &s_DepthBufferDeviceMemory);
+		s_DepthBufferImage = VulkanUtilities::CreateImage(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(), 
+			GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width,
+			GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height,
+			depthBufferFormat,
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			&s_DepthBufferDeviceMemory);
 
-		s_DepthBufferImageView = VulkanUtilities::CreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_DepthBufferImage, depthBufferFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+		s_DepthBufferImageView = VulkanUtilities::CreateImageView(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			s_DepthBufferImage,
+			depthBufferFormat,
+			VK_IMAGE_ASPECT_DEPTH_BIT);
 	}
 
 	void VulkanFrameBuffer::Frame::ShutdownDepthTesting()
 	{
-		vkDestroyImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_DepthBufferImageView, nullptr);
-		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_DepthBufferDeviceMemory, nullptr);
-		vkDestroyImage(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_DepthBufferImage, nullptr);
+		vkDestroyImageView(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			s_DepthBufferImageView,
+			nullptr);
+		vkFreeMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			s_DepthBufferDeviceMemory,
+			nullptr);
+		vkDestroyImage(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			s_DepthBufferImage,
+			nullptr);
 	}
 
 	void VulkanFrameBuffer::Frame::UpdateDepthTesting()

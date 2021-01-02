@@ -118,7 +118,10 @@ namespace Graphite
 			instanceInfo.ppEnabledLayerNames = nullptr;
 		}
 		
-		VkResult result = vkCreateInstance(&instanceInfo, nullptr, &m_Instance);
+		VkResult result = vkCreateInstance(
+			&instanceInfo,
+			nullptr,
+			&m_Instance);
 
 		if(result != VK_SUCCESS)
 		{
@@ -131,7 +134,10 @@ namespace Graphite
 		m_PhysicalDevice = VK_NULL_HANDLE;
 
 		uint32_t devCount = 0;
-		vkEnumeratePhysicalDevices(m_Instance, &devCount, nullptr);
+		vkEnumeratePhysicalDevices(
+			m_Instance,
+			&devCount,
+			nullptr);
 
 		if(devCount == 0)
 		{
@@ -139,7 +145,10 @@ namespace Graphite
 		}
 
 		std::vector<VkPhysicalDevice> devices(devCount);
-		vkEnumeratePhysicalDevices(m_Instance, &devCount, devices.data());
+		vkEnumeratePhysicalDevices(
+			m_Instance,
+			&devCount,
+			devices.data());
 
 		std::multimap<int, VkPhysicalDevice> candidates;
 
@@ -155,8 +164,12 @@ namespace Graphite
 			throw std::runtime_error("failed to find a suitable GPU!");
 		}
 
-		vkGetPhysicalDeviceProperties(m_PhysicalDevice, &m_PhysicalDeviceProperties);
-		vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &m_PhysicalDeviceFeatures);
+		vkGetPhysicalDeviceProperties(
+			m_PhysicalDevice,
+			&m_PhysicalDeviceProperties);
+		vkGetPhysicalDeviceFeatures(
+			m_PhysicalDevice,
+			&m_PhysicalDeviceFeatures);
 	}
 
 	void VulkanGraphicsContext::CreateLogicalDevice()
@@ -188,19 +201,35 @@ namespace Graphite
 
 		deviceCreateInfo.pEnabledFeatures = &features;
 
-		VkResult result = vkCreateDevice(m_PhysicalDevice, &deviceCreateInfo, nullptr, &m_LogicalDevice);
+		VkResult result = vkCreateDevice(
+			m_PhysicalDevice,
+			&deviceCreateInfo,
+			nullptr,
+			&m_LogicalDevice);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a logical device!");
 		}
 
-		vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilies.GraphicsFamily, 0, &m_GraphicsQueue);
-		vkGetDeviceQueue(m_LogicalDevice, m_QueueFamilies.PresentationFamily, 0, &m_PresentationQueue);
+		vkGetDeviceQueue(
+			m_LogicalDevice,
+			m_QueueFamilies.GraphicsFamily,
+			0,
+			&m_GraphicsQueue);
+		vkGetDeviceQueue(
+			m_LogicalDevice,
+			m_QueueFamilies.PresentationFamily,
+			0,
+			&m_PresentationQueue);
 	}
 
 	void VulkanGraphicsContext::CreateSurface()
 	{
-		VkResult result = glfwCreateWindowSurface(m_Instance, GetNativeWindow(), nullptr, &m_Surface);
+		VkResult result = glfwCreateWindowSurface(
+			m_Instance,
+			GetNativeWindow(),
+			nullptr,
+			&m_Surface);
 
 		if(result != VK_SUCCESS)
 		{
@@ -212,10 +241,16 @@ namespace Graphite
 	void VulkanGraphicsContext::GetQueueFamilies()
 	{
 		uint32_t familyCount = 0;
-		vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice, &familyCount, nullptr);
+		vkGetPhysicalDeviceQueueFamilyProperties(
+			m_PhysicalDevice,
+			&familyCount,
+			nullptr);
 
 		std::vector<VkQueueFamilyProperties> properties(familyCount);
-		vkGetPhysicalDeviceQueueFamilyProperties(m_PhysicalDevice, &familyCount, properties.data());
+		vkGetPhysicalDeviceQueueFamilyProperties(
+			m_PhysicalDevice,
+			&familyCount,
+			properties.data());
 
 		for(int i = 0; i <= properties.size(); i++)
 		{
@@ -225,7 +260,11 @@ namespace Graphite
 			}
 
 			VkBool32 presentationSupport = false;
-			vkGetPhysicalDeviceSurfaceSupportKHR(m_PhysicalDevice, i, m_Surface, &presentationSupport);
+			vkGetPhysicalDeviceSurfaceSupportKHR(
+				m_PhysicalDevice,
+				i,
+				m_Surface,
+				&presentationSupport);
 			
 			if(properties[i].queueCount > 0 && presentationSupport)
 			{
@@ -248,7 +287,11 @@ namespace Graphite
 		callbackInfo.flags = VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT;
 		callbackInfo.pfnCallback = VulkanValidator::DebugCallback;
 
-		VkResult result = VulkanValidator::CreateDebugReportCallbackEXT(m_Instance, &callbackInfo, nullptr, &m_DebugCallback);
+		VkResult result = VulkanValidator::CreateDebugReportCallbackEXT(
+			m_Instance,
+			&callbackInfo,
+			nullptr,
+			&m_DebugCallback);
 
 		if(result != VK_SUCCESS)
 		{

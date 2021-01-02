@@ -142,11 +142,19 @@ namespace Graphite
 					VkDeviceSize offsets[] = { 0 };
 
 					// Bind a vertex buffer
-					vkCmdBindVertexBuffers(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 0, 1, vertexBuffers, offsets);
+					vkCmdBindVertexBuffers(
+						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+						0,
+						1,
+						vertexBuffers,
+						offsets);
 
 					// Bind an index buffer
-					vkCmdBindIndexBuffer(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 
-						dynamic_cast<VulkanVertexBuffer*>(meshList[meshIndices[i]]->GetIndexBuffer())->GetNativeBuffer(), 0, VK_INDEX_TYPE_UINT32);
+					vkCmdBindIndexBuffer(
+						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 
+						dynamic_cast<VulkanVertexBuffer*>(meshList[meshIndices[i]]->GetIndexBuffer())->GetNativeBuffer(),
+						0,
+						VK_INDEX_TYPE_UINT32);
 
 					// Send push constant data to the shader directly
 					vkCmdPushConstants(
@@ -161,11 +169,24 @@ namespace Graphite
 					std::array<VkDescriptorSet, 2> descriptorSetGroup = { s_FrameBuffer->operator[](imageIndex)->GetDescriptorSet(),
 						dynamic_cast<VulkanTexture*>(textureList[textureIndices[i]])->GetDescriptorSet() };
 
-					vkCmdBindDescriptorSets(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, s_GraphicsPipelineLayout,
-								0, static_cast<uint32_t>(descriptorSetGroup.size()), descriptorSetGroup.data(), 0, nullptr);
+					vkCmdBindDescriptorSets(
+						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+						VK_PIPELINE_BIND_POINT_GRAPHICS,
+						s_GraphicsPipelineLayout,
+						0,
+						static_cast<uint32_t>(descriptorSetGroup.size()),
+						descriptorSetGroup.data(),
+						0,
+						nullptr);
 
 					// Execute the graphics pipeline
-					vkCmdDrawIndexed(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), meshList[meshIndices[i]]->VertexCount(), 1, 0, 0, 0);
+					vkCmdDrawIndexed(
+						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+						meshList[meshIndices[i]]->VertexCount(),
+						1,
+						0,
+						0,
+						0);
 				}
 			}
 
@@ -197,7 +218,11 @@ namespace Graphite
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
 
-		VkResult result = vkQueueSubmit(GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), 1, &submitInfo, s_DrawFences[s_CurrentFrame]);
+		VkResult result = vkQueueSubmit(
+			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),
+			1,
+			&submitInfo,
+			s_DrawFences[s_CurrentFrame]);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to submit a commang buffer to the graphics queue!");
@@ -211,7 +236,9 @@ namespace Graphite
 		presentInfo.pSwapchains = &s_Swapchain;
 		presentInfo.pImageIndices = &imageIndex;
 
-		result = vkQueuePresentKHR(GR_GRAPHICS_CONTEXT->GetPresentationQueue(), &presentInfo);
+		result = vkQueuePresentKHR(
+			GR_GRAPHICS_CONTEXT->GetPresentationQueue(),
+			&presentInfo);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to present an image to the screen!");
@@ -223,7 +250,9 @@ namespace Graphite
 
 	void VulkanRendererAPI::CreateSwapchain()
 	{
-		VulkanUtilities::SwapchainInfo swapchainInfo = VulkanUtilities::GetSwapchainDetails(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetSurface());
+		VulkanUtilities::SwapchainInfo swapchainInfo = VulkanUtilities::GetSwapchainDetails(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetSurface());
 
 		VkSurfaceFormatKHR surfaceFormat = swapchainInfo.ChooseBestSurfaceFormat();
 		VkPresentModeKHR presentMode = swapchainInfo.ChooseBestPresentMode();
@@ -271,7 +300,11 @@ namespace Graphite
 
 		swapchainCreateInfo.oldSwapchain = VK_NULL_HANDLE;
 
-		VkResult result = vkCreateSwapchainKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &swapchainCreateInfo, nullptr, &s_Swapchain);
+		VkResult result = vkCreateSwapchainKHR(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&swapchainCreateInfo,
+			nullptr,
+			&s_Swapchain);
 
 		if (result != VK_SUCCESS)
 		{
@@ -316,7 +349,11 @@ namespace Graphite
 		renderPassCreateInfo.subpassCount = 1;
 		renderPassCreateInfo.pSubpasses = &subpass;
 
-		VkResult result = vkCreateRenderPass(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &renderPassCreateInfo, nullptr, &s_RenderPass);
+		VkResult result = vkCreateRenderPass(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&renderPassCreateInfo,
+			nullptr,
+			&s_RenderPass);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a render pass!");
@@ -443,7 +480,11 @@ namespace Graphite
 		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 		pipelineLayoutCreateInfo.pPushConstantRanges = &s_PushConstantRange;
 
-		VkResult result = vkCreatePipelineLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &pipelineLayoutCreateInfo, nullptr, &s_GraphicsPipelineLayout);
+		VkResult result = vkCreatePipelineLayout(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&pipelineLayoutCreateInfo,
+			nullptr,
+			&s_GraphicsPipelineLayout);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a pipeline layout!");
@@ -477,7 +518,13 @@ namespace Graphite
 		pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 		pipelineCreateInfo.basePipelineIndex = -1;
 
-		result = vkCreateGraphicsPipelines(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineCreateInfo, nullptr, &s_GraphicsPipeline);
+		result = vkCreateGraphicsPipelines(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			VK_NULL_HANDLE,
+			1,
+			&pipelineCreateInfo,
+			nullptr,
+			&s_GraphicsPipeline);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a pipeline");
@@ -497,7 +544,11 @@ namespace Graphite
 		commandPoolCreateInfo.queueFamilyIndex = GR_GRAPHICS_CONTEXT->GetQueueFamiliesIndices().GraphicsFamily;
 		commandPoolCreateInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-		VkResult result = vkCreateCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &commandPoolCreateInfo, nullptr, &s_GraphicsCommandPool);
+		VkResult result = vkCreateCommandPool(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&commandPoolCreateInfo,
+			nullptr,
+			&s_GraphicsCommandPool);
 
 		if (result != VK_SUCCESS)
 		{
@@ -519,7 +570,11 @@ namespace Graphite
 		descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(poolSizes.size());
 		descriptorPoolCreateInfo.pPoolSizes = poolSizes.data();
 
-		VkResult result = vkCreateDescriptorPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &descriptorPoolCreateInfo, nullptr, &s_DescriptorPool);
+		VkResult result = vkCreateDescriptorPool(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&descriptorPoolCreateInfo,
+			nullptr,
+			&s_DescriptorPool);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a descriptor set pool!");
@@ -535,7 +590,11 @@ namespace Graphite
 		samplerDescriptorPoolCreateInfo.maxSets = 1;
 		samplerDescriptorPoolCreateInfo.pPoolSizes = &samplerPoolSize;
 
-		vkCreateDescriptorPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &samplerDescriptorPoolCreateInfo, nullptr, &s_SamplerDescriptorPool);
+		vkCreateDescriptorPool(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&samplerDescriptorPoolCreateInfo,
+			nullptr,
+			&s_SamplerDescriptorPool);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a descriptor set pool!");
@@ -595,7 +654,11 @@ namespace Graphite
 		layoutCreateInfo.bindingCount = static_cast<uint32_t>(layoutBindings.size());
 		layoutCreateInfo.pBindings = layoutBindings.data();
 
-		VkResult result = vkCreateDescriptorSetLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &layoutCreateInfo, nullptr, &s_DescriptorSetLayout);
+		VkResult result = vkCreateDescriptorSetLayout(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&layoutCreateInfo,
+			nullptr,
+			&s_DescriptorSetLayout);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a Descriptor Set Layout!");
@@ -613,17 +676,15 @@ namespace Graphite
 		textureLayoutCreateInfo.bindingCount = 1;
 		textureLayoutCreateInfo.pBindings = &samplerLayoutBinding;
 
-		result = vkCreateDescriptorSetLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &textureLayoutCreateInfo, nullptr, &s_SamplerDescriptorSetLayout);
+		result = vkCreateDescriptorSetLayout(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&textureLayoutCreateInfo,
+			nullptr,
+			&s_SamplerDescriptorSetLayout);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a Descriptor Set Layout!");
 		}
-	}
-
-
-	void VulkanRendererAPI::RecordCommands(uint32_t frameIndex)
-	{
-		
 	}
 
 }

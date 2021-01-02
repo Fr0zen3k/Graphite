@@ -1,10 +1,11 @@
-#if defined (_MSC_VER)
-#pragma once
-#pragma warning(disable: 4251)
-#endif
-
 #ifndef GRAPHITE_GRAPHICSCONTEXT_H
 #define GRAPHITE_GRAPHICSCONTEXT_H
+
+#if defined (_MSC_VER)
+#pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #include "Graphite/Core/grpch.h"
 
@@ -32,4 +33,8 @@ namespace Graphite
 	
 }
 
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
 #endif

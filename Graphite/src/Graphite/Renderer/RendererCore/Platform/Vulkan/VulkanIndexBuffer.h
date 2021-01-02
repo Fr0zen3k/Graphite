@@ -1,5 +1,6 @@
 #if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
@@ -22,7 +23,9 @@ namespace Graphite
 	class GRAPHITE_API VulkanIndexBuffer: public IndexBuffer
 	{
 	public:
-		VulkanIndexBuffer(uint32_t* pIndices, size_t size);
+		VulkanIndexBuffer(
+			uint32_t* pIndices,
+			size_t size);
 		~VulkanIndexBuffer();
 
 		inline size_t Size() const override { return m_Size; }
@@ -44,4 +47,8 @@ namespace Graphite
 
 #endif
 
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
 #endif

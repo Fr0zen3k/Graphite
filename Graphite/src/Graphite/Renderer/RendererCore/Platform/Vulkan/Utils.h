@@ -1,5 +1,6 @@
 #if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
@@ -89,48 +90,84 @@ namespace Graphite
 					newExtent.width = static_cast<uint32_t>(width);
 					newExtent.height = static_cast<uint32_t>(height);
 
-					newExtent.width = std::max(m_SurfaceCapabilities.minImageExtent.width, std::min(m_SurfaceCapabilities.maxImageExtent.width, newExtent.width));
-					newExtent.height = std::max(m_SurfaceCapabilities.minImageExtent.height, std::min(m_SurfaceCapabilities.maxImageExtent.height, newExtent.height));
+					newExtent.width = std::max(
+						m_SurfaceCapabilities.minImageExtent.width,
+						std::min(
+							m_SurfaceCapabilities.maxImageExtent.width,
+							newExtent.width));
+					newExtent.height = std::max(
+						m_SurfaceCapabilities.minImageExtent.height,
+						std::min(
+							m_SurfaceCapabilities.maxImageExtent.height,
+							newExtent.height));
 
 					return newExtent;
 				}
 			}
 		};
 
-		static SwapchainInfo GetSwapchainDetails(VkPhysicalDevice device, VkSurfaceKHR surface)
+		static SwapchainInfo GetSwapchainDetails(
+			VkPhysicalDevice device,
+			VkSurfaceKHR surface)
 		{
 			SwapchainInfo info;
 
-			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &info.m_SurfaceCapabilities);
+			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
+				device,
+				surface,
+				&info.m_SurfaceCapabilities);
 
 			uint32_t count = 0;
-			vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &count, nullptr);
+			vkGetPhysicalDeviceSurfacePresentModesKHR(
+				device,
+				surface,
+				&count,
+				nullptr);
 
 			if(count > 0)
 			{
 				info.m_PresentModes.resize(count);
-				vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &count, info.m_PresentModes.data());
+				vkGetPhysicalDeviceSurfacePresentModesKHR(
+					device,
+					surface,
+					&count,
+					info.m_PresentModes.data());
 			}
 
 			count = 0;
 
-			vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &count, nullptr);
+			vkGetPhysicalDeviceSurfaceFormatsKHR(
+				device,
+				surface,
+				&count,
+				nullptr);
 
 			if(count > 0)
 			{
 				info.m_SurfaceFormats.resize(count);
-				vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &count, info.m_SurfaceFormats.data());
+				vkGetPhysicalDeviceSurfaceFormatsKHR(
+					device,
+					surface,
+					&count,
+					info.m_SurfaceFormats.data());
 			}
 
 			return info;
 		}
 
-		static VkFormat ChooseSupportedFormat(VkPhysicalDevice device, const std::vector<VkFormat>& formats, VkImageTiling tiling, VkFormatFeatureFlagBits fetureFlags)
+		static VkFormat ChooseSupportedFormat(
+			VkPhysicalDevice device,
+			const std::vector<VkFormat>& formats,
+			VkImageTiling tiling,
+			VkFormatFeatureFlagBits fetureFlags)
 		{
 			for(VkFormat f : formats)
 			{
 				VkFormatProperties props;
-				vkGetPhysicalDeviceFormatProperties(device, f, &props);
+				vkGetPhysicalDeviceFormatProperties(
+					device,
+					f,
+					&props);
 
 				if(tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & fetureFlags) == fetureFlags)
 				{
@@ -148,10 +185,16 @@ namespace Graphite
 		static bool CheckInstanceExtensions(std::vector<const char*>& extensions)
 		{
 			uint32_t extensionCount = 0;
-			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+			vkEnumerateInstanceExtensionProperties(
+				nullptr,
+				&extensionCount,
+				nullptr);
 
 			std::vector<VkExtensionProperties> supportedExtensions(extensionCount);
-			vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, supportedExtensions.data());
+			vkEnumerateInstanceExtensionProperties(
+				nullptr,
+				&extensionCount,
+				supportedExtensions.data());
 
 			for (const auto& checkExtension : extensions)
 			{
@@ -180,8 +223,12 @@ namespace Graphite
 			VkPhysicalDeviceProperties properties;
 			VkPhysicalDeviceFeatures features;
 
-			vkGetPhysicalDeviceProperties(device, &properties);
-			vkGetPhysicalDeviceFeatures(device, &features);
+			vkGetPhysicalDeviceProperties(
+				device,
+				&properties);
+			vkGetPhysicalDeviceFeatures(
+				device,
+				&features);
 
 			int score = 0;
 
@@ -200,11 +247,16 @@ namespace Graphite
 			return score;
 		}
 
-		static uint32_t FindMemoryTypeIndex(VkPhysicalDevice physicalDevice, uint32_t type, VkMemoryPropertyFlags properties)
+		static uint32_t FindMemoryTypeIndex(
+			VkPhysicalDevice physicalDevice,
+			uint32_t type,
+			VkMemoryPropertyFlags properties)
 		{
 			VkPhysicalDeviceMemoryProperties memProps;
 
-			vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProps);
+			vkGetPhysicalDeviceMemoryProperties(
+				physicalDevice,
+				&memProps);
 
 			for(uint32_t i = 0; i < memProps.memoryTypeCount; i++)
 			{
@@ -217,8 +269,14 @@ namespace Graphite
 			throw std::runtime_error("Failed to find suitable memory type on the physical device!");
 		}
 
-		static void CreateBuffer(VkPhysicalDevice physicalDevice, VkDevice device, VkDeviceSize bufferSize, VkBufferUsageFlags bufferUsage,
-		                         VkMemoryPropertyFlags bufferProperties, VkBuffer* buffer, VkDeviceMemory* bufferMemory)
+		static void CreateBuffer(
+			VkPhysicalDevice physicalDevice,
+			VkDevice device,
+			VkDeviceSize bufferSize,
+			VkBufferUsageFlags bufferUsage,
+		    VkMemoryPropertyFlags bufferProperties,
+			VkBuffer* buffer,
+			VkDeviceMemory* bufferMemory)
 		{
 			VkBufferCreateInfo bufferInfo = {};
 			bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -226,14 +284,21 @@ namespace Graphite
 			bufferInfo.usage = bufferUsage;
 			bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-			VkResult result = vkCreateBuffer(device, &bufferInfo, nullptr, buffer);
+			VkResult result = vkCreateBuffer(
+				device,
+				&bufferInfo,
+				nullptr,
+				buffer);
 			if (result != VK_SUCCESS)
 			{
 				throw std::runtime_error("Failed to create a Vertex Buffer!");
 			}
 
 			VkMemoryRequirements memRequirements;
-			vkGetBufferMemoryRequirements(device, *buffer, &memRequirements);
+			vkGetBufferMemoryRequirements(
+				device,
+				*buffer,
+				&memRequirements);
 
 			VkMemoryAllocateInfo memoryAllocInfo = {};
 			memoryAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -241,16 +306,26 @@ namespace Graphite
 			memoryAllocInfo.memoryTypeIndex = FindMemoryTypeIndex(physicalDevice, memRequirements.memoryTypeBits,
 			                                                      bufferProperties);
 		
-			result = vkAllocateMemory(device, &memoryAllocInfo, nullptr, bufferMemory);
+			result = vkAllocateMemory(
+				device,
+				&memoryAllocInfo,
+				nullptr,
+				bufferMemory);
 			if (result != VK_SUCCESS)
 			{
 				throw std::runtime_error("Failed to allocate Vertex Buffer Memory!");
 			}
 
-			vkBindBufferMemory(device, *buffer, *bufferMemory, 0);
+			vkBindBufferMemory(
+				device,
+				*buffer,
+				*bufferMemory,
+				0);
 		}
 
-		static VkCommandBuffer BeginCommandBuffer(VkDevice device, VkCommandPool commandPool)
+		static VkCommandBuffer BeginCommandBuffer(
+			VkDevice device,
+			VkCommandPool commandPool)
 		{
 			VkCommandBuffer commandBuffer;
 
@@ -260,18 +335,27 @@ namespace Graphite
 			allocInfo.commandPool = commandPool;
 			allocInfo.commandBufferCount = 1;
 
-			vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer);
+			vkAllocateCommandBuffers(
+				device,
+				&allocInfo,
+				&commandBuffer);
 
 			VkCommandBufferBeginInfo beginInfo = {};
 			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 			beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-			vkBeginCommandBuffer(commandBuffer, &beginInfo);
+			vkBeginCommandBuffer(
+				commandBuffer,
+				&beginInfo);
 
 			return commandBuffer;
 		}
 
-		static void EndAndSubmitCommandBuffer(VkDevice device, VkCommandPool commandPool, VkQueue queue, VkCommandBuffer commandBuffer)
+		static void EndAndSubmitCommandBuffer(
+			VkDevice device,
+			VkCommandPool commandPool,
+			VkQueue queue,
+			VkCommandBuffer commandBuffer)
 		{
 			vkEndCommandBuffer(commandBuffer);
 
@@ -280,29 +364,61 @@ namespace Graphite
 			submitInfo.commandBufferCount = 1;
 			submitInfo.pCommandBuffers = &commandBuffer;
 
-			vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE);
+			vkQueueSubmit(
+				queue,
+				1,
+				&submitInfo,
+				VK_NULL_HANDLE);
 			vkQueueWaitIdle(queue);
 
-			vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
+			vkFreeCommandBuffers(
+				device,
+				commandPool,
+				1,
+				&commandBuffer);
 		}
 
-		static void CopyBuffer(VkDevice device, VkQueue transferQueue, VkCommandPool transferCommandPool,
-		                       VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize)
+		static void CopyBuffer(
+			VkDevice device,
+			VkQueue transferQueue,
+			VkCommandPool transferCommandPool,
+		    VkBuffer srcBuffer,
+			VkBuffer dstBuffer,
+			VkDeviceSize bufferSize)
 		{
-			VkCommandBuffer transferCommandBuffer = BeginCommandBuffer(device, transferCommandPool);
+			VkCommandBuffer transferCommandBuffer = BeginCommandBuffer(
+				device,
+				transferCommandPool);
 
 			VkBufferCopy bufferCopyRegion = {};
 			bufferCopyRegion.srcOffset = 0;
 			bufferCopyRegion.dstOffset = 0;
 			bufferCopyRegion.size = bufferSize;
 
-			vkCmdCopyBuffer(transferCommandBuffer, srcBuffer, dstBuffer, 1, &bufferCopyRegion);
+			vkCmdCopyBuffer(
+				transferCommandBuffer,
+				srcBuffer,
+				dstBuffer,
+				1,
+				&bufferCopyRegion);
 
-			EndAndSubmitCommandBuffer(device, transferCommandPool, transferQueue, transferCommandBuffer);
+			EndAndSubmitCommandBuffer(
+				device,
+				transferCommandPool,
+				transferQueue,
+				transferCommandBuffer);
 		}
 
-		static VkImage CreateImage(VkPhysicalDevice physicalDevice, VkDevice logicalDevice, uint32_t width, uint32_t height, VkFormat format, 
-		                           VkImageTiling imageTiling, VkImageUsageFlags imageFlags, VkMemoryPropertyFlags memoryFlags, VkDeviceMemory* pImageMemory)
+		static VkImage CreateImage(
+			VkPhysicalDevice physicalDevice,
+			VkDevice logicalDevice,
+			uint32_t width,
+			uint32_t height,
+			VkFormat format, 
+		    VkImageTiling imageTiling,
+			VkImageUsageFlags imageFlags,
+			VkMemoryPropertyFlags memoryFlags,
+			VkDeviceMemory* pImageMemory)
 		{
 			VkImageCreateInfo imageCreateInfo = {};
 			imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -321,32 +437,54 @@ namespace Graphite
 
 			VkImage image;
 		
-			VkResult result = vkCreateImage(logicalDevice, &imageCreateInfo, nullptr, &image);
+			VkResult result = vkCreateImage(
+				logicalDevice,
+				&imageCreateInfo,
+				nullptr,
+				&image);
 			if (result != VK_SUCCESS)
 			{
 				throw std::runtime_error("Failed to create an Image!");
 			}
 
 			VkMemoryRequirements memoryRequirements;
-			vkGetImageMemoryRequirements(logicalDevice, image, &memoryRequirements);
+			vkGetImageMemoryRequirements(
+				logicalDevice,
+				image,
+				&memoryRequirements);
 
 			VkMemoryAllocateInfo memoryAllocInfo = {};
 			memoryAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			memoryAllocInfo.allocationSize = memoryRequirements.size;
-			memoryAllocInfo.memoryTypeIndex = FindMemoryTypeIndex(physicalDevice, memoryRequirements.memoryTypeBits, imageFlags);
+			memoryAllocInfo.memoryTypeIndex = FindMemoryTypeIndex(
+				physicalDevice,
+				memoryRequirements.memoryTypeBits,
+				imageFlags);
 
-			result = vkAllocateMemory(logicalDevice, &memoryAllocInfo, nullptr, pImageMemory);
+			result = vkAllocateMemory(
+				logicalDevice,
+				&memoryAllocInfo,
+				nullptr,
+				pImageMemory);
 			if (result != VK_SUCCESS)
 			{
 				throw std::runtime_error("Failed to allocate memory for image!");
 			}
 
-			vkBindImageMemory(logicalDevice, image, *pImageMemory, 0);
+			vkBindImageMemory(
+				logicalDevice,
+				image,
+				*pImageMemory,
+				0);
 
 			return image;
 		}
 
-		static VkImageView CreateImageView(VkDevice logicalDevice, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags)
+		static VkImageView CreateImageView(
+			VkDevice logicalDevice,
+			VkImage image,
+			VkFormat format,
+			VkImageAspectFlags aspectFlags)
 		{
 			VkImageViewCreateInfo viewCreateInfo = {};
 			viewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -366,7 +504,11 @@ namespace Graphite
 
 			VkImageView imageView;
 
-			VkResult result = vkCreateImageView(logicalDevice, &viewCreateInfo, nullptr, &imageView);
+			VkResult result = vkCreateImageView(
+				logicalDevice,
+				&viewCreateInfo,
+				nullptr,
+				&imageView);
 			if (result != VK_SUCCESS)
 			{
 				throw std::runtime_error("Failed to create an Image View!");
@@ -375,9 +517,17 @@ namespace Graphite
 			return imageView;
 		}
 
-		static void TransitionImageLayout(VkDevice device, VkQueue queue, VkCommandPool commandPool, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout)
+		static void TransitionImageLayout(
+			VkDevice device,
+			VkQueue queue,
+			VkCommandPool commandPool,
+			VkImage image,
+			VkImageLayout oldLayout,
+			VkImageLayout newLayout)
 		{
-			VkCommandBuffer commandBuffer = BeginCommandBuffer(device, commandPool);
+			VkCommandBuffer commandBuffer = BeginCommandBuffer(
+				device,
+				commandPool);
 
 			VkImageMemoryBarrier imageMemoryBarrier = {};
 			imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -414,19 +564,35 @@ namespace Graphite
 
 			vkCmdPipelineBarrier(
 				commandBuffer,
-				srcStage, dstStage,
+				srcStage,
+				dstStage,
 				0,
-				0, nullptr,
-				0, nullptr,
-				1, &imageMemoryBarrier
-			);
+				0,
+				nullptr,
+				0,
+				nullptr,
+				1,
+				&imageMemoryBarrier);
 
-			EndAndSubmitCommandBuffer(device, commandPool, queue, commandBuffer);
+			EndAndSubmitCommandBuffer(
+				device,
+				commandPool,
+				queue,
+				commandBuffer);
 		}
 
-		static void CopyImageBuffer(VkDevice device, VkQueue transferQueue, VkCommandPool transferCommandPool, VkBuffer src, VkImage dst, uint32_t width, uint32_t height)
+		static void CopyImageBuffer(
+			VkDevice device,
+			VkQueue transferQueue,
+			VkCommandPool transferCommandPool,
+			VkBuffer src,
+			VkImage dst,
+			uint32_t width,
+			uint32_t height)
 		{
-			VkCommandBuffer transferCommandBuffer = BeginCommandBuffer(device, transferCommandPool);
+			VkCommandBuffer transferCommandBuffer = BeginCommandBuffer(
+				device,
+				transferCommandPool);
 
 			VkBufferImageCopy imageRegion = {};
 			imageRegion.bufferOffset = 0;
@@ -439,9 +605,19 @@ namespace Graphite
 			imageRegion.imageOffset = { 0, 0, 0 };
 			imageRegion.imageExtent = { width, height, 1 };
 
-			vkCmdCopyBufferToImage(transferCommandBuffer, src, dst, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &imageRegion);
+			vkCmdCopyBufferToImage(
+				transferCommandBuffer,
+				src,
+				dst,
+				VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				1,
+				&imageRegion);
 
-			EndAndSubmitCommandBuffer(device, transferCommandPool, transferQueue, transferCommandBuffer);
+			EndAndSubmitCommandBuffer(
+				device,
+				transferCommandPool,
+				transferQueue,
+				transferCommandBuffer);
 		}
 	}
 }
@@ -450,3 +626,6 @@ namespace Graphite
 
 #endif
 
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

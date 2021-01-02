@@ -1,5 +1,6 @@
 #if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
@@ -38,7 +39,9 @@ namespace Graphite
 		
 		void Translate(glm::vec3 position) override;
 		
-		void Rotate(float angle, glm::vec3 rotationVector) override;
+		void Rotate(
+			float angle,
+			glm::vec3 rotationVector) override;
 		void Rotate(Math::Rotation rotation) override;
 		void Rotate(glm::quat quaternion) override;
 		void Rotate(const std::vector<Math::Rotation>& rotations) override;
@@ -65,4 +68,11 @@ namespace Graphite
 
 #endif
 
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif
+#if defined (_MSC_VER)
+#pragma warning(pop)
 #endif

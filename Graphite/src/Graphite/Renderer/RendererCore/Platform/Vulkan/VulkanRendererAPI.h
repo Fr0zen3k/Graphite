@@ -3,6 +3,7 @@
 
 #if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
@@ -55,8 +56,6 @@ namespace Graphite
 		static void CreatePushConstantRange();
 		static void CreateSynchronisation();
 		static void CreateDescriptorSetLayouts();
-
-		static void RecordCommands(uint32_t frameIndex);
 		
 	private:
 		static const int MAX_OBJECTS = 65536;
@@ -95,4 +94,8 @@ namespace Graphite
 
 #endif
 
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
 #endif

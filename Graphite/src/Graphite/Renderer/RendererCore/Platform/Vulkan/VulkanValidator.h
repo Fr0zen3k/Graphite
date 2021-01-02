@@ -1,5 +1,6 @@
 #if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
@@ -33,10 +34,16 @@ namespace Graphite
 			const char* message,
 			void* userData);
 
-		static VkResult CreateDebugReportCallbackEXT(VkInstance instance, const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, 
-														const VkAllocationCallbacks* pAllocator, VkDebugReportCallbackEXT* pCallback);
+		static VkResult CreateDebugReportCallbackEXT(
+			VkInstance instance,
+			const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, 
+			const VkAllocationCallbacks* pAllocator,
+			VkDebugReportCallbackEXT* pCallback);
 
-		static void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
+		static void DestroyDebugReportCallbackEXT(
+			VkInstance instance,
+			VkDebugReportCallbackEXT callback,
+			const VkAllocationCallbacks* pAllocator);
 
 		static bool CheckValidationSupport();
 
@@ -51,4 +58,8 @@ namespace Graphite
 
 #endif
 
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
 #endif

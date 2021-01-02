@@ -3,6 +3,7 @@
 
 #if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
 #pragma warning(disable: 4251)
 #endif
 
@@ -11,12 +12,13 @@
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
 #include "Graphite/EventCore/Events.h"
+#include "../../FrameBuffer.h"
 
 #include "vulkan/vulkan.h"
 
 namespace Graphite
 {
-	class GRAPHITE_API VulkanFrameBuffer
+	class GRAPHITE_API VulkanFrameBuffer : public FrameBuffer
 	{
 		class GRAPHITE_API Frame
 		{
@@ -84,13 +86,13 @@ namespace Graphite
 		
 	public:
 		VulkanFrameBuffer();
-		~VulkanFrameBuffer();
+		~VulkanFrameBuffer() override;
 
-		bool OnEvent(Event& e);
+		bool OnEvent(Event& e) override;
 
 		inline void UpdateViewProjectionUniform(uint32_t currentFrame) { m_Frames[currentFrame]->UpdateViewProjectionUniform(); }
 
-		inline size_t Size() const { return m_BufferSize; }
+		inline size_t Size() const override { return m_BufferSize; }
 
 		inline Frame* operator [] (int i) { return m_Frames[i]; }
 
@@ -107,6 +109,10 @@ namespace Graphite
 	};
 }
 
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
 #endif
 
 #endif

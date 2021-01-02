@@ -23,7 +23,10 @@ namespace Graphite
 	void VulkanTexture::DestroyCommonSampler()
 	{
 		s_SampleInitialized = false;
-		vkDestroySampler(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_CommonTextureSampler, nullptr);
+		vkDestroySampler(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			s_CommonTextureSampler,
+			nullptr);
 	}
 
 
@@ -43,9 +46,19 @@ namespace Graphite
 
 	void VulkanTexture::Shutdown()
 	{
-		vkDestroyImage(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Image, nullptr);
-		vkDestroyImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_ImageView, nullptr);
-		vkFreeDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), VulkanRendererAPI::GetSamplerDescriptorPool(), 1, &m_DescriptorSet);
+		vkDestroyImage(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_Image,
+			nullptr);
+		vkDestroyImageView(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_ImageView,
+			nullptr);
+		vkFreeDescriptorSets(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			VulkanRendererAPI::GetSamplerDescriptorPool(),
+			1,
+			&m_DescriptorSet);
 	}
 
 	void VulkanTexture::CreateImage(const std::string& filePath)
@@ -56,32 +69,78 @@ namespace Graphite
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingMem;
-		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-						VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingMem);
+		VulkanUtilities::CreateBuffer(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			size,
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			&stagingBuffer,
+			&stagingMem);
 
 		void* data;
-		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem, 0, size, 0, &data);
-		memcpy(data, rawData, static_cast<size_t>(size));
-		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem);
+		vkMapMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			stagingMem,
+			0,
+			size,
+			0,
+			&data);
+		memcpy(
+			data,
+			rawData,
+			static_cast<size_t>(size));
+		vkUnmapMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			stagingMem);
 
 		stbi_image_free(rawData);
 
-		VulkanUtilities::CreateImage(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Width, m_Height, VK_FORMAT_R8G8B8A8_UNORM,
-										VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &m_ImageMemory);
+		VulkanUtilities::CreateImage(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_Width,
+			m_Height,
+			VK_FORMAT_R8G8B8A8_UNORM,
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			&m_ImageMemory);
 
-		VulkanUtilities::TransitionImageLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), VulkanRendererAPI::GetGraphicsCommandPool(), m_Image,
-								VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		VulkanUtilities::TransitionImageLayout(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),
+			VulkanRendererAPI::GetGraphicsCommandPool(),
+			m_Image,
+			VK_IMAGE_LAYOUT_UNDEFINED,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-		VulkanUtilities::CopyImageBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), VulkanRendererAPI::GetGraphicsCommandPool(), stagingBuffer,
-										m_Image, m_Width, m_Height);
+		VulkanUtilities::CopyImageBuffer(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),
+			VulkanRendererAPI::GetGraphicsCommandPool(),
+			stagingBuffer,
+			m_Image,
+			m_Width,
+			m_Height);
 
-		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBuffer, nullptr);
-		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem, nullptr);
+		vkDestroyBuffer(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			stagingBuffer,
+			nullptr);
+		vkFreeMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			stagingMem,
+			nullptr);
 	}
 
 	void VulkanTexture::CreateImageView()
 	{
-		m_ImageView = VulkanUtilities::CreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+		m_ImageView = VulkanUtilities::CreateImageView(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_Image,
+			VK_FORMAT_R8G8B8A8_UNORM,
+			VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	void VulkanTexture::CreateDescriptorSet()
@@ -94,7 +153,10 @@ namespace Graphite
 		allocInfo.descriptorSetCount = 1;
 		allocInfo.pSetLayouts = &layout;
 
-		VkResult result = vkAllocateDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &allocInfo, &m_DescriptorSet);
+		VkResult result = vkAllocateDescriptorSets(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&allocInfo,
+			&m_DescriptorSet);
 
 		if(result != VK_SUCCESS)
 		{
@@ -115,14 +177,24 @@ namespace Graphite
 		descriptorWrite.descriptorCount = 1;
 		descriptorWrite.pImageInfo = &imageInfo;
 
-		vkUpdateDescriptorSets(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), 1, &descriptorWrite, 0, nullptr);
+		vkUpdateDescriptorSets(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			1,
+			&descriptorWrite,
+			0,
+			nullptr);
 	}
 
 	stbi_uc* VulkanTexture::LoadTextureFile(const std::string& filePath)
 	{
 		int channels;
 
-		stbi_uc * file = stbi_load(filePath.c_str(), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
+		stbi_uc * file = stbi_load(
+			filePath.c_str(),
+			&m_Width,
+			&m_Height,
+			&channels,
+			STBI_rgb_alpha);
 
 		if(!file)
 		{
@@ -153,7 +225,11 @@ namespace Graphite
 		createInfo.minLod = 0.0f;
 		createInfo.maxLod = 0.0f;
 
-		VkResult result = vkCreateSampler(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &createInfo, nullptr, &s_CommonTextureSampler);
+		VkResult result = vkCreateSampler(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			&createInfo,
+			nullptr,
+			&s_CommonTextureSampler);
 
 		if(result != VK_SUCCESS)
 		{
