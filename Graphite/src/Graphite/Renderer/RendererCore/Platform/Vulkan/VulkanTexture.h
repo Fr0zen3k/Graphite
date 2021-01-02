@@ -29,6 +29,8 @@ namespace Graphite
 		inline VkImage GetNativeImage() const { return m_Image; }
 		inline VkImageView GetImageView() const { return m_ImageView; }
 		inline std::pair<uint32_t, uint32_t> GetTextureSize() const override { return std::pair<uint32_t, uint32_t>(m_Width, m_Height); }
+
+		inline VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
 		
 		static inline VkSampler GetCommonSampler() { return s_CommonTextureSampler; }
 		static inline bool Initialized() { return s_SampleInitialized; }

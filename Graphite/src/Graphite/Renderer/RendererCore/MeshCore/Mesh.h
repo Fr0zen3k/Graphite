@@ -30,6 +30,9 @@ namespace Graphite
 
 		inline size_t VertexCount() const { return m_VertexBuffer->Size(); }
 		inline size_t IndexCount() const { return m_IndexBuffer->Size(); }
+
+		inline VertexBuffer* GetVertexBuffer() { return m_VertexBuffer; }
+		inline IndexBuffer* GetIndexBuffer() { return m_IndexBuffer; }
 		
 	private:
 		Vertex* m_Vertices;

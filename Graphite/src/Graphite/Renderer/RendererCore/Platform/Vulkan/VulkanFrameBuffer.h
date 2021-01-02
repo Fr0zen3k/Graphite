@@ -1,12 +1,12 @@
+#ifndef GRAPHITE_VKFRAMEBUFFER_H
+#define GRAPHITE_VKFRAMEBUFFER_H
+
 #if defined (_MSC_VER)
 #pragma once
 #pragma warning(disable: 4251)
 #endif
 
 #ifdef GRAPHITE_RENDERER_VULKAN
-
-#ifndef GRAPHITE_VKFRAMEBUFFER_H
-#define GRAPHITE_VKFRAMEBUFFER_H
 
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
@@ -31,16 +31,22 @@ namespace Graphite
 				m_Image = image;
 			}
 
-			inline Frame operator =  (Frame f)
+			inline Frame operator =  (Frame f) const
 			{
 				Frame res(f.m_Image);
 				return res;
 			}
 
-			inline VkCommandBuffer GetCommandBuffer()
+			inline VkCommandBuffer GetCommandBuffer() const
 			{
 				return m_CommandBuffer;
 			}
+
+			inline VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
+
+			inline VkFramebuffer GetNativeFramebuffer() const { return m_Framebuffer; }
+
+			inline VkCommandBuffer* GetCommandBufferPointer() { return &m_CommandBuffer; }
 
 			void UpdateViewProjectionUniform();
 
@@ -87,6 +93,8 @@ namespace Graphite
 		inline size_t Size() const { return m_BufferSize; }
 
 		inline Frame* operator [] (int i) { return m_Frames[i]; }
+
+		inline Frame* GetFrame(uint32_t index) { return m_Frames[index]; }
 	private:
 		void Init();
 		void Shutdown();

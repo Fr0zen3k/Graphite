@@ -6,9 +6,16 @@
 #include "VulkanOrthographicCamera.h"
 #include "VulkanPerspectiveCamera.h"
 #include "../../Camera.h"
+#include "VulkanGraphicsContext.h"
+#include "../../../Renderer2D/Renderer2D.h"
+#include "VulkanIndexBuffer.h"
+#include "VulkanTexture.h"
+#include "VulkanVertexBuffer.h"
 
 namespace Graphite
 {
+	uint8_t VulkanRendererAPI::s_CurrentFrame = 0;
+	
 	void VulkanRendererAPI::Init()
 	{
 		CreateSwapchain();
@@ -45,6 +52,174 @@ namespace Graphite
 		}
 	}
 
+	uint32_t VulkanRendererAPI::StartDrawing()
+	{
+		vkWaitForFences(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(), 
+			1, &s_DrawFences[s_CurrentFrame], 
+			VK_TRUE, 
+			std::numeric_limits<uint64_t>::max());
+
+		vkResetFences(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			1,
+			&s_DrawFences[s_CurrentFrame]);
+
+		uint32_t imageIndex;
+		vkAcquireNextImageKHR(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			s_Swapchain,
+			std::numeric_limits<uint64_t>::max(),
+			s_ImageAvailableSemaphores[s_CurrentFrame],
+			VK_NULL_HANDLE,
+			&imageIndex);
+
+		return imageIndex;
+	}
+
+	// Recording the commands for the data given for drawing
+	void VulkanRendererAPI::Draw(const std::vector<Mesh*>& meshList, const std::vector<glm::mat4>& modelMatrices, const std::vector<Texture*>& textureList, 
+		const std::vector<uint16_t>& meshIndices, const std::vector<uint16_t>& textureIndices, uint32_t imageIndex)
+	{
+		if(meshList.size() > MAX_OBJECTS || meshIndices.size() > MAX_OBJECTS)
+		{
+			throw std::runtime_error("Maximum number of objects in a draw call exceeded!");
+		}
+
+		if(meshIndices.size() != textureIndices.size())
+		{
+			throw std::runtime_error("Every mesh in a draw call must have an appropriate texture!");
+		}
+
+		if(meshIndices.size() != modelMatrices.size())
+		{
+			throw std::runtime_error("Numeber of model matrices must match the number of model indices in a draw call!");
+		}
+		
+		VkCommandBufferBeginInfo commandBufferBeginInfo = {};
+		commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+		VkRenderPassBeginInfo renderPassBeginInfo = {};
+		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassBeginInfo.renderPass = s_RenderPass;
+		renderPassBeginInfo.renderArea.offset = { 0, 0 };
+		renderPassBeginInfo.renderArea.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
+
+		std::array<VkClearValue, 2> clearValues = {};
+		clearValues[0].color = {0.24f, 0.23f, 0.24f, 1.0f};
+		clearValues[1].depthStencil.depth = 1.0f;
+
+		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassBeginInfo.pClearValues = clearValues.data();
+		renderPassBeginInfo.framebuffer = s_FrameBuffer->operator[](imageIndex)->GetNativeFramebuffer();
+
+		VkResult result = vkBeginCommandBuffer(
+			s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+			&commandBufferBeginInfo);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to start recording a command buffer!");
+		}
+
+
+		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BEGIN RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+		{
+			vkCmdBeginRenderPass(
+				s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+				&renderPassBeginInfo, 
+				VK_SUBPASS_CONTENTS_INLINE);
+
+			{
+				vkCmdBindPipeline(
+					s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+					VK_PIPELINE_BIND_POINT_GRAPHICS,
+					s_GraphicsPipeline);
+
+				for(size_t i = 0; i < meshIndices.size(); i++)
+				{
+					VkBuffer vertexBuffers[] = { dynamic_cast<VulkanVertexBuffer*>(meshList[meshIndices[i]]->GetVertexBuffer())->GetNativeBuffer() };
+					VkDeviceSize offsets[] = { 0 };
+
+					// Bind a vertex buffer
+					vkCmdBindVertexBuffers(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 0, 1, vertexBuffers, offsets);
+
+					// Bind an index buffer
+					vkCmdBindIndexBuffer(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 
+						dynamic_cast<VulkanVertexBuffer*>(meshList[meshIndices[i]]->GetIndexBuffer())->GetNativeBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+					// Send push constant data to the shader directly
+					vkCmdPushConstants(
+						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 
+						s_GraphicsPipelineLayout,
+						VK_SHADER_STAGE_VERTEX_BIT,
+						0,
+						sizeof(glm::mat4),
+						&modelMatrices[meshIndices[i]]);
+
+					// Bind descriptor sets
+					std::array<VkDescriptorSet, 2> descriptorSetGroup = { s_FrameBuffer->operator[](imageIndex)->GetDescriptorSet(),
+						dynamic_cast<VulkanTexture*>(textureList[textureIndices[i]])->GetDescriptorSet() };
+
+					vkCmdBindDescriptorSets(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, s_GraphicsPipelineLayout,
+								0, static_cast<uint32_t>(descriptorSetGroup.size()), descriptorSetGroup.data(), 0, nullptr);
+
+					// Execute the graphics pipeline
+					vkCmdDrawIndexed(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), meshList[meshIndices[i]]->VertexCount(), 1, 0, 0, 0);
+				}
+			}
+
+			vkCmdEndRenderPass(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer());
+		}
+
+		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+		result = vkEndCommandBuffer(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer());
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to stop recording a command buffer!");
+		}
+	}
+
+	void VulkanRendererAPI::EndDrawing(uint32_t imageIndex)
+	{
+		s_FrameBuffer->operator[](imageIndex)->UpdateViewProjectionUniform();
+		
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.waitSemaphoreCount = 1;
+		submitInfo.pWaitSemaphores = &s_ImageAvailableSemaphores[s_CurrentFrame];
+		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+		submitInfo.pWaitDstStageMask = waitStages;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = s_FrameBuffer->operator[](imageIndex)->GetCommandBufferPointer();
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
+
+		VkResult result = vkQueueSubmit(GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), 1, &submitInfo, s_DrawFences[s_CurrentFrame]);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to submit a commang buffer to the graphics queue!");
+		}
+
+		// Present the image to screen
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
+		presentInfo.pSwapchains = &s_Swapchain;
+		presentInfo.pImageIndices = &imageIndex;
+
+		result = vkQueuePresentKHR(GR_GRAPHICS_CONTEXT->GetPresentationQueue(), &presentInfo);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to present an image to the screen!");
+		}
+
+		s_CurrentFrame = (s_CurrentFrame + 1) % MAX_FRAME_DRAWS;
+	}
+	
 
 	void VulkanRendererAPI::CreateSwapchain()
 	{
@@ -443,6 +618,12 @@ namespace Graphite
 		{
 			throw std::runtime_error("Failed to create a Descriptor Set Layout!");
 		}
+	}
+
+
+	void VulkanRendererAPI::RecordCommands(uint32_t frameIndex)
+	{
+		
 	}
 
 }

@@ -1,12 +1,12 @@
+#ifndef GRAPHITE_VULKANRENDERERAPI_H
+#define GRAPHITE_VULKANRENDERERAPI_H
+
 #if defined (_MSC_VER)
 #pragma once
 #pragma warning(disable: 4251)
 #endif
 
 #ifdef GRAPHITE_RENDERER_VULKAN
-
-#ifndef GRAPHITE_VULKANRENDERERAPI_H
-#define GRAPHITE_VULKANRENDERERAPI_H
 
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
@@ -15,10 +15,9 @@
 #include "vulkan/vulkan.h"
 
 #include "VulkanFrameBuffer.h"
-#include "VulkanGraphicsContext.h"
-#include "../../../Renderer2D/Renderer2D.h"
-#include "../../GraphicsContext.h"
 #include "VulkanShader.h"
+#include "../../MeshCore/Mesh.h"
+#include "../../Texture.h"
 
 namespace Graphite
 {
@@ -41,6 +40,11 @@ namespace Graphite
 		inline static VkDescriptorSetLayout GetDescriptorSetLayout() { return s_DescriptorSetLayout; }
 		inline static VkDescriptorSetLayout GetSamplerDescriptorSetLayout() { return s_SamplerDescriptorSetLayout; }
 
+		static uint32_t StartDrawing();
+		static void Draw(const std::vector<Mesh*>& meshList, const std::vector<glm::mat4>& modelMatrices, const std::vector<Texture*>& textureList, const std::vector<uint16_t>& meshIndices,
+									const std::vector<uint16_t>& textureIndices, uint32_t imageIndex);
+		static void EndDrawing(uint32_t imageIndex);
+
 	private:
 		static void CreateSwapchain();
 		static void CreateRenderPass();
@@ -51,9 +55,11 @@ namespace Graphite
 		static void CreatePushConstantRange();
 		static void CreateSynchronisation();
 		static void CreateDescriptorSetLayouts();
+
+		static void RecordCommands(uint32_t frameIndex);
 		
 	private:
-		static const int MAX_OBJECTS = 10000;
+		static const int MAX_OBJECTS = 65536;
 		static const int MAX_FRAME_DRAWS = 2;
 		
 		static VulkanFrameBuffer* s_FrameBuffer;
@@ -81,6 +87,8 @@ namespace Graphite
 		static std::vector<VkSemaphore> s_ImageAvailableSemaphores;
 		static std::vector<VkSemaphore> s_RenderFinishSemaphores;
 		static std::vector<VkFence> s_DrawFences;
+
+		static uint8_t s_CurrentFrame;
 	};
 	
 }
