@@ -4,8 +4,6 @@ namespace Graphite
 {
 	namespace Math
 	{
-
-
 		Box::Box(glm::vec3 size, glm::vec3 position, Transform transformation = Transform()) : b_Transformation(transformation)
 		{
 			b_Transformation.Translate(position);

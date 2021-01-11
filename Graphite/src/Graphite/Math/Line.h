@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Core/grpch.h"
-#include "../Core/Core.h"
+#include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 #include <glm/glm.hpp>
 #include "GeoEntity.h"
 
@@ -19,7 +19,7 @@ namespace Graphite
 			// Constructs a line by defining the point used to position the line and the vector used to orient the line
 			Line(glm::vec3 point, glm::vec3 vector);
 			virtual ~Line() = default;
-
+			
 			// Returns a vector of the line used to orient the line
 			inline glm::vec3 GetOrientation() const { return l_Vector; }
 
