@@ -1,11 +1,18 @@
 #pragma once
+
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 #include <glm/glm.hpp>
 
-class GeoEntity
+namespace Graphite
 {
-	// ne postoji virtual template metoda?
-	template <class T>
-	bool contains(T e);
-};
-
+	namespace Math
+	{
+		class GRAPHITE_API GeoEntity
+		{
+		public:
+			GeoEntity();
+			virtual ~GeoEntity() = default;
+		};
+	}
+}

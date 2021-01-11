@@ -1,25 +1,18 @@
-
+#include "Graphite/Core/grpch.h"
 #include "Plain.h"
 
-class Plain : public GeoEntity
+namespace Graphite
 {
-private:
-	Point a;
-	glm::vec3 n;
+	namespace Math
+	{
+		Plain::Plain(glm::vec3 point = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 vector = glm::vec3(1.0f, 0.0f, 0.0f)) : p_Point(point) 
+		{
+			p_NormalVector = glm::normalize(vector);
+		}
 
-public:
-	Plain(Point a = Point(0,0,0), glm::vec3 n = glm::vec3(0,0,0)) {
-		this->a = a;
-		this->n = glm::normalize(n);
+		Plain::Plain(glm::vec3 point1, glm::vec3 point2, glm::vec3 point3) : p_Point(point1)
+		{
+			p_NormalVector = glm::normalize((point1 - point2) * (point1 - point3));
+		}
 	}
-	Plain(Point a, Point b, Point c) {
-		this->a = a;
-		glm::vec3 v1 = glm::vec3(a.getX() - b.getX(), a.getY() - b.getY(), a.getZ() - b.getZ());
-		glm::vec3 v2 = glm::vec3(a.getX() - c.getX(), c.getY() - c.getY(), c.getZ() - c.getZ());
-		this->n = glm::normalize(v1 * v2);
-	}
-
-	Point getStartPoint() { return a; }
-	glm::vec3 getVectorNormal() { return n;}
-
-};
+}
