@@ -3,7 +3,8 @@
 
 namespace Graphite
 {
-	TextureAsset::TextureAsset()
+	TextureAsset::TextureAsset():
+		Asset(true)
 	{
 	}
 
@@ -14,6 +15,9 @@ namespace Graphite
 	void TextureAsset::Load(std::istream& source)
 	{
 		mInternalTexture = Texture::CreateTexture(source);
+
+		mWidth = mInternalTexture->GetTextureSize().first;
+		mHeight = mInternalTexture->GetTextureSize().second;
 	}
 
 	void TextureAsset::Unload()

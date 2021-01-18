@@ -16,17 +16,17 @@ namespace Graphite
 	class GRAPHITE_API Frame2D
 	{
 	public:
-		Frame2D(const TextureAsset* tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h);
+		Frame2D(AssetPtr<const TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h);
 		~Frame2D();
 
-		const TextureAsset* GetTexture() const { return mTexturePtr; }
+		AssetPtr<const TextureAsset> GetTexture() const { return mTexturePtr; }
 		glm::vec2 GetTopLeft() const { return mTopLeft; }
 		glm::vec2 GetBottomRight() const { return mBottomRight; }
 		float GetWidth() const { return mWidth; }
 		float GetHeight() const { return mHeight; }
 
 	protected:
-		const TextureAsset* mTexturePtr;
+		AssetPtr<const TextureAsset> mTexturePtr;
 		glm::vec2 mTopLeft, mBottomRight;
 		float mWidth, mHeight;
 	};

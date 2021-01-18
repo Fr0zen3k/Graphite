@@ -70,7 +70,13 @@ namespace Graphite
 		auto assetPtr = GetAsset(filename);
 		if (!assetPtr->IsLoaded())
 		{
-			std::ifstream file(filename);
+			std::ifstream file;
+
+			if (assetPtr->NeedsBinary())
+				file.open(filename, std::ios::binary);
+			else
+				file.open(filename);
+
 			assetPtr->Load(file);
 			mLoadedAssetsPerFilename[filename] = assetPtr;
 		}

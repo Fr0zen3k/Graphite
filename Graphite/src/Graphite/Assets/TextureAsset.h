@@ -22,8 +22,12 @@ namespace Graphite
 		void Load(std::istream& source);
 		void Unload();
 
+		inline size_t GetOriginalWidth() const { return mWidth; }
+		inline size_t GetOriginalHeight() const { return mHeight; }
+
 	protected:
 		Texture *mInternalTexture;
+		size_t mWidth, mHeight;
 	};
 
 }

@@ -11,5 +11,12 @@ namespace Graphite
 		return new VulkanTexture(filePath);
 #endif
 	}
+
+	Texture* Texture::CreateTexture(std::istream& srcStream)
+	{
+#ifdef GRAPHITE_RENDERER_VULKAN
+		return new VulkanTexture(srcStream);
+#endif
+	}
 	
 }

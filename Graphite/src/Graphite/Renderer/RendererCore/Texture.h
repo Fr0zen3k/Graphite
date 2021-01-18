@@ -16,6 +16,7 @@ namespace Graphite
 		virtual ~Texture() = default;
 		
 		static Texture* CreateTexture(const std::string& filePath);
+		static Texture* CreateTexture(std::istream& srcStream);
 
 		virtual std::pair<uint32_t, uint32_t> GetTextureSize() const = 0;
 		

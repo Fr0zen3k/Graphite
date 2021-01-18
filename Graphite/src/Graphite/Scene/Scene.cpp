@@ -4,7 +4,8 @@
 
 namespace Graphite
 {
-	Scene::Scene()
+	Scene::Scene() :
+		Asset(false)
 	{
 	}
 

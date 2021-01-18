@@ -5,7 +5,7 @@
 
 namespace Graphite
 {
-	Frame2D::Frame2D(const TextureAsset* tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h)
+	Frame2D::Frame2D(AssetPtr<const TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h)
 		: mTexturePtr(tex)
 		, mTopLeft(topLeft)
 		, mBottomRight(bottomRight)
@@ -17,7 +17,8 @@ namespace Graphite
 	{
 	}
 
-	Animation2DAsset::Animation2DAsset()
+	Animation2DAsset::Animation2DAsset() :
+		Asset(false)
 	{
 	}
 
@@ -35,7 +36,7 @@ namespace Graphite
 
 	void Animation2DAsset::Load(const rapidjson::Value& params)
 	{
-		TextureAsset* tex = AssetManager::instance().GetTexture(params["texture"].GetString());
+		AssetPtr<TextureAsset> tex = AssetManager::instance().GetTexture(params["texture"].GetString());
 		glm::vec2 topLeft = glm::vec2(params["area"][0].GetFloat(), params["area"][1].GetFloat());
 		glm::vec2 bottomRight = glm::vec2(params["area"][2].GetFloat(), params["area"][3].GetFloat());
 		int rows = params["rows"].GetInt();
@@ -43,7 +44,8 @@ namespace Graphite
 		int first = params["frame-first"].GetInt();
 		int last = params["frame-last"].GetInt();
 
-		glm::vec2 frameSize = bottomRight - topLeft;
+		glm::vec2 sheetSize = bottomRight - topLeft;
+		glm::vec2 frameSize(sheetSize.x / columns, sheetSize.y / rows);
 
 		for (int ind = first; ind <= last; ind++)
 		{
