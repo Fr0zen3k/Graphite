@@ -3,6 +3,8 @@
 #include "Animation2DAsset.h"
 #include "Graphite/Scene/Scene2D/Scene2D.h"
 
+#include <fstream>
+
 namespace Graphite
 {
 	AssetManager& AssetManager::instance()
@@ -65,11 +67,22 @@ namespace Graphite
 
 	void AssetManager::LoadAsset(const std::string& filename)
 	{
-		mLoadedAssetsPerFilename[filename] = GetAsset(filename);
+		auto assetPtr = GetAsset(filename);
+		if (!assetPtr->IsLoaded())
+		{
+			std::ifstream file(filename);
+			assetPtr->Load(file);
+			mLoadedAssetsPerFilename[filename] = assetPtr;
+		}
 	}
 
 	void AssetManager::FreeAsset(const std::string& filename)
 	{
-		mLoadedAssetsPerFilename.erase(filename);
+		auto assetPtr = GetAsset(filename);
+		if (assetPtr->IsLoaded())
+		{
+			assetPtr->Unload();
+			mLoadedAssetsPerFilename.erase(filename);
+		}
 	}
 }
