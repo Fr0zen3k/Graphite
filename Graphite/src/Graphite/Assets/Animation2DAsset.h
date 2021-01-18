@@ -43,6 +43,8 @@ namespace Graphite
 		void Load(const rapidjson::Value& params);
 		void Unload();
 
+		inline Frame2D& GetFrame(size_t index) const { return mFrames[index]; }
+
 	protected:
 		std::vector<Frame2D> mFrames;
 	};

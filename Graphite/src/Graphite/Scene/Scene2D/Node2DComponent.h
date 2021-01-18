@@ -12,6 +12,12 @@
 
 namespace Graphite
 {
+	struct Bounds2D
+	{
+		glm::vec2 topLeft, bottomRight;
+	};
+
+	Bounds2D operator*(const glm::mat4x4& transform, const Bounds2D& source);
 
 	class GRAPHITE_API Node2DComponent : public Component
 	{
@@ -35,6 +41,8 @@ namespace Graphite
 		inline glm::vec2 GetScaling() const { return mScaling; }
 
 		inline glm::mat4x4 GetAbsoluteTransformation() const { return mAbsTransform; }
+		inline Bounds2D GetAssignedBounds() const { return mAssignedBounds; }
+		inline Bounds2D GetGraphBounds() const { return mGraphBounds; }
 		inline bool NeedsUpdate() const { return mNeedsUpdate; }
 
 		void SetParent(Node2DComponent* parent);
@@ -49,6 +57,8 @@ namespace Graphite
 		void RotateDegrees(float degrees);
 		void Scale(glm::vec2 scaling);
 
+		void AssignBounds(Bounds2D bounds);
+
 		void update();
 
 	protected:
@@ -60,6 +70,7 @@ namespace Graphite
 		glm::vec2 mScaling;
 
 		glm::mat4x4 mAbsTransform;
+		Bounds2D mAssignedBounds, mGraphBounds;
 		bool mNeedsUpdate;
 
 		// Marks for updating
