@@ -1,4 +1,5 @@
 #include "Node2DComponent.h"
+#include "Graphite/Scene/Scene.h"
 
 #include "glm/gtc/type_ptr.hpp"
 
@@ -21,9 +22,9 @@ namespace Graphite
 		SetParent(parent);
 	}
 
-	Node2DComponent::Node2DComponent(const rapidjson::Value& params)
+	Node2DComponent::Node2DComponent(const rapidjson::Value& params, Scene* scene)
 		: Node2DComponent(
-			nullptr,
+			scene->GetEntity(params["parent"].GetString())->CompPtr<Node2DComponent>(),
 			glm::vec2(params["position"][0].GetFloat(), params["position"][1].GetFloat()),
 			params["rotation"].GetFloat(),
 			glm::vec2(params["scaling"][0].GetFloat(), params["scaling"][1].GetFloat())
@@ -73,6 +74,22 @@ namespace Graphite
 	{
 		mScaling = scaling;
 		Invalidate();
+	}
+
+	void Node2DComponent::Move(glm::vec2 shift)
+	{
+	}
+
+	void Node2DComponent::Rotate(float radians)
+	{
+	}
+
+	void Node2DComponent::RotateDegrees(float degrees)
+	{
+	}
+
+	void Node2DComponent::Scale(glm::vec2 scaling)
+	{
 	}
 
 	void Node2DComponent::update()

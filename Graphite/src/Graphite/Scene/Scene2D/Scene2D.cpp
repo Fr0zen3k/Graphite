@@ -1,18 +1,20 @@
 #include "Scene2D.h"
+#include "Node2DComponent.h"
 
 namespace Graphite
 {
 	Scene2D::Scene2D()
 	{
-	}
-
-	Scene2D::Scene2D(rapidjson::Value root)
-		: Scene(root)
-	{
+		CreateEntity({new Node2DComponent()}, "RootNode");
 	}
 
 	Scene2D::~Scene2D()
 	{
+	}
+
+	Node2DComponent* Scene2D::GetRootNode()
+	{
+		return GetEntity("RootNode")->CompPtr<Node2DComponent>();
 	}
 
 
@@ -20,7 +22,7 @@ namespace Graphite
 	{
 	}
 
-	void onComponentRemoved(Component* c);
+	void Scene2D::onComponentRemoved(Component* c)
 	{
 	}
 }

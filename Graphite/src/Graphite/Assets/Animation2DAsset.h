@@ -41,6 +41,7 @@ namespace Graphite
 
 		void Load(std::istream& source);
 		void Load(const rapidjson::Value& params);
+		void Unload();
 
 	protected:
 		std::vector<Frame2D> mFrames;

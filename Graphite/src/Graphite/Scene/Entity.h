@@ -31,7 +31,7 @@ namespace Graphite
 		Scene* GetScene() const { return mScenePtr; }
 
 		// Returns a map of std::type_info* - Component* pairs
-		std::map<const std::type_info*, std::unique_ptr<Component>>& GetComponents() const { return mComponents; }
+		const std::map<const std::type_info*, std::unique_ptr<Component>>& GetComponents() const { return mComponents; }
 
 		// Returns a component. If the component doesn't exist throws std::out_of_range
 		template <class _CompT>

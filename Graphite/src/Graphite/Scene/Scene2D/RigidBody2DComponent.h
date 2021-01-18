@@ -6,7 +6,7 @@
 #include "Graphite/Core/grpch.h"
 
 #include "../Component.h"
-#include "AbstractCollider2DComponent.h"
+// #include "AbstractCollider2DComponent.h"
 
 #include "glm/glm.hpp"
 

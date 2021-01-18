@@ -12,12 +12,11 @@ namespace Graphite
 	class Node2DComponent;
 	class AbstractCollidableComponent;
 
-	class GRAPHITE_API Scene2D : Scene
+	class GRAPHITE_API Scene2D : public Scene
 	{
 	public:
 
 		Scene2D();
-		Scene2D(rapidjson::Value root);
 		~Scene2D();
 
 		Node2DComponent* GetRootNode();

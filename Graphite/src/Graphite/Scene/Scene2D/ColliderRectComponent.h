@@ -6,7 +6,7 @@
 #pragma once
 
 #include "../Component.h"
-#include "AbstractCollider2DComponent.h"
+//#include "AbstractCollider2DComponent.h"
 
 #include "glm/glm.hpp"
 
@@ -27,7 +27,7 @@ namespace Graphite
 		std::array<glm::vec2, 4> GetTransformedVertices(const glm::mat4x4& transform);
 
 	protected:
-		float mWidth, float mHeight;
+		float mWidth, mHeight;
 	};
 
 }

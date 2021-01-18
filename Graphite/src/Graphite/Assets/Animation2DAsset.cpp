@@ -60,4 +60,7 @@ namespace Graphite
 			);
 		}
 	}
+	void Animation2DAsset::Unload()
+	{
+	}
 }

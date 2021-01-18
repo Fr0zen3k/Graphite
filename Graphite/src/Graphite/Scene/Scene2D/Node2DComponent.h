@@ -6,7 +6,7 @@
 #pragma once
 
 #include "../Component.h"
-#include "Bounds2D.h"
+//#include "Bounds2D.h"
 
 #include "glm/glm.hpp"
 
@@ -22,7 +22,7 @@ namespace Graphite
 			float rotation = 0.0f, 
 			glm::vec2 scaling = glm::vec2(1.0f, 1.0f)
 		);
-		Node2DComponent(const rapidjson::Value& params);
+		Node2DComponent(const rapidjson::Value& params, Scene* scene);
 
 		~Node2DComponent();
 
@@ -43,6 +43,11 @@ namespace Graphite
 		void SetRotation(float radians);
 		void SetRotationDegrees(float degrees);
 		void SetScaling(glm::vec2 scaling);
+
+		void Move(glm::vec2 shift);
+		void Rotate(float radians);
+		void RotateDegrees(float degrees);
+		void Scale(glm::vec2 scaling);
 
 		void update();
 
