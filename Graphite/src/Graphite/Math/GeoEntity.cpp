@@ -6,7 +6,7 @@ namespace Graphite
 	{
 		GeoEntity::GeoEntity() {};
 		// TO DO: add methods which can manipulate Euclidean geometry axioms
-		// TO DO: facing 
 
+		GeoEntity::GetPosition();
 	}
 }

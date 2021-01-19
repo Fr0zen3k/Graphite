@@ -6,6 +6,9 @@ namespace Graphite
 	{
 		Box::Box(glm::vec3 size, glm::vec3 position, Transform transformation = Transform()) : b_Transformation(transformation)
 		{
+			position.x = glm::abs(position.x);
+			position.y = glm::abs(position.y);
+			position.z = glm::abs(position.z);
 			b_Transformation.Translate(position);
 			b_Vertex = size * 0.5;
 		}

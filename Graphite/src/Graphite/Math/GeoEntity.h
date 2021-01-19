@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Graphite/Core/grpch.h"
-#include "Graphite/Core/Core.h"
 #include <glm/glm.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 namespace Graphite
 {
@@ -13,6 +13,8 @@ namespace Graphite
 		public:
 			GeoEntity();
 			virtual ~GeoEntity() = default;
+
+			GetPosition();
 		};
 	}
 }
