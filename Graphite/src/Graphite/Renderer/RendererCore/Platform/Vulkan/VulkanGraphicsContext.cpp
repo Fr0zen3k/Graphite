@@ -53,6 +53,7 @@ namespace Graphite
 		try
 		{
 			CreateInstance();
+			CreateDebugCallback();
 			ChoosePhysicalDevice();
 			CreateSurface();
 			GetQueueFamilies();
@@ -66,6 +67,10 @@ namespace Graphite
 
 	void VulkanGraphicsContext::Shutdown()
 	{
+		vkDeviceWaitIdle(m_LogicalDevice);
+
+		vkDestroySurfaceKHR(m_Instance, m_Surface, nullptr);
+		vkDestroyDevice(m_LogicalDevice, nullptr);
 		vkDestroyInstance(m_Instance, nullptr);
 	}
 

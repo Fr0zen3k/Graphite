@@ -34,9 +34,10 @@ namespace Graphite
 		inline VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
 		
 		static inline VkSampler GetCommonSampler() { return s_CommonTextureSampler; }
-		static inline bool Initialized() { return s_SampleInitialized; }
 
 		static void DestroyCommonSampler();
+
+		static void CreateCommonSampler();
 
 		// Add a texture sampler recreation function for when new renderer settings are introduced, or when old settings change (after implementing the renderer settings functionality to the engine)
 
@@ -49,8 +50,6 @@ namespace Graphite
 		void CreateDescriptorSet();
 
 		stbi_uc* LoadTextureFile(const std::string& filePath);
-
-		static void CreateCommonSampler();
 		
 	private:
 		int m_Width;
@@ -63,7 +62,6 @@ namespace Graphite
 		
 		static VkSampler s_CommonTextureSampler;
 		static VkDescriptorSetLayout s_TextureSamplerDescriptorSetLayout;
-		static bool s_SampleInitialized;
 	};
 	
 }

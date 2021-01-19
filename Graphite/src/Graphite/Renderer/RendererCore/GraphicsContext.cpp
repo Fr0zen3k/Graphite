@@ -12,6 +12,5 @@ namespace Graphite
 		return new VulkanGraphicsContext();
 #endif
 	}
-
 	
 }

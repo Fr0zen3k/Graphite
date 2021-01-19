@@ -7,9 +7,7 @@
 #include "VulkanRendererAPI.h"
 
 namespace Graphite
-{
-	bool VulkanTexture::s_SampleInitialized = false;
-	
+{	
 	VulkanTexture::VulkanTexture(const std::string& filePath): Texture()
 	{
 		Init(filePath);
@@ -22,7 +20,6 @@ namespace Graphite
 
 	void VulkanTexture::DestroyCommonSampler()
 	{
-		s_SampleInitialized = false;
 		vkDestroySampler(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			s_CommonTextureSampler,
@@ -32,13 +29,6 @@ namespace Graphite
 
 	void VulkanTexture::Init(const std::string& filePath)
 	{
-		if(!s_SampleInitialized)
-		{
-			s_SampleInitialized = true;
-
-			CreateCommonSampler();
-		}
-
 		CreateImage(filePath);
 		CreateImageView();
 		CreateDescriptorSet();
@@ -46,6 +36,7 @@ namespace Graphite
 
 	void VulkanTexture::Shutdown()
 	{
+		vkDeviceWaitIdle(GR_GRAPHICS_CONTEXT->GetLogicalDevice());
 		vkDestroyImage(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			m_Image,

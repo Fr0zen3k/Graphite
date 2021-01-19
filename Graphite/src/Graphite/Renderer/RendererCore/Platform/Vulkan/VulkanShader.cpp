@@ -112,6 +112,7 @@ namespace Graphite
 
 	void VulkanShader::Shutdown()
 	{
+		vkDeviceWaitIdle(GR_GRAPHICS_CONTEXT->GetLogicalDevice());
 		vkDestroyShaderModule(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			m_ShaderModule,

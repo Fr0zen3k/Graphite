@@ -60,6 +60,38 @@ namespace Graphite
 		}
 	}
 
+	void VulkanFrameBuffer::CreateFramebuffers()
+	{
+		for(Frame* f : m_Frames)
+		{
+			f->CreateFramebuffer();
+		}
+	}
+	
+	void VulkanFrameBuffer::CreateCommandBuffers()
+	{
+		for (Frame* f : m_Frames)
+		{
+			f->CreateCommandBuffer();
+		}
+	}
+	
+	void VulkanFrameBuffer::CreateUniformBuffers()
+	{
+		for (Frame* f : m_Frames)
+		{
+			f->CreateUniformBuffer();
+		}
+	}
+
+	void VulkanFrameBuffer::CreateDescriptorSets()
+	{
+		for (Frame* f : m_Frames)
+		{
+			f->CreateDescriptorSet();
+		}
+	}
+
 
 	// ---------------- Frame -----------------
 

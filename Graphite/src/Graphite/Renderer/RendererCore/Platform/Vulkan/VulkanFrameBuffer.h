@@ -55,16 +55,17 @@ namespace Graphite
 			static void InitDepthTesting();
 			static void ShutdownDepthTesting();
 			static void UpdateDepthTesting();
+			
+			void CreateFramebuffer();
+			void CreateCommandBuffer();
+			void CreateUniformBuffer();
+			void CreateDescriptorSet();
 
 		private:
 			void Init();
 			void Shutdown();
 
 			void CreateImageView();
-			void CreateFramebuffer();
-			void CreateCommandBuffer();
-			void CreateUniformBuffer();
-			void CreateDescriptorSet();
 
 		private:
 			VkImage m_Image;
@@ -97,6 +98,13 @@ namespace Graphite
 		inline Frame* operator [] (int i) { return m_Frames[i]; }
 
 		inline Frame* GetFrame(uint32_t index) { return m_Frames[index]; }
+
+		inline static void InitDepthTesting() { Frame::InitDepthTesting(); }
+
+		void CreateFramebuffers();
+		void CreateCommandBuffers();
+		void CreateUniformBuffers();
+		void CreateDescriptorSets();
 	private:
 		void Init();
 		void Shutdown();

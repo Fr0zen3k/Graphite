@@ -18,15 +18,57 @@ namespace Graphite
 	
 	void VulkanRendererAPI::Init()
 	{
-		CreateSwapchain();
-		CreateCommandPool();
-		CreateRenderPass();
-		CreateSwapchain();
+		try
+		{
+			CreateSwapchain();
+			CreateRenderPass();
+			CreateDescriptorPools();
+			CreateDescriptorSetLayouts();
+			CreatePushConstantRange();
+			CreateGraphicsPipeline();
+			VulkanFrameBuffer::InitDepthTesting();
+			s_FrameBuffer = new VulkanFrameBuffer();
+			s_FrameBuffer->CreateFramebuffers();
+			CreateCommandPool();
+			s_FrameBuffer->CreateCommandBuffers();
+			VulkanTexture::CreateCommonSampler();
+			s_FrameBuffer->CreateUniformBuffers();
+			CreateSynchronisation();
+		}
+		catch (const std::runtime_error& e)
+		{
+			throw e;
+		}
 	}
 
 	void VulkanRendererAPI::Shutdown()
 	{
-		
+		vkDeviceWaitIdle(GR_GRAPHICS_CONTEXT->GetLogicalDevice());
+
+		for(int i = 0; i < MAX_FRAME_DRAWS; i++)
+		{
+			vkDestroySemaphore(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_ImageAvailableSemaphores[i], nullptr);
+			vkDestroySemaphore(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_RenderFinishSemaphores[i], nullptr);
+			vkDestroyFence(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_DrawFences[i], nullptr);
+		}
+
+		vkDestroyDescriptorSetLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_DescriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_SamplerDescriptorSetLayout, nullptr);
+
+		vkDestroyDescriptorPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_DescriptorPool, nullptr);
+		vkDestroyDescriptorPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_SamplerDescriptorPool, nullptr);
+
+		delete s_FrameBuffer;
+		delete s_FragmentShader;
+		delete s_VertexShader;
+
+		vkDestroyCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_GraphicsCommandPool, nullptr);
+
+		vkDestroyPipeline(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_GraphicsPipeline, nullptr);
+		vkDestroyPipelineLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_GraphicsPipelineLayout, nullptr);
+
+		vkDestroyRenderPass(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_RenderPass, nullptr);
+		vkDestroySwapchainKHR(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_Swapchain, nullptr);
 	}
 
 	bool VulkanRendererAPI::OnEvent(const Event& e)
