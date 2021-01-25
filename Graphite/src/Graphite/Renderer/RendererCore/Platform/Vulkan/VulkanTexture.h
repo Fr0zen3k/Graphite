@@ -25,6 +25,7 @@ namespace Graphite
 	{
 	public:
 		VulkanTexture(const std::string& filePath);
+		VulkanTexture(std::istream& srcStream);
 		~VulkanTexture() override;
 
 		inline VkImage GetNativeImage() const { return m_Image; }
@@ -43,13 +44,18 @@ namespace Graphite
 
 	private:
 		void Init(const std::string& filePath);
+		void Init(std::istream& srcStream);
 		void Shutdown();
 
 		void CreateImage(const std::string& filePath);
+		void CreateImage(std::istream& srcStream);
 		void CreateImageView();
 		void CreateDescriptorSet();
-
+		
 		stbi_uc* LoadTextureFile(const std::string& filePath);
+		stbi_uc* LoadTextureStream(std::istream& srcStream);
+
+		static void CreateCommonSampler();
 		
 	private:
 		int m_Width;

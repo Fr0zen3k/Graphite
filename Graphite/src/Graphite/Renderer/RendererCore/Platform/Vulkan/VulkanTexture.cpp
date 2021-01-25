@@ -13,6 +13,11 @@ namespace Graphite
 		Init(filePath);
 	}
 
+	VulkanTexture::VulkanTexture(std::istream& srcStream) : Texture()
+	{
+		Init(srcStream);
+	}
+
 	VulkanTexture::~VulkanTexture()
 	{
 		Shutdown();
@@ -30,6 +35,21 @@ namespace Graphite
 	void VulkanTexture::Init(const std::string& filePath)
 	{
 		CreateImage(filePath);
+		CreateImageView();
+		CreateDescriptorSet();
+	}
+
+
+	void VulkanTexture::Init(std::istream& srcStream)
+	{
+		if (!s_SampleInitialized)
+		{
+			s_SampleInitialized = true;
+
+			CreateCommonSampler();
+		}
+
+		CreateImage(srcStream);
 		CreateImageView();
 		CreateDescriptorSet();
 	}
@@ -125,6 +145,36 @@ namespace Graphite
 			nullptr);
 	}
 
+	void VulkanTexture::CreateImage(std::istream& srcStream)
+	{
+		stbi_uc* rawData = LoadTextureStream(srcStream);
+
+		VkDeviceSize size = m_Height * m_Width * 4;
+
+		VkBuffer stagingBuffer;
+		VkDeviceMemory stagingMem;
+		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingMem);
+
+		void* data;
+		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem, 0, size, 0, &data);
+		memcpy(data, rawData, static_cast<size_t>(size));
+		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem);
+
+		stbi_image_free(rawData);
+
+		VulkanUtilities::CreateImage(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Width, m_Height, VK_FORMAT_R8G8B8A8_UNORM,
+			VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &m_ImageMemory);
+
+		VulkanUtilities::TransitionImageLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), graphicsCommandPool, m_Image,
+			VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+		VulkanUtilities::CopyImageBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), graphicsCommandPool, stagingBuffer, m_Image, m_Width, m_Height);
+
+		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBuffer, nullptr);
+		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem, nullptr);
+	}
+
 	void VulkanTexture::CreateImageView()
 	{
 		m_ImageView = VulkanUtilities::CreateImageView(
@@ -193,6 +243,32 @@ namespace Graphite
 		}
 
 		return file;
+	}
+
+	stbi_uc* VulkanTexture::LoadTextureStream(std::istream& srcStream)
+	{
+		int channels;
+
+		std::vector<stbi_uc> bufferVec;
+		srcStream.seekg(0, std::ios::end);
+		bufferVec.resize(srcStream.tellg());
+		srcStream.seekg(0, std::ios::beg);
+		
+		if (srcStream.read((char*)bufferVec.data(), bufferVec.size()))
+		{
+			stbi_uc* file = stbi_load_from_memory(bufferVec.data(), bufferVec.size(), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
+
+			if (!file)
+			{
+				throw std::runtime_error("Failed to load a Texture from stream");
+			}
+
+			return file;
+		}
+		else
+		{
+			throw std::runtime_error("Failed to load a Texture from stream");
+		}
 	}
 
 

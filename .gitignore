@@ -3,6 +3,7 @@
 ################################################################################
 
 /.vs/Graphite/v16
+/.vscode
 /bin
 /bin-int
 /Graphite/vendor/Vulkan/1.2.148.1
@@ -11,3 +12,16 @@
 *.filters
 *.vcxproj
 /.vs
+
+Makefile
+bin/
+bin-int/
+debug/
+build/
+*.a
+*.lib
+*.pdb
+*.d
+*.o
+*.tlog
+*.idb
