@@ -1,12 +1,19 @@
 //
 // Created by Mauricio Smit
 //
-#include "Graphite/Core/grpch.h"
-
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_NODE2DCOMPONENT_H
+#define GRAPHITE_NODE2DCOMPONENT_H
+
+#include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "../Component.h"
-//#include "Bounds2D.h"
 
 #include "glm/glm.hpp"
 
@@ -79,3 +86,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

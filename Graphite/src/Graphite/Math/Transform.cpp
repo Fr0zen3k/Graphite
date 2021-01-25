@@ -1,4 +1,4 @@
-#include "../Core/grpch.h"
+#include "Graphite/Core/grpch.h"
 #include "Transform.h"
 namespace Graphite
 {
@@ -9,15 +9,14 @@ namespace Graphite
 		}
 
 		void Transform::Rotate(glm::vec3& vector, float angle) {
-			glm::normalize(vec);
-			glm::quat quaternion = glm::quat(glm::radians(angle), vec);
+			glm::quat quaternion = glm::quat(glm::radians(angle), glm::normalize(vector));
 			m_Rotation = quaternion * m_Rotation;
 		}
 
-		void Transform::Rotate(std::vector<Rotation>& rotations) {
+		void Transform::Rotate(const std::vector<Rotation>& rotations) {
 			for (Rotation rot : rotations) {
 				rot.vec = glm::normalize(rot.vec);
-				glm::quat quaternion = glm::quat(glm::radians(angle), rot.vec);
+				glm::quat quaternion = glm::quat(glm::radians(rot.angle), rot.vec);
 				m_Rotation = glm::cross(quaternion, m_Rotation);
 			}
 		}
@@ -25,7 +24,8 @@ namespace Graphite
 		void Transform::Rotate(glm::quat& quaternion) {
 			m_Rotation = glm::cross(quaternion, m_Rotation);
 		}
-		void Transform::Rotate(std::vector<glm::quat>& quaternions) {
+		
+		void Transform::Rotate(const std::vector<glm::quat>& quaternions) {
 			for (glm::quat q : quaternions)
 			{
 				m_Rotation = glm::cross(q, m_Rotation);

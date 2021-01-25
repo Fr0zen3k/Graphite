@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "RigidBody2DComponent.h"
 
 namespace Graphite

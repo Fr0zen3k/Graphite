@@ -1,6 +1,15 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_SPHERE_H
+#define GRAPHITE_SPHERE_H
 
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
+
 #include <glm/glm.hpp>
 #include "GeoEntity.h"
 
@@ -16,11 +25,11 @@ namespace Graphite
 			/// </summary>
 			/// <param name="point"></param>
 			/// <param name="radius"></param>
-			Sphere(glm::vec3 point, float radius);
+			Sphere(glm::vec3 point, float radius) : s_Center(point), s_Radius(radius) {};
 			virtual ~Sphere() = default;
 
 			/// <returns>a point of the center of the sphere</returns>
-			inline glm::vec3 GetPosition() const { return s_Center; }
+			inline glm::vec3 GetPosition() const override { return s_Center; }
 
 			/// <returns>radius of the sphere</returns>
 			inline float GetRadius() const { return s_Radius; }
@@ -43,3 +52,9 @@ namespace Graphite
 		};
 	}
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

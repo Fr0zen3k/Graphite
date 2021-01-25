@@ -1,4 +1,5 @@
-#include "Node2DComponent.h"
+#include "Graphite/Core/grpch.h"
+#include "../Scene2D/Node2DComponent.h"
 #include "EventQueueComponent.h"
 
 namespace Graphite
@@ -17,7 +18,7 @@ namespace Graphite
 
 	void EventQueueComponent::post(ComponentEvent* ev)
 	{
-		mEventQueue.push_back(ev);
+		mEventQueue.emplace_back(ev);
 	}
 
 	void EventQueueComponent::processEvents()

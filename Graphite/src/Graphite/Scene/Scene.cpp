@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "Scene.h"
 #include "Entity.h"
 #include "ComponentFactory.h"

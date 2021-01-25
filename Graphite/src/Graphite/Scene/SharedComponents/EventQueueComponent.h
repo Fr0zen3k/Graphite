@@ -1,9 +1,17 @@
 //
 // Created by Mauricio Smit on 12/21/20
 //
-#include "Graphite/Core/grpch.h"
-
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_EVENTQUEUECOMPONENT_H
+#define GRAPHITE_EVENTQUEUECOMPONENT_H
+
+#include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "../Component.h"
 
@@ -135,3 +143,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

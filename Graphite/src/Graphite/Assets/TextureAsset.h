@@ -1,17 +1,24 @@
 //
 // Created by Mauricio Smit
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_TEXTUREASSET_H
+#define GRAPHITE_TEXTUREASSET_H
 
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "Asset.h"
 
-#include "glm/glm.hpp"
+#include "Graphite/Renderer/RendererCore/Texture.h"
 
 namespace Graphite
 {
-	class Texture;// Internal texture
 
 	class GRAPHITE_API TextureAsset : public Asset
 	{
@@ -31,3 +38,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

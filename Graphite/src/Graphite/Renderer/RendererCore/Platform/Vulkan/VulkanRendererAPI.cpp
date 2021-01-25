@@ -224,7 +224,7 @@ namespace Graphite
 					// Execute the graphics pipeline
 					vkCmdDrawIndexed(
 						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
-						meshList[meshIndices[i]]->VertexCount(),
+						static_cast<uint32_t>(meshList[meshIndices[i]]->VertexCount()),
 						1,
 						0,
 						0,

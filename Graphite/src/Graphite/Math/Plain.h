@@ -1,7 +1,12 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
-#ifndef GRAPHITE_TRANSFORM_H
-#define GRAPHITE_TRANSFORM_H
+
+#ifndef GRAPHITE_PLAIN_H
+#define GRAPHITE_PLAIN_H
 
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
@@ -40,7 +45,7 @@ namespace Graphite
 			inline glm::vec3 GetNormalVector() const { return p_NormalVector; }
 
 			/// <returns>a point which is used to position the plain</returns>
-			inline glm::vec3 GetPosition() const { return p_Point; }
+			inline glm::vec3 GetPosition() const override { return p_Point; }
 
 			/// <summary>
 			/// Sets the position of the plain
@@ -63,3 +68,9 @@ namespace Graphite
 		};
 	}
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

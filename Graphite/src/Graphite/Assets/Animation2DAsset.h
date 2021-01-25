@@ -1,13 +1,29 @@
 //
 // Created by Mauricio Smit
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_ANIMATION2DASSET_H
+#define GRAPHITE_ANIMATION2DASSET_H
 
 #include "Graphite/Core/grpch.h"
+
+#include "Graphite/Core/Core.h"
 
 #include "Asset.h"
 
 #include "glm/glm.hpp"
+
+#include "TextureAsset.h"
+
+#include "AssetManager.h"
+
+template<class _AssT>
+class AssetPtr;
 
 namespace Graphite
 {
@@ -50,3 +66,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

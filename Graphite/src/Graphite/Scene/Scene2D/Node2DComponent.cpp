@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "Node2DComponent.h"
 #include "Graphite/Scene/Scene.h"
 

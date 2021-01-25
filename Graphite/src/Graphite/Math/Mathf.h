@@ -1,8 +1,14 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_MATHF_H
+#define GRAPHITE_MATHF_H
 
 #include "Graphite/Core/grpch.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include "Graphite/Core/Core.h"
 
 
 namespace Graphite
@@ -11,7 +17,7 @@ namespace Graphite
 	{
 		// useful math functions
 		// glm can be used for lerp and slerp
-		class Mathf
+		class GRAPHITE_API Mathf
 		{
 		public:
 			/// <summary>
@@ -22,6 +28,12 @@ namespace Graphite
 			/// <param name="currentValue">- reference to the variable you whish to interpolate</param>
 			/// <param name="rate">- step size, value between 0.0f and 1.0f</param>
 			void static Lerp(float& start, float& stop, float& currentValue, float& rate);
-		}
+		};
 	}
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

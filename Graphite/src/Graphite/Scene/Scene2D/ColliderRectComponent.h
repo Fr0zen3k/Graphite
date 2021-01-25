@@ -1,12 +1,19 @@
 //
 // Created by Mauricio Smit
 //
-#include "Graphite/Core/grpch.h"
-
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_COLLIDERRECTCOMPONENT_H
+#define GRAPHITE_COLLIDERRECTCOMPONENT_H
+
+#include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "../Component.h"
-//#include "AbstractCollider2DComponent.h"
 
 #include "glm/glm.hpp"
 
@@ -31,3 +38,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

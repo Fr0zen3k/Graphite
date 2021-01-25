@@ -1,6 +1,15 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_MATH_LINE_H
+#define GRAPHITE_MATH_LINE_H
 
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
+
 #include <glm/glm.hpp>
 #include "GeoEntity.h"
 
@@ -27,7 +36,7 @@ namespace Graphite
 			inline glm::vec3 GetOrientation() const { return l_Vector; }
 
 			/// <returns>a point of the line used to position the line</returns>
-			inline glm::vec3 GetPosition() const { return l_Point; }
+			inline glm::vec3 GetPosition() const override { return l_Point; }
 
 			/// <summary>
 			/// Sets the position of the line by given point
@@ -43,3 +52,9 @@ namespace Graphite
 		};
 	}
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

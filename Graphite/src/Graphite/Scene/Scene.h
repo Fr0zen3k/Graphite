@@ -2,18 +2,25 @@
 // Created by Mauricio Smit
 //
 
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_SCENE_H
+#define GRAPHITE_SCENE_H
 
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "Component.h"
 #include "Graphite/Assets/Asset.h"
 
+#include "Entity.h"
+
 namespace Graphite
 {
-	class Entity;
-	class ComponentFactory;
-
 	class GRAPHITE_API Scene : public Asset
 	{
 	public:
@@ -60,3 +67,9 @@ namespace Graphite
 		void removeEntity(Entity* e);
 	};
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

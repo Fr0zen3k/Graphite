@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "Animation2DAsset.h"
 #include "AssetManager.h"
 #include "TextureAsset.h"

@@ -40,8 +40,6 @@ namespace Graphite
 
 		static void CreateCommonSampler();
 
-		// Add a texture sampler recreation function for when new renderer settings are introduced, or when old settings change (after implementing the renderer settings functionality to the engine)
-
 	private:
 		void Init(const std::string& filePath);
 		void Init(std::istream& srcStream);
@@ -55,7 +53,6 @@ namespace Graphite
 		stbi_uc* LoadTextureFile(const std::string& filePath);
 		stbi_uc* LoadTextureStream(std::istream& srcStream);
 
-		static void CreateCommonSampler();
 		
 	private:
 		int m_Width;

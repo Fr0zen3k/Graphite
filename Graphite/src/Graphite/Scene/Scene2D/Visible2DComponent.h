@@ -1,21 +1,26 @@
 //
 // Created by Mauricio Smit
 //
-#include "Graphite/Core/grpch.h"
-
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_VISIBLE2DCOMPONENT_H
+#define GRAPHITE_VISIBLE2DCOMPONENT_H
+
+#include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "../Component.h"
 #include "Graphite/Assets/AssetManager.h"
-//#include "AbstractCollider2DComponent.h"
 
-#include "glm/glm.hpp"
+#include "Node2DComponent.h"
+#include "Graphite/Assets/Animation2DAsset.h"
 
 namespace Graphite
 {
-	class Animation2DAsset;
-	class Node2DComponent;
-
 	class GRAPHITE_API Visible2DComponent : public Component
 	{
 	public:
@@ -35,3 +40,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

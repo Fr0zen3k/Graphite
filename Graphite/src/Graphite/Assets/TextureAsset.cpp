@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "TextureAsset.h"
 #include "Graphite/Renderer/RendererCore/Texture.h"
 

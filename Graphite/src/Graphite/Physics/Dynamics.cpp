@@ -23,7 +23,7 @@ namespace Graphite
 
 		void Dynamics::AddVelocity(glm::vec3& velocity) { d_Velocity += velocity; }
 
-		void Dynamics::TimeTick(Transform& transform) // reference transform of the object
+		void Dynamics::TimeTick(Math::Transform& transform) // reference transform of the object
 		{
 			// translation
 			AddAcceleration(force / mass);

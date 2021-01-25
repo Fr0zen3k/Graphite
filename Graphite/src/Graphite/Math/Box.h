@@ -1,6 +1,15 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_BOX_H
+#define GRAPHITE_BOX_H
 
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
+
 #include <glm/glm.hpp>
 #include "Transform.h"
 #include "GeoEntity.h"
@@ -23,11 +32,11 @@ namespace Graphite
 			virtual ~Box() = default;
 
 			/// <returns>a point of the center of the box</returns>
-			inline glm::vec3 GetPosition() const { return b_Transformation.GetPosition(); }
+			inline glm::vec3 GetPosition() const override { return b_Transformation.GetPosition(); }
 
 			/// <returns>size of the box as a vector (width, height, depth)</returns>
 			inline glm::vec3 GetSize() const {
-				glm::vec3 r = glm::vec3(b_Vertex * 2);
+				glm::vec3 r = glm::vec3(b_Vertex * 2.0f);
 				glm::vec3 m_Size = b_Transformation.GetSize();
 				r[0] *= m_Size.x;
 				r[1] *= m_Size.y;
@@ -48,7 +57,7 @@ namespace Graphite
 			/// Sets the position of the center of the box by given point
 			/// </summary>
 			/// <param name="point"></param>
-			inline void SetPosition(glm::vec3 point) { b_Transformation.SetPosition(point); }
+			inline void SetPosition(glm::vec3 point) { b_Transformation.Translate(point); }
 
 			/// <summary>
 			/// Sets dimensions of the box by given vector size (width, height, depth)
@@ -56,7 +65,7 @@ namespace Graphite
 			/// <param name="size"></param>
 			inline void SetSize(glm::vec3 size) {
 				b_Transformation.SetSize(glm::vec3(1.0f, 1.0f, 1.0f));
-				b_Vertex = size * 0.5;
+				b_Vertex = size * 0.5f;
 			}
 
 		private:
@@ -65,3 +74,9 @@ namespace Graphite
 		};
 	}
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

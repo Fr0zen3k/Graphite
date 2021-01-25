@@ -1,12 +1,20 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
-#include <typeinfo>
+#ifndef GRAPHITE_COMPONENTCONTAINER_H
+#define GRAPHITE_COMPONENTCONTAINER_H
+
+#include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
+
+#include "Component.h"
 
 namespace Graphite
 {
-	class Component;
-
-	class ComponentContainer
+	class GRAPHITE_API ComponentContainer
 	{
 	public:
 		ComponentContainer() = delete;
@@ -26,3 +34,9 @@ namespace Graphite
 		const std::type_info* mTypeInfoPtr;
 	};
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

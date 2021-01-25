@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "Visible2DComponent.h"
 #include "Node2DComponent.h"
 #include "Graphite/Assets/Animation2DAsset.h"

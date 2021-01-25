@@ -42,13 +42,6 @@ namespace Graphite
 
 	void VulkanTexture::Init(std::istream& srcStream)
 	{
-		if (!s_SampleInitialized)
-		{
-			s_SampleInitialized = true;
-
-			CreateCommonSampler();
-		}
-
 		CreateImage(srcStream);
 		CreateImageView();
 		CreateDescriptorSet();
@@ -153,26 +146,67 @@ namespace Graphite
 
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingMem;
-		VulkanUtilities::CreateBuffer(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &stagingBuffer, &stagingMem);
+		VulkanUtilities::CreateBuffer(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			size,
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			&stagingBuffer,
+			&stagingMem);
 
 		void* data;
-		vkMapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem, 0, size, 0, &data);
-		memcpy(data, rawData, static_cast<size_t>(size));
+		vkMapMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			stagingMem,
+			0,
+			size,
+			0,
+			&data);
+		memcpy(
+			data,
+			rawData,
+			static_cast<size_t>(size));
 		vkUnmapMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem);
 
 		stbi_image_free(rawData);
 
-		VulkanUtilities::CreateImage(GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Width, m_Height, VK_FORMAT_R8G8B8A8_UNORM,
-			VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, &m_ImageMemory);
+		VulkanUtilities::CreateImage(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			m_Width,
+			m_Height,
+			VK_FORMAT_R8G8B8A8_UNORM,
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			&m_ImageMemory);
 
-		VulkanUtilities::TransitionImageLayout(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), graphicsCommandPool, m_Image,
-			VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		VulkanUtilities::TransitionImageLayout(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),
+			VulkanRendererAPI::GetGraphicsCommandPool(),
+			m_Image,
+			VK_IMAGE_LAYOUT_UNDEFINED,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 
-		VulkanUtilities::CopyImageBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), GR_GRAPHICS_CONTEXT->GetGraphicsQueue(), graphicsCommandPool, stagingBuffer, m_Image, m_Width, m_Height);
+		VulkanUtilities::CopyImageBuffer(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),
+			VulkanRendererAPI::GetGraphicsCommandPool(),
+			stagingBuffer,
+			m_Image,
+			m_Width,
+			m_Height);
 
-		vkDestroyBuffer(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingBuffer, nullptr);
-		vkFreeMemory(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), stagingMem, nullptr);
+		vkDestroyBuffer(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			stagingBuffer,
+			nullptr);
+		vkFreeMemory(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			stagingMem,
+			nullptr);
 	}
 
 	void VulkanTexture::CreateImageView()

@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "Component.h"
 
 namespace Graphite

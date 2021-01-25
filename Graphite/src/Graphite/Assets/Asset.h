@@ -1,9 +1,19 @@
 //
 // Created by Mauricio Smit
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_ASSET_H
+#define GRAPHITE_ASSET_H
 
 #include "Graphite/Core/grpch.h"
+
+#include "Graphite/Core/Core.h"
+
 
 namespace Graphite
 {
@@ -25,3 +35,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

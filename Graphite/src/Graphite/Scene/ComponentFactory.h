@@ -1,15 +1,23 @@
 //
 // Created by Mauricio Smit
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_COMPONENTFACTORY_H
+#define GRAPHITE_COMPONENTFACTORY_H
 
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
+
+#include "Component.h"
 
 namespace Graphite
 {
-	class Component;
-
-	class ComponentFactory
+	class GRAPHITE_API ComponentFactory
 	{
 	public:
 		using ComponentConstructor = std::function<Component* (const rapidjson::Value&, Scene*)>;
@@ -29,4 +37,11 @@ namespace Graphite
 		ComponentFactory();
 	};
 
+
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

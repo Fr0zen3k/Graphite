@@ -4,6 +4,9 @@
 #pragma warning(disable: 4251)
 #endif
 
+#ifndef GRAPHITE_DYNAMICS_H
+#define GRAPHITE_DYNAMICS_H
+
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
 #include <glm/glm.hpp>
@@ -99,10 +102,12 @@ namespace Graphite
 			/// This function uses game loop to translate and rotate object (should be called for every frame)
 			/// </summary>
 			/// <param name="transform">-> reference to the Transform atribute of the object</param>
-			void TimeTick(Transform& transform);
+			void TimeTick(Math::Transform& transform);
 		};
 	}
 }
+
+#endif
 
 #if defined (_MSC_VER)
 #pragma warning(pop)

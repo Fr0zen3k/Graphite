@@ -16,7 +16,7 @@ namespace Graphite
 {
 	namespace Math
 	{
-		struct Rotation {
+		struct GRAPHITE_API Rotation {
 			glm::vec3 vec;
 			float angle;
 		};
@@ -44,7 +44,7 @@ namespace Graphite
 			/// Apply multiple rotations defined with structs Quaternion and packed into std::vector
 			/// </summary>
 			/// <param name="rotations"></param>
-			void Rotate(std::vector<Rotation>& rotations);
+			void Rotate(const std::vector<Rotation>& rotations);
 			// example of use :
 			//  1) std::vector<Rotation> arg = new std::vector<Rotation>()
 			//	2) Rotation rot;
@@ -64,7 +64,7 @@ namespace Graphite
 			/// Apply multiple rotations defined with quaternions
 			/// </summary>
 			/// <param name="quaternions"></param>
-			void Rotate(std::vector<glm::quat>& quaternions);
+			void Rotate(const std::vector<glm::quat>& quaternions);
 
 			/// <summary>
 			/// Change the position by translating for the given vector

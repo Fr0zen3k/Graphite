@@ -1,3 +1,4 @@
+#include "Graphite/Core/grpch.h"
 #include "ComponentFactory.h"
 #include "Scene2D/Node2DComponent.h"
 #include "Scene2D/ColliderRectComponent.h"

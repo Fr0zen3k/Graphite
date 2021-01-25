@@ -1,14 +1,19 @@
 //
 // Created by Mauricio Smit
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_RIGIDBODY2DCOMPONENT_H
+#define GRAPHITE_RIGIDBODY2DCOMPONENT_H
 
 #include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "../Component.h"
-// #include "AbstractCollider2DComponent.h"
-
-#include "glm/glm.hpp"
 
 namespace Graphite
 {
@@ -24,3 +29,9 @@ namespace Graphite
 	};
 
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

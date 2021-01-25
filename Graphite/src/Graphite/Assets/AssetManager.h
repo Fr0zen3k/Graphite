@@ -1,19 +1,27 @@
 //
 // Created by Mauricio Smit
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_ASSETMANAGER_H
+#define GRAPHITE_ASSETMANAGER_H
 
 #include "Graphite/Core/grpch.h"
 
+#include "Graphite/Core/Core.h"
+
+#include "../Scene/Scene2D/Scene2D.h"
+#include "Asset.h"
+#include "TextureAsset.h"
+#include "Animation2DAsset.h"
+
 namespace Graphite
 {
-	class Asset;
-
-	class TextureAsset;
-	class Animation2DAsset;
-	class Scene2D;
-
-	struct AssetManagementData
+	struct GRAPHITE_API AssetManagementData
 	{
 		std::unique_ptr<Asset> asset = nullptr;
 		size_t counter = 0;
@@ -21,31 +29,8 @@ namespace Graphite
 	using AssetMap = std::map<std::string, AssetManagementData>;
 	using AssetMapIterator = AssetMap::iterator;
 
-	class AssetManager
-	{
-	public:
-		static AssetManager& instance();
-
-		// Returns the asset corresponding to the given filename. The asset isn't necessarily loaded.
-		// If it doesn't exist returns nullptr
-		AssetPtr<Asset> GetAsset(const std::string& filename);
-
-		AssetPtr<TextureAsset> GetTexture(const std::string& filename);
-		AssetPtr<Animation2DAsset> GetAnimation(const std::string& filename);
-		AssetPtr<Scene2D> GetScene2D(const std::string& filename);
-
-		void LoadAsset(const std::string& filename);
-		void FreeAsset(const std::string& filename);
-
-	private:
-		AssetMap mAssetsPerFilename;
-		std::map<std::string, AssetPtr<Asset>> mLoadedAssetsPerFilename;
-
-		AssetManager();
-	};
-
 	template<class _AssT>
-	class AssetPtr
+	class GRAPHITE_API AssetPtr
 	{
 	public:
 		AssetPtr() :
@@ -165,4 +150,33 @@ namespace Graphite
 		AssetMapIterator mAssetIterator;
 	};
 
+	class GRAPHITE_API AssetManager
+	{
+	public:
+		static AssetManager& instance();
+
+		// Returns the asset corresponding to the given filename. The asset isn't necessarily loaded.
+		// If it doesn't exist returns nullptr
+		AssetPtr<Asset> GetAsset(const std::string& filename);
+
+		AssetPtr<TextureAsset> GetTexture(const std::string& filename);
+		AssetPtr<Animation2DAsset> GetAnimation(const std::string& filename);
+		AssetPtr<Scene2D> GetScene2D(const std::string& filename);
+
+		void LoadAsset(const std::string& filename);
+		void FreeAsset(const std::string& filename);
+
+	private:
+		AssetMap mAssetsPerFilename;
+		std::map<std::string, AssetPtr<Asset>> mLoadedAssetsPerFilename;
+
+		AssetManager();
+	};
+
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

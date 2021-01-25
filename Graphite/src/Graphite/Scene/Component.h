@@ -1,16 +1,19 @@
 //
 // Created by Mauricio Smit
 //
-#include "Graphite/Core/grpch.h"
-
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
+
+#ifndef GRAPHITE_COMPONENT_H
+#define GRAPHITE_COMPONENT_H
+
+#include "Graphite/Core/grpch.h"
+#include "Graphite/Core/Core.h"
 
 #include "Entity.h"
-
-#include <typeinfo>
-#include <memory>
-#include <vector>
-#include <map>
 
 namespace Graphite
 {
@@ -41,3 +44,9 @@ namespace Graphite
 		Entity* mEntity;
 	};
 }
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif
