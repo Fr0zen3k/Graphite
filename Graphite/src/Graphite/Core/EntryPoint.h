@@ -1,7 +1,11 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_ENTRYPOINT_H
 #define GRAPHITE_ENTRYPOINT_H
@@ -12,6 +16,7 @@
 
 #include "Application.h"
 #include "Log.h"
+#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
 
 /// <summary>
 /// The extern function defined by the Sandbox, used to retrieve a client specified instance of an Application
@@ -40,3 +45,7 @@ int main(int argc, char *argv[]) {
 }
 
 #endif //GRAPHITE_ENTRYPOINT_H
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

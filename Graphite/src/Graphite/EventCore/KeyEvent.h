@@ -1,7 +1,11 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #include "Graphite/Core/grpch.h"
 
@@ -84,4 +88,8 @@ namespace Graphite {
 	
 }
 
-#endif //GRAPHITE_GRKEYEVENT_H
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

@@ -1,7 +1,11 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_GRAPHITE_H
 #define GRAPHITE_GRAPHITE_H
@@ -14,3 +18,7 @@
 //------------Entry Point-------------------------------------------
 
 #endif //GRAPHITE_GRAPHITE_H
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

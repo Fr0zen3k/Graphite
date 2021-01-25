@@ -1,4 +1,8 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_GRPCH_H
 #define GRAPHITE_GRPCH_H
@@ -16,6 +20,7 @@
 #include <execution>
 #include <iomanip>
 #include <filesystem>
+#include <fstream>
 #include <regex>
 #include <complex>
 #include <iterator>
@@ -56,3 +61,7 @@
 #endif
 
 #endif //GRAPHITE_GRPCH_H
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

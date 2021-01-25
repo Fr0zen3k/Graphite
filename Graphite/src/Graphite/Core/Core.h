@@ -1,7 +1,11 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_CORE_H
 #define GRAPHITE_CORE_H
@@ -28,5 +32,14 @@
 	#define GR_ASSERT(x, ...)
 #endif
 
+#ifdef GRAPHITE_RENDERER_VULKAN
+	#define GR_GRAPHICS_CONTEXT dynamic_cast<VulkanGraphicsContext*>(Renderer2D::GetGraphicsContext())
+	#define RENDERER_API VulkanRendererAPI
+#endif
+
 
 #endif //GRAPHITE_CORE_H
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

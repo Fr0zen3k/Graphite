@@ -1,18 +1,18 @@
 #include "Graphite/Core/grpch.h"
-#include "grColor.h"
+#include "Color.h"
 
 namespace Graphite
 {
 
-	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::grColor() :
+	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::Color() :
 		m_Red(0), m_Green(0), m_Blue(0), m_Alpha(0) {}
 
-	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::
-		grColor(_GR_COLOR_SIZE red, _GR_COLOR_SIZE green, _GR_COLOR_SIZE blue, _GR_COLOR_SIZE alpha) :
+	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::
+		Color(_GR_COLOR_SIZE red, _GR_COLOR_SIZE green, _GR_COLOR_SIZE blue, _GR_COLOR_SIZE alpha) :
 		m_Red(red), m_Green(green), m_Blue(blue), m_Alpha(alpha) {}
 
-	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::
-		grColor(float red, float green, float blue, float alpha)
+	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::
+		Color(float red, float green, float blue, float alpha)
 	{
 		if (red < 0.0f)
 		{
@@ -58,7 +58,7 @@ namespace Graphite
 		m_Alpha = (_GR_COLOR_SIZE)(limit.max() * alpha);
 	}
 
-	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> glm::vec4 grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::GetColorPercentageVector()
+	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> glm::vec4 Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::GetColorPercentageVector()
 	{
 		glm::vec4 res(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -263,8 +263,8 @@ namespace Graphite
 		return res;
 	}
 
-	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>
-							grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::operator + (grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> topColor)
+	template<typename _GR_COLOR_SIZE, grColorLayout _GR_COLOR_LAYOUT> Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>
+							Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT>::operator + (Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> topColor)
 	{
 		_GR_COLOR_SIZE red;
 		_GR_COLOR_SIZE green;
@@ -277,7 +277,7 @@ namespace Graphite
 		green = static_cast<_GR_COLOR_SIZE>(topColor.GetAlphaPercentage() * m_Green + (1 - topColor.GetAlphaPercentage()) * topColor.GetGreen());
 		blue = static_cast<_GR_COLOR_SIZE>(topColor.GetAlphaPercentage() * m_Blue + (1 - topColor.GetAlphaPercentage()) * topColor.GetBlue());
 
-		grColor<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> res(red, green, blue, alpha);
+		Color<_GR_COLOR_SIZE, _GR_COLOR_LAYOUT> res(red, green, blue, alpha);
 
 		return res;
 	}

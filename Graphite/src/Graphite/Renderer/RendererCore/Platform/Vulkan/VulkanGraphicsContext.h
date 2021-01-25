@@ -1,4 +1,8 @@
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 
@@ -15,15 +19,12 @@
 
 #include "GLFW/glfw3.h"
 
-#include "Graphite/Renderer/RendererCore/GraphicsContext.h"
+#include "../../GraphicsContext.h"
 
 namespace Graphite
 {
 	class GRAPHITE_API VulkanGraphicsContext : public GraphicsContext
 	{
-		friend class Renderer2D;
-		friend class Renderer3D;
-		friend class VulkanFrameBuffer;
 	public:
 		VulkanGraphicsContext();
 		~VulkanGraphicsContext();
@@ -38,6 +39,27 @@ namespace Graphite
 
 		inline std::pair<uint32_t, uint32_t> GetFrameSize() const override { return m_FrameSize; }
 		inline GLFWwindow* GetNativeWindow() const override { return m_ActiveApplication->GetWindow().GetNativeWindow(); }
+
+		// Getters
+		inline VkInstance GetInstance() const { return m_Instance; }
+		
+		inline VkPhysicalDevice GetPhysicalDevice() const { return m_PhysicalDevice; }
+		inline VkDevice GetLogicalDevice() const { return m_LogicalDevice; }
+		
+		inline VkQueue GetGraphicsQueue() const { return m_GraphicsQueue; }
+		inline VkQueue GetPresentationQueue() const { return m_PresentationQueue; }
+
+		inline VkSurfaceKHR GetSurface() const { return m_Surface; }
+		inline VkFormat GetSwapchainImageFormat() const { return m_SwapchainImageFormat; }
+		inline VkExtent2D GetSwapchainExtent() const { return m_SwapchainExtent; }
+		inline VkColorSpaceKHR GetSwapchainColorSpace() const { return m_SwapchainColorSpace; }
+
+		inline VulkanUtilities::QueueFamilies GetQueueFamiliesIndices() { return m_QueueFamilies; }
+
+		// Setters
+		inline void SetSwapchainExtent(VkExtent2D extent) { m_SwapchainExtent = extent; }
+		inline void SetSwapchainImageFormat(VkFormat format) { m_SwapchainImageFormat = format; }
+		inline void SetSwapchainColorSpace(VkColorSpaceKHR colorSpace) { m_SwapchainColorSpace = colorSpace; }
 		
 	private:
 		void Init();
@@ -46,6 +68,7 @@ namespace Graphite
 		void ChoosePhysicalDevice();
 		void CreateLogicalDevice();
 		void CreateSurface();
+		void CreateDebugCallback();
 		
 		void GetQueueFamilies();
 
@@ -69,11 +92,18 @@ namespace Graphite
 		VkFormat m_SwapchainImageFormat;
 		VkExtent2D m_SwapchainExtent;
 		VkColorSpaceKHR m_SwapchainColorSpace;
+
+		VkDebugReportCallbackEXT m_DebugCallback;
 		
 		std::pair<uint32_t, uint32_t> m_FrameSize;
-		QueueFamilies m_QueueFamilies;
+		VulkanUtilities::QueueFamilies m_QueueFamilies;
 	};
 }
 
 #endif
+
+#endif
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
 #endif

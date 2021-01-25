@@ -1,7 +1,11 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #ifndef GRAPHITE_GRLOG_H
 #define GRAPHITE_GRLOG_H
@@ -59,3 +63,7 @@ namespace Graphite {
 #define GR_CORE_LOG_CRITICAL(...)               ::Graphite::Log::getCoreLogger()->critical(__VA_ARGS__)
 
 #endif //GRAPHITE_GRLOG_H
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif

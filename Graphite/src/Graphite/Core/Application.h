@@ -1,7 +1,11 @@
 //
 // Created by Jan Kresic on 9/19/20.
 //
+#if defined (_MSC_VER)
 #pragma once
+#pragma warning(push)
+#pragma warning(disable: 4251)
+#endif
 
 #include "grpch.h"
 
@@ -11,6 +15,8 @@
 #include "Core.h"
 
 #include "Window.h"
+
+#include "Graphite/Renderer/RendererCore/Camera.h"
 
 namespace Graphite {
 
@@ -42,6 +48,8 @@ namespace Graphite {
         /// <returns> Returns the window reference </returns>
         inline Window& GetWindow() { return *m_Window; }
 
+        Camera* GetActiveCameraInstance();
+
         /// <summary>
         /// Function that retrieves the active application instance
         /// </summary>
@@ -61,3 +69,7 @@ namespace Graphite {
 }
 
 #endif //GRAPHITE_APPLICATION_H
+
+#if defined (_MSC_VER)
+#pragma warning(pop)
+#endif
