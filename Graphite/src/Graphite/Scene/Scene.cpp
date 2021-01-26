@@ -48,6 +48,10 @@ namespace Graphite
 	{
 	}
 
+	void Scene::Update(float sElapsed)
+	{
+	}
+
 	Entity* Scene::GetEntity(const std::string& name)
 	{
 		auto it = mEntitiesByName.find(name);

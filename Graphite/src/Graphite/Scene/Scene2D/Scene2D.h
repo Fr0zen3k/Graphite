@@ -16,6 +16,7 @@
 #include "Graphite/Scene/Scene.h"
 
 #include "Node2DComponent.h"
+#include "Visible2DComponent.h"
 
 namespace Graphite
 {
@@ -26,10 +27,12 @@ namespace Graphite
 		Scene2D();
 		~Scene2D();
 
+		void Update(float sElapsed);
+
 		Node2DComponent* GetRootNode();
 
 	protected:
-		std::set<Node2DComponent*> mEntities;
+		std::set<Visible2DComponent*> mVisibles;
 
 		void onComponentAdded(Component* c);
 		void onComponentRemoved(Component* c);

@@ -42,6 +42,8 @@ namespace Graphite
 		void Load(const rapidjson::Value& root);
 		void Unload();
 
+		virtual void Update(float sElapsed);
+
 		// Returns the entity with the specified name. Returns nulptr if it doesn't exist
 		Entity* GetEntity(const std::string& name);
 
