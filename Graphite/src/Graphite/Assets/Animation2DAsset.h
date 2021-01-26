@@ -42,7 +42,7 @@ namespace Graphite
 		float GetCenterX() const { return mCenterX; }
 		float GetCenterY() const { return mCenterY; }
 
-		Mesh GetMesh() const { return mMesh; }
+		const Mesh& GetMesh() const { return mMesh; }
 
 	protected:
 		AssetPtr<TextureAsset> mTexturePtr;
