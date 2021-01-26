@@ -2,6 +2,8 @@
 #include "TextureAsset.h"
 #include "Animation2DAsset.h"
 
+#include <rapidjson/istreamwrapper.h>
+
 namespace Graphite
 {
 	Frame2D::Frame2D(AssetPtr<TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h)
@@ -27,8 +29,9 @@ namespace Graphite
 
 	void Animation2DAsset::Load(std::istream& source)
 	{
+		rapidjson::IStreamWrapper jsonStream(source);
 		rapidjson::Document d;
-		d.ParseStream(source);
+		d.ParseStream(jsonStream);
 
 		Load(d);
 	}

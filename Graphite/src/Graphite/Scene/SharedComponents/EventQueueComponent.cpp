@@ -16,9 +16,9 @@ namespace Graphite
 	{
 	}
 
-	void EventQueueComponent::post(std::unique_ptr<ComponentEvent>&& evPtr)
+	void EventQueueComponent::post(const std::shared_ptr<ComponentEvent>& evPtr)
 	{
-		mEventQueue.emplace_back(std::move(evPtr));
+		mEventQueue.emplace_back(evPtr);
 	}
 
 	void EventQueueComponent::processEvents()

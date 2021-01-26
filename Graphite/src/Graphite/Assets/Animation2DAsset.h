@@ -14,7 +14,7 @@
 
 #include "Graphite/Core/Core.h"
 
-#include "Asset.h"
+//#include "Asset.h"
 
 #include "glm/glm.hpp"
 

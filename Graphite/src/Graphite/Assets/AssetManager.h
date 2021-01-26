@@ -14,17 +14,17 @@
 
 #include "Graphite/Core/Core.h"
 
-#include "../Scene/Scene2D/Scene2D.h"
 #include "Asset.h"
 
 namespace Graphite
 {
 	class TextureAsset;
 	class Animation2DAsset;
+	class Scene2D;
 
 	struct GRAPHITE_API AssetManagementData
 	{
-		std::unique_ptr<Asset> asset = nullptr;
+		std::shared_ptr<Asset> asset;
 		size_t counter = 0;
 	};
 	using AssetMap = std::map<std::string, AssetManagementData>;

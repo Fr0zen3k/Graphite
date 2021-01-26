@@ -55,8 +55,8 @@ namespace Graphite
 		virtual void onComponentRemoved(Component* c);
 
 	protected:
-		std::set<std::unique_ptr<Entity>> mEntities;
-		std::map<std::string, std::set<std::unique_ptr<Entity>>::iterator> mEntitiesByName;
+		std::set<std::shared_ptr<Entity>> mEntities;
+		std::map<std::string, std::set<std::shared_ptr<Entity>>::iterator> mEntitiesByName;
 
 		// Adds an existing entity to the scene. Takes ownership of it.
 		// If an entity with the given name already exists in the scene, throws NameTaken

@@ -120,12 +120,12 @@ namespace Graphite
 		EventQueueComponent(const rapidjson::Value& params);
 		~EventQueueComponent();
 
-		void post(std::unique_ptr<ComponentEvent>&& evPtr);
+		void post(const std::shared_ptr<ComponentEvent>& evPtr);
 
 		template<class _EvT>
-		void post(_EvT* evPtr)
+		void post(_EvT* ev)
 		{
-			post(std::make_unique<_EvT>(evPtr))
+			post(std::shared_ptr<_EvT>(ev));
 		}
 
 		void processEvents();
@@ -159,7 +159,7 @@ namespace Graphite
 		
 	protected:
 		std::map<const std::type_info*, std::vector<CallbackMethodWrapper>> mCallbacksPerType;
-		std::deque<std::unique_ptr<ComponentEvent>> mEventQueue;
+		std::deque<std::shared_ptr<ComponentEvent>> mEventQueue;
 	};
 
 

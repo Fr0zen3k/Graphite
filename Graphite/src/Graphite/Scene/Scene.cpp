@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "ComponentFactory.h"
+#include <rapidjson/istreamwrapper.h>
 
 namespace Graphite
 {
@@ -16,8 +17,9 @@ namespace Graphite
 
 	void Scene::Load(std::istream& source)
 	{
+		rapidjson::IStreamWrapper jsonStream(source);
 		rapidjson::Document d;
-		d.ParseStream(source);
+		d.ParseStream(jsonStream);
 
 		Load(d);
 	}
@@ -60,51 +62,52 @@ namespace Graphite
 
 	Entity* Scene::CreateEntity(const std::vector<Component*>& components, const std::string& name)
 	{
-		Entity* e = new Entity(components, this, name);
-		addEntity(e);
+		Entity* ePtr = new Entity(components, this, name);
+		addEntity(ePtr);
+		return ePtr;
 	}
 
-	void Scene::DestroyEntity(Entity* e)
+	void Scene::DestroyEntity(Entity* ePtr)
 	{
-		removeEntity(e);
-		delete e;
+		removeEntity(ePtr);
+		delete ePtr;
 	}
 
-	void Scene::addEntity(Entity* e)
+	void Scene::addEntity(Entity* ePtr)
 	{
 		// Check
-		auto it = mEntitiesByName.find(e->GetName());
+		auto it = mEntitiesByName.find(ePtr->GetName());
 		if (it != mEntitiesByName.end())
-			throw NameTaken(std::string("Entity with name '") + e->GetName() + "' is already part of the scene");
+			throw NameTaken(std::string("Entity with name '") + ePtr->GetName() + "' is already part of the scene");
 
 		// add to sets
-		auto itInsertedPair = mEntities.insert(std::make_unique<Entity>(e));
-		mEntitiesByName.insert({ e->GetName(), itInsertedPair.first });
+		auto itInsertedPair = mEntities.insert(std::shared_ptr<Entity>(ePtr));
+		mEntitiesByName.insert({ ePtr->GetName(), itInsertedPair.first });
 
 		// Specialization
-		for (auto& tyCoPair : e->GetComponents())
+		for (auto& tyCoPair : ePtr->GetComponents())
 		{
 			onComponentAdded(tyCoPair.second.get());
 		}
 	}
 
-	void Scene::removeEntity(Entity* e)
+	void Scene::removeEntity(Entity* ePtr)
 	{
 		// Check
-		auto it = std::find_if(mEntities.begin(), mEntities.end(), [&](std::unique_ptr<Entity>& p) { return p.get() == e; });
-		//auto it = mEntities.find(e);
+		auto it = std::find_if(mEntities.begin(), mEntities.end(), [&](const std::shared_ptr<Entity>& p) { return p.get() == ePtr; });
+		//auto it = mEntities.find(ePtr);
 		if (it == mEntities.end())
 			throw NonexistantEntity("Entity doesn't exist");
 
 		// Specialization
-		for (auto& tyCoPair : e->GetComponents())
+		for (auto& tyCoPair : ePtr->GetComponents())
 		{
 			onComponentRemoved(tyCoPair.second.get());
 		}
 
 		// Remove
 		mEntities.erase(it);
-		mEntitiesByName.erase(e->GetName());
+		mEntitiesByName.erase(ePtr->GetName());
 	}
 
 	void Scene::onComponentAdded(Component* c)

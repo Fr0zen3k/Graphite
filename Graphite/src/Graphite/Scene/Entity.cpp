@@ -18,7 +18,7 @@ namespace Graphite
 			mComponents.insert(
 				{ 
 					&typeid(*compPtr),
-					std::unique_ptr<Component>(compPtr)
+					std::shared_ptr<Component>(compPtr)
 				}
 			);
 			compPtr->SetEntity(this);

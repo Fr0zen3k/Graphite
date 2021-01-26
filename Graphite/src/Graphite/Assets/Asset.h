@@ -21,7 +21,7 @@ namespace Graphite
 	{
 	public:
 		Asset(bool needsBinary) : mLoaded(false), mNeedsBinary(needsBinary) {};
-		virtual ~Asset() = 0;
+		virtual ~Asset() {};
 
 
 		bool NeedsBinary() const { return mNeedsBinary; }

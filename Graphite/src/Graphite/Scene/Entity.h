@@ -31,7 +31,7 @@ namespace Graphite
 		Scene* GetScene() const { return mScenePtr; }
 
 		// Returns a map of std::type_info* - Component* pairs
-		const std::map<const std::type_info*, std::unique_ptr<Component>>& GetComponents() const { return mComponents; }
+		const std::map<const std::type_info*, std::shared_ptr<Component>>& GetComponents() const { return mComponents; }
 
 		// Returns a component. If the component doesn't exist throws std::out_of_range
 		template <class _CompT>
@@ -76,7 +76,7 @@ namespace Graphite
 				it = mComponents.insert(
 					{
 						&typeid(_CompT),
-						std::unique_ptr<Component>(compPtr)
+						std::shared_ptr<Component>(compPtr)
 					}
 				).first;
 
@@ -95,7 +95,7 @@ namespace Graphite
 		}
 
 	private:
-		std::map<const std::type_info*, std::unique_ptr<Component>> mComponents;
+		std::map<const std::type_info*, std::shared_ptr<Component>> mComponents;
 		std::string mName;
 		Scene* mScenePtr;
 
