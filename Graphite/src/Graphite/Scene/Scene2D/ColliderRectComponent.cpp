@@ -10,7 +10,7 @@ namespace Graphite
 	}
 
 	ColliderRectComponent::ColliderRectComponent(const rapidjson::Value& params)
-		: ColliderRectComponent(params["width"], params["height"])
+		: ColliderRectComponent(params["width"].GetFloat(), params["height"].GetFloat())
 	{
 	}
 
@@ -23,9 +23,9 @@ namespace Graphite
 		glm::vec4 vecArray3DAffine[4] =
 		{
 			transform * glm::vec4(-mWidth / 2, -mHeight / 2, 0.0f, 1.0f),
-			transform * glm::vec4(mWidth / 2, -mHeight / 2),
-			transform * glm::vec4(mWidth / 2, mHeight / 2),
-			transform * glm::vec4(-mWidth / 2, mHeight / 2)
+			transform * glm::vec4(mWidth / 2, -mHeight / 2, 0.0f, 1.0f),
+			transform * glm::vec4(mWidth / 2, mHeight / 2, 0.0f, 1.0f),
+			transform * glm::vec4(-mWidth / 2, mHeight / 2, 0.0f, 1.0f)
 		};
 
 		return std::array<glm::vec2, 4>(

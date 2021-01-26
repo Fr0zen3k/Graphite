@@ -13,13 +13,10 @@
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
 
-#include "Scene.h"
-
-#include "Component.h"
-
 namespace Graphite
 {
 	class Component;
+	class Scene;
 
 	class GRAPHITE_API Entity
 	{
@@ -55,12 +52,12 @@ namespace Graphite
 		{
 			static_assert(std::is_base_of<Component, _CompT>::value, "The template arg is not a Component");
 
-			std::map<std::type_info*, std::unique_ptr<Component>>::iterator it = mComponents.find(&typeid(_CompT));
+			auto it = mComponents.find(&typeid(_CompT));
 
 			if (it == mComponents.end())
 				return nullptr;
 			else
-				return it->second.get();
+				return (_CompT*)it->second.get();
 		}
 
 		// Returns a required component. If the component doesn't exist creates it
@@ -69,30 +66,26 @@ namespace Graphite
 		{
 			static_assert(std::is_base_of<Component, _CompT>::value, "The template arg is not a Component");
 
-			std::map<std::type_info*, std::unique_ptr<Component>>::iterator it = mComponents.find(&typeid(_CompT));
+			auto it = mComponents.find(&typeid(_CompT));
 
 			if (it == mComponents.end())
 			{
+				_CompT *compPtr = new _CompT();
+
 				// insert comp
 				it = mComponents.insert(
 					{
 						&typeid(_CompT),
-						std::unique_ptr<Component>(compCont.componentPtr())
+						std::unique_ptr<Component>(compPtr)
 					}
 				).first;
 
-				// init comp
-				it->second->SetEntity(this);
-				it->second->Init();
+				initNewComp(compPtr);
 
-				// notify scene
-				if (mScene)
-					mScene->onComponentAdded(it->second);
-
-				return *(it->second);
+				return *((_CompT*)it->second.get());
 			}
 			else
-				return *it->second;
+				return *((_CompT*)it->second.get());
 
 			return *static_cast<_CompT*>(
 				mComponents.at(
@@ -105,6 +98,8 @@ namespace Graphite
 		std::map<const std::type_info*, std::unique_ptr<Component>> mComponents;
 		std::string mName;
 		Scene* mScenePtr;
+
+		void initNewComp(Component* c);
 	};
 
 }

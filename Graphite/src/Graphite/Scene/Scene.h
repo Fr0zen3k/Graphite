@@ -17,10 +17,10 @@
 #include "Component.h"
 #include "Graphite/Assets/Asset.h"
 
-#include "Entity.h"
-
 namespace Graphite
 {
+	class Entity;
+
 	class GRAPHITE_API Scene : public Asset
 	{
 	public:

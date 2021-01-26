@@ -16,11 +16,12 @@
 
 #include "../Scene/Scene2D/Scene2D.h"
 #include "Asset.h"
-#include "TextureAsset.h"
-#include "Animation2DAsset.h"
 
 namespace Graphite
 {
+	class TextureAsset;
+	class Animation2DAsset;
+
 	struct GRAPHITE_API AssetManagementData
 	{
 		std::unique_ptr<Asset> asset = nullptr;
@@ -125,21 +126,21 @@ namespace Graphite
 
 		_AssT& operator*()
 		{
-			return *dynamic_cast<_AssT*>(mAssetIterator->second.asset);
+			return *dynamic_cast<_AssT*>(mAssetIterator->second.asset.get());
 		}
 
 		_AssT* operator->()
 		{
-			return dynamic_cast<_AssT*>(mAssetIterator->second.asset);
+			return dynamic_cast<_AssT*>(mAssetIterator->second.asset.get());
 		}
 
 		template<class _OtherT>
 		operator AssetPtr<_OtherT>()
 		{
-			_OtherT* other = dynamic_cast<_OtherT*>(mAssetIterator->second.asset);
+			_OtherT* other = dynamic_cast<_OtherT*>(mAssetIterator->second.asset.get());
 			if (other == nullptr)
 			{
-				throw std::bad_cast("Cannot cast!");
+				throw std::bad_cast();
 			}
 
 			return AssetPtr<_OtherT>(mAssetMapPtr, mAssetIterator);

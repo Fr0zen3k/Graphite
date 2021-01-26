@@ -1,6 +1,7 @@
 #include "Graphite/Core/grpch.h"
 #include "Entity.h"
 #include "Component.h"
+#include "Scene.h"
 
 namespace Graphite
 {
@@ -33,5 +34,15 @@ namespace Graphite
 
 	Entity::~Entity()
 	{
+	}
+	void Entity::initNewComp(Component* c)
+	{
+		// init comp
+		c->SetEntity(this);
+		c->Init();
+
+		// notify scene
+		if (mScenePtr)
+			mScenePtr->onComponentAdded(c);
 	}
 }

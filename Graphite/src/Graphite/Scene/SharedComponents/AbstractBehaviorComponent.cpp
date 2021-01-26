@@ -15,8 +15,8 @@ namespace Graphite
 	{
 		auto evQ = &CompReq<EventQueueComponent>();
 
-		evQ->registerCallback(this, &onUpdate);
-		evQ->registerCallback(this, &onCollision);
+		evQ->registerCallback(this, &AbstractBehaviorComponent::onUpdate);
+		evQ->registerCallback(this, &AbstractBehaviorComponent::onCollision);
 	}
 
 	void AbstractBehaviorComponent::onUpdate(const ComponentUpdateEvent& ev)

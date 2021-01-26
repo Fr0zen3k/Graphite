@@ -1,12 +1,10 @@
 #include "Graphite/Core/grpch.h"
-#include "Animation2DAsset.h"
-#include "AssetManager.h"
 #include "TextureAsset.h"
 #include "Animation2DAsset.h"
 
 namespace Graphite
 {
-	Frame2D::Frame2D(AssetPtr<const TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h)
+	Frame2D::Frame2D(AssetPtr<TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h)
 		: mTexturePtr(tex)
 		, mTopLeft(topLeft)
 		, mBottomRight(bottomRight)

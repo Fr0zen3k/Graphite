@@ -18,8 +18,6 @@
 
 #include "glm/glm.hpp"
 
-#include "TextureAsset.h"
-
 #include "AssetManager.h"
 
 template<class _AssT>
@@ -32,17 +30,17 @@ namespace Graphite
 	class GRAPHITE_API Frame2D
 	{
 	public:
-		Frame2D(AssetPtr<const TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h);
+		Frame2D(AssetPtr<TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h);
 		~Frame2D();
 
-		AssetPtr<const TextureAsset> GetTexture() const { return mTexturePtr; }
+		AssetPtr<TextureAsset> GetTexture() const { return mTexturePtr; }
 		glm::vec2 GetTopLeft() const { return mTopLeft; }
 		glm::vec2 GetBottomRight() const { return mBottomRight; }
 		float GetWidth() const { return mWidth; }
 		float GetHeight() const { return mHeight; }
 
 	protected:
-		AssetPtr<const TextureAsset> mTexturePtr;
+		AssetPtr<TextureAsset> mTexturePtr;
 		glm::vec2 mTopLeft, mBottomRight;
 		float mWidth, mHeight;
 	};
@@ -59,7 +57,7 @@ namespace Graphite
 		void Load(const rapidjson::Value& params);
 		void Unload();
 
-		inline Frame2D& GetFrame(size_t index) const { return mFrames[index]; }
+		inline Frame2D& GetFrame(size_t index) { return mFrames[index]; }
 
 	protected:
 		std::vector<Frame2D> mFrames;

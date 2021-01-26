@@ -21,7 +21,8 @@ namespace Graphite
 
 	struct GRAPHITE_API ComponentEvent
 	{
-
+		virtual ~ComponentEvent() {};
+		int a;
 	};
 
 	/*
@@ -29,17 +30,38 @@ namespace Graphite
 	(abstract and non-specialized: use CallbackMethodWrapper with
 	the appropriate template types for the wrapped method)
 	*/
-	struct GRAPHITE_API AbstractCallbackMethodWrapper
+	class GRAPHITE_API CallbackMethodWrapper
 	{
+	public:
+
+		CallbackMethodWrapper(void* ownerPtr, const std::type_info* typeInfo, std::function<void(void*, const ComponentEvent&)> method)
+			: ownerPtr(ownerPtr)
+			, typeInfo(typeInfo)
+			, caller(method)
+		{
+			
+		}
+
 		// calls the wrapped method, with the specified event.
 		// Make sure the event can be casted to the appropriate type for the specified method
-		virtual void call(const ComponentEvent& event) = 0;
+		virtual void call(const ComponentEvent& event)
+		{
+			caller(ownerPtr, event);
+		}
 
 		// Returns the pointer to the type_info of the appropriate ComponentEvent type for the wrapped method
-		virtual const std::type_info* GetEventTypeInfo() const = 0;
+		virtual const std::type_info* GetEventTypeInfo() const
+		{
+			return typeInfo;
+		}
 
 		// Returns a newly constructed object, of identical type as the actual type of this object
-		virtual AbstractCallbackMethodWrapper* newClone() const = 0;
+		//virtual AbstractCallbackMethodWrapper* newClone() const = 0;
+
+	private:
+		void* ownerPtr;
+		const std::type_info* typeInfo;
+		std::function<void(void*, const ComponentEvent&)> caller;
 	};
 
 	/*
@@ -48,7 +70,7 @@ namespace Graphite
 	ownerPtr is the owner object of the method
 	method is the method of the object that will be called
 	*/
-	template<class _OwnerT, class _EvT>
+	/*template<class _OwnerT, class _EvT>
 	struct GRAPHITE_API CallbackMethodWrapper : public AbstractCallbackMethodWrapper
 	{
 		static_assert(std::is_base_of<ComponentEvent, _EvT>::value, "CallbackMethodWrapper only wraps ComponentEvent handlers.");
@@ -89,7 +111,7 @@ namespace Graphite
 			return new CallbackMethodWrapper<_OwnerT, _EvT>(*this);
 		}
 
-	};
+	};*/
 
 	class GRAPHITE_API EventQueueComponent : public Component
 	{
@@ -98,14 +120,21 @@ namespace Graphite
 		EventQueueComponent(const rapidjson::Value& params);
 		~EventQueueComponent();
 
-		void post(ComponentEvent* ev);
+		void post(std::unique_ptr<ComponentEvent>&& evPtr);
+
+		template<class _EvT>
+		void post(_EvT* evPtr)
+		{
+			post(std::make_unique<_EvT>(evPtr))
+		}
+
 		void processEvents();
 
 		/*
 		Registers the callback method by the wrapper that will be called
 		when the event that can be passed to the wrapped method is processed.
 		*/
-		void registerCallback(const AbstractCallbackMethodWrapper& callback);
+		void registerCallback(const CallbackMethodWrapper& callback);
 
 		/*
 		Registers the callback method that will be called when the event that can be passed
@@ -118,11 +147,18 @@ namespace Graphite
 		template<class _OwnerT, class _EvT>
 		void registerCallback(_OwnerT* ownerPtr, void(_OwnerT::*method)(const _EvT&) )//std::function<void(_OwnerT*, const _EvT&)>
 		{
-			registerCallback(CallbackMethodWrapper<_OwnerT, _EvT>(ownerPtr, method));
+			auto callerFunction = [](void* owner, const ComponentEvent& ev, std::function<void(_OwnerT*, const _EvT&)> method)
+			{
+				method((_OwnerT*)owner, (const _EvT&)ev);
+			};
+			auto caller = std::bind(callerFunction, std::placeholders::_1, std::placeholders::_2, method);
+
+			auto c = CallbackMethodWrapper(ownerPtr, &typeid(_EvT), caller);
+			registerCallback(c);
 		}
 		
 	protected:
-		std::map<const std::type_info*, std::set<std::unique_ptr<AbstractCallbackMethodWrapper>>> mCallbacksPerType;
+		std::map<const std::type_info*, std::vector<CallbackMethodWrapper>> mCallbacksPerType;
 		std::deque<std::unique_ptr<ComponentEvent>> mEventQueue;
 	};
 
