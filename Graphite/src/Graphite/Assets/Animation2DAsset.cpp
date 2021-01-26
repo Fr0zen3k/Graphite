@@ -6,12 +6,15 @@
 
 namespace Graphite
 {
-	Frame2D::Frame2D(AssetPtr<TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h)
+	Frame2D::Frame2D(AssetPtr<TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, 
+		float w, float h, float centerX, float centerY)
 		: mTexturePtr(tex)
 		, mTopLeft(topLeft)
 		, mBottomRight(bottomRight)
 		, mWidth(w)
 		, mHeight(h)
+		, mCenterX(centerX)
+		, mCenterY(centerY)
 	{
 	}
 	Frame2D::~Frame2D()
@@ -45,6 +48,8 @@ namespace Graphite
 		int columns = params["columns"].GetInt();
 		int first = params["frame-first"].GetInt();
 		int last = params["frame-last"].GetInt();
+		int cX = params.HasMember("center-x")? params["center-x"].GetFloat() : 0.5f;
+		int cY = params.HasMember("center-y") ? params["center-y"].GetFloat() : 0.5f;
 
 		glm::vec2 sheetSize = bottomRight - topLeft;
 		glm::vec2 frameSize(sheetSize.x / columns, sheetSize.y / rows);
@@ -59,7 +64,8 @@ namespace Graphite
 				tex,
 				pos, pos + frameSize, 
 				tex->GetOriginalWidth() * frameSize.x,
-				tex->GetOriginalHeight() * frameSize.y
+				tex->GetOriginalHeight() * frameSize.y,
+				cX, cY
 				)
 			);
 		}

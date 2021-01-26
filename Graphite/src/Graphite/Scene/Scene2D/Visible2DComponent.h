@@ -32,11 +32,21 @@ namespace Graphite
 		inline AssetPtr<Animation2DAsset> GetAnimation() const { return mAnimationPtr; }
 
 		void Init();
+		void Update(float sElapsed);
+
+		void SetAnimationFPS(float fps);
+		float GetAnimationFPS() const { return mAnimFPS; }
+		void SetFrameIndex(float index);
+		float GetFrameIndex() const { return mFrameInd; }
+		Frame2D& GetCurrentFrame() const;
 
 
 	protected:
 		AssetPtr<Animation2DAsset> mAnimationPtr;
 		Node2DComponent* mNodePtr;
+
+		float mFrameInd;
+		float mAnimFPS;
 	};
 
 }

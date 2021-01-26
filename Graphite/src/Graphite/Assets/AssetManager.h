@@ -124,12 +124,12 @@ namespace Graphite
 			return mAssetMapPtr != nullptr;
 		}
 
-		_AssT& operator*()
+		_AssT& operator*() const
 		{
 			return *dynamic_cast<_AssT*>(mAssetIterator->second.asset.get());
 		}
 
-		_AssT* operator->()
+		_AssT* operator->() const
 		{
 			return dynamic_cast<_AssT*>(mAssetIterator->second.asset.get());
 		}
