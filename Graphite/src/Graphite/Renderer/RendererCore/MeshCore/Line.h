@@ -20,14 +20,14 @@ namespace Graphite
 	class GRAPHITE_API Line : public Mesh
 	{
 	public:
-		Line() : Mesh(s_QuadVertices, s_QuadIndices) {}
+		Line() : Mesh(s_LineVertices, s_LineIndices) {}
 		~Line() = default;
 
 		static void Init();
 
 	private:
-		static std::vector<Vertex> s_QuadVertices;
-		static std::vector<uint32_t> s_QuadIndices;
+		static std::vector<Vertex> s_LineVertices;
+		static std::vector<uint32_t> s_LineIndices;
 	};
 
 }

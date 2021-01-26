@@ -14,11 +14,15 @@ namespace Graphite {
     {
         s_Instance = this;
     	
-        m_Window = std::unique_ptr<Window>(Window::grCreateWindow());
+        m_Window = Window::grCreateWindow();
         m_Window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
     }
 
-    Application::~Application() {}
+    Application::~Application()
+    {
+        delete m_ActiveCamera;
+        delete m_Window;
+    }
 
     void Application::run() {
         while (true)
@@ -36,5 +40,11 @@ namespace Graphite {
                 return true;
             });
 	}
+
+	Camera* Application::GetActiveCameraInstance()
+	{
+        return m_ActiveCamera;
+	}
+
 
 }

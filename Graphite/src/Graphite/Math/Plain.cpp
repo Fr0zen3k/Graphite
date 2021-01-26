@@ -5,7 +5,7 @@ namespace Graphite
 {
 	namespace Math
 	{
-		Plain::Plain(glm::vec3 point = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 vector = glm::vec3(1.0f, 0.0f, 0.0f)) : p_Point(point) 
+		Plain::Plain(glm::vec3 point, glm::vec3 vector) : p_Point(point)
 		{
 			p_NormalVector = glm::normalize(vector);
 		}

@@ -38,7 +38,7 @@ namespace Graphite
 		}
 
 		inline std::pair<uint32_t, uint32_t> GetFrameSize() const override { return m_FrameSize; }
-		inline GLFWwindow* GetNativeWindow() const override { return m_ActiveApplication->GetWindow().GetNativeWindow(); }
+		inline GLFWwindow* GetNativeWindow() const override { return m_ActiveApplication->GetWindow()->GetNativeWindow(); }
 
 		// Getters
 		inline VkInstance GetInstance() const { return m_Instance; }

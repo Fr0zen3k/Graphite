@@ -22,6 +22,8 @@ namespace Graphite
 	class GRAPHITE_API Renderer2D
 	{
 	public:
+		static void Init();
+		static void Shutdown();
 		static GraphicsContext* GetGraphicsContext();
 		
 	private:

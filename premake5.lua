@@ -39,7 +39,6 @@ project "Graphite"
 		"%{prj.name}/src/",
 		"%{prj.name}/vendor/glfw_x64/include/",
 		"%{prj.name}/vendor/glm",
-		"%{prj.name}/vendor/Vulkan/1.2.148.1/Include/",
 		"C:/VulkanSDK/1.2.148.1/Include",
 		"%{prj.name}/vendor/imgui",
 		"%{prj.name}/vendor/RapidJSON/include",
@@ -48,7 +47,6 @@ project "Graphite"
 	
 	libdirs 
 	{
-		"%{prj.name}/vendor/Vulkan/1.2.148.1/Lib",
 		"C:/VulkanSDK/1.2.148.1/Lib",
 		"%{prj.name}/vendor/glfw_x64/lib-vc2019"
 	}
@@ -62,7 +60,8 @@ project "Graphite"
 	
 	defines 
 	{
-		"GLFW_INCLUDE_VULKAN"
+		"GLFW_INCLUDE_VULKAN",
+		"GLM_FORCE_DEPTH_ZERO_TO_ONE"
 	}
 	
 	filter "system:windows"

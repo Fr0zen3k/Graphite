@@ -52,6 +52,8 @@ namespace Graphite
 		virtual void SetFieldOfViewRad(float radFOV = 1.0f / 3.0f * glm::pi<float>()) = 0;
 
 		virtual CameraType GetCameraType() const = 0;
+
+		static Camera* CreateCamera(CameraType type);
 	};
 	
 }

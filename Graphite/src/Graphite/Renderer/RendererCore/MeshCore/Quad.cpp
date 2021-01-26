@@ -7,6 +7,9 @@
 namespace Graphite
 {
 
+	std::vector<Vertex> Quad::s_QuadVertices;
+	std::vector<uint32_t> Quad::s_QuadIndices;
+	
 	void Quad::Init()
 	{
 		Vertex v;

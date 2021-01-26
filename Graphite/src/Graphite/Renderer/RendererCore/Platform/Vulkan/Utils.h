@@ -204,7 +204,7 @@ namespace Graphite
 				{
 					if (strcmp(checkExtension, extension.extensionName) == 0)
 					{
-						supported = false;
+						supported = true;
 						break;
 					}
 				}

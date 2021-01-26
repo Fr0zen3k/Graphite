@@ -12,6 +12,10 @@
 
 namespace Graphite
 {
+
+	VkImage VulkanFrameBuffer::Frame::s_DepthBufferImage;
+	VkDeviceMemory VulkanFrameBuffer::Frame::s_DepthBufferDeviceMemory;
+	VkImageView VulkanFrameBuffer::Frame::s_DepthBufferImageView;
 	
 	VulkanFrameBuffer::VulkanFrameBuffer() : FrameBuffer()
 	{

@@ -18,7 +18,7 @@ namespace Graphite
 	{
 	public:
 		FrameBuffer() = default;
-		virtual ~FrameBuffer();
+		virtual ~FrameBuffer() = default;
 
 		virtual bool OnEvent(Event& e) = 0;
 

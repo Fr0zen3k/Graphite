@@ -3,6 +3,8 @@
 
 namespace Graphite
 {
+	std::vector<Vertex> Point::s_QuadVertices;
+	std::vector<uint32_t> Point::s_QuadIndices;
 
 	void Point::Init()
 	{

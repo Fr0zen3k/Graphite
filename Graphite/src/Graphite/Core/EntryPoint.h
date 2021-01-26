@@ -38,8 +38,14 @@ int main(int argc, char *argv[]) {
     GR_LOG_CRITICAL("Client app logger init");
 
     Graphite::Application *userApp = Graphite::CreateApp();
+	
+    Graphite::Renderer2D::Init();
+	
+    userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Orthographic));
     userApp->run();
     delete userApp;
+
+    Graphite::Renderer2D::Shutdown();
 
     return 0;
 }

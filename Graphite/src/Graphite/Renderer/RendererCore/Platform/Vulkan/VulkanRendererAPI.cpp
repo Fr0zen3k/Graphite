@@ -15,11 +15,39 @@
 namespace Graphite
 {
 	uint8_t VulkanRendererAPI::s_CurrentFrame = 0;
+
+	VulkanFrameBuffer* VulkanRendererAPI::s_FrameBuffer;
+
+	VkSwapchainKHR VulkanRendererAPI::s_Swapchain;
+
+	VkRenderPass VulkanRendererAPI::s_RenderPass;
+
+	VkPipeline VulkanRendererAPI::s_GraphicsPipeline;
+	VkPipelineLayout VulkanRendererAPI::s_GraphicsPipelineLayout;
+
+	VulkanShader* VulkanRendererAPI::s_VertexShader;
+	VulkanShader* VulkanRendererAPI::s_FragmentShader;
+
+	VkCommandPool VulkanRendererAPI::s_GraphicsCommandPool;
+
+	VkDescriptorPool VulkanRendererAPI::s_DescriptorPool;
+	VkDescriptorPool VulkanRendererAPI::s_SamplerDescriptorPool;
+
+	VkDescriptorSetLayout VulkanRendererAPI::s_DescriptorSetLayout;
+	VkDescriptorSetLayout VulkanRendererAPI::s_SamplerDescriptorSetLayout;
+
+	VkPushConstantRange VulkanRendererAPI::s_PushConstantRange;
+
+	std::vector<VkSemaphore> VulkanRendererAPI::s_ImageAvailableSemaphores;
+	std::vector<VkSemaphore> VulkanRendererAPI::s_RenderFinishSemaphores;
+	std::vector<VkFence> VulkanRendererAPI::s_DrawFences;
 	
 	void VulkanRendererAPI::Init()
 	{
 		try
 		{
+			s_FragmentShader = new VulkanShader(ShaderType::Fragment, "./Shaders/frag.spv");
+			s_VertexShader = new VulkanShader(ShaderType::Vertex, "./Shaders/vert.spv");
 			CreateSwapchain();
 			CreateRenderPass();
 			CreateDescriptorPools();

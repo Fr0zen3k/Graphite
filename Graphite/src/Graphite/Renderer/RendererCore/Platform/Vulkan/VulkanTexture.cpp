@@ -2,12 +2,18 @@
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "VulkanTexture.h"
 #include "../../../Renderer2D/Renderer2D.h"
 #include "VulkanRendererAPI.h"
 
 namespace Graphite
-{	
+{
+
+	VkSampler VulkanTexture::s_CommonTextureSampler;
+	VkDescriptorSetLayout VulkanTexture::s_TextureSamplerDescriptorSetLayout;
+	
 	VulkanTexture::VulkanTexture(const std::string& filePath): Texture()
 	{
 		Init(filePath);
@@ -290,7 +296,7 @@ namespace Graphite
 		
 		if (srcStream.read((char*)bufferVec.data(), bufferVec.size()))
 		{
-			stbi_uc* file = stbi_load_from_memory(bufferVec.data(), bufferVec.size(), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
+			stbi_uc* file = stbi_load_from_memory(bufferVec.data(), static_cast<int>(bufferVec.size()), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
 
 			if (!file)
 			{

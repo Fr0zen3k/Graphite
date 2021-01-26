@@ -46,9 +46,14 @@ namespace Graphite {
         /// Function to retrieve the window instance of type Window
         /// </summary>
         /// <returns> Returns the window reference </returns>
-        inline Window& GetWindow() { return *m_Window; }
+        inline Window* GetWindow() { return m_Window; }
 
         Camera* GetActiveCameraInstance();
+
+		inline void SetActiveCamera(Camera* camera)
+		{
+            m_ActiveCamera = camera;
+		}
 
         /// <summary>
         /// Function that retrieves the active application instance
@@ -56,7 +61,9 @@ namespace Graphite {
         /// <returns> Returns the active application instance </returns>
         inline static Application* Get() { return s_Instance; }
     private:
-        std::unique_ptr<Window> m_Window;
+        Window* m_Window;
+
+        Camera* m_ActiveCamera;
 
         static Application* s_Instance;
     };

@@ -47,7 +47,8 @@ namespace Graphite
 
 		static bool CheckValidationSupport();
 
-		inline static const std::vector<const char*>& GetValidationLayers() { return s_ValidationLayers; }
+		inline static const char* const* GetValidationLayers() { return s_ValidationLayers.data(); }
+		inline static size_t GetValidationLayerSize() { return s_ValidationLayers.size(); }
 		
 	private:
 		static bool s_Status;

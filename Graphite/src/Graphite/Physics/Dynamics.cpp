@@ -31,7 +31,7 @@ namespace Graphite
 			transform.Translate(d_Velocity * Application::Tick());
 
 			// rotation
-			glm::quat angularAcceleration = glm::cross(glm::quat(torque.length() / mass, glm::normalize(torque), angularAcceleration);
+			glm::quat angularAcceleration = glm::cross(glm::quat(d_Torque.length() / d_Mass, glm::normalize(d_Torque), angularAcceleration));
 			d_AngularVelocity = glm::slerp(d_AngularVelocity, angularAcceleration, Application::Tick());
 			transform.Rotate(glm::slerp(transform.GetQuat(), glm::cross(d_AngularVelocity, transform.GetQuat()), Application::Tick()));
 		}

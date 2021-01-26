@@ -45,8 +45,7 @@ namespace Graphite
 	{
 		m_ActiveApplication = Application::Get();
 		
-		m_FrameSize.first = m_ActiveApplication->GetWindow().GetHeight();
-		m_FrameSize.second = m_ActiveApplication->GetWindow().GetWidth();
+		SetFrameSize(m_ActiveApplication->GetWindow()->GetWidth(), m_ActiveApplication->GetWindow()->GetHeight());
 
 		m_DeviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
@@ -79,7 +78,7 @@ namespace Graphite
 	{
 		m_ApplicationInfo = {};
 		m_ApplicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		m_ApplicationInfo.pApplicationName = m_ActiveApplication->GetWindow().m_Data.Title.c_str();
+		m_ApplicationInfo.pApplicationName = m_ActiveApplication->GetWindow()->m_Data.Title.c_str();
 		m_ApplicationInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		m_ApplicationInfo.pEngineName = "Graphite Engine";
 		m_ApplicationInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
@@ -112,10 +111,13 @@ namespace Graphite
 		instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		instanceInfo.ppEnabledExtensionNames = extensions.data();
 
+		
+		const char* const* validationLayers = VulkanValidator::GetValidationLayers();
+		
 		if(VulkanValidator::Status())
 		{
-			instanceInfo.enabledLayerCount = static_cast<uint32_t>(VulkanValidator::GetValidationLayers().size());
-			instanceInfo.ppEnabledLayerNames = VulkanValidator::GetValidationLayers().data();
+			instanceInfo.enabledLayerCount = static_cast<uint32_t>(VulkanValidator::GetValidationLayerSize());
+			instanceInfo.ppEnabledLayerNames = validationLayers;
 		}
 		else
 		{
@@ -123,11 +125,15 @@ namespace Graphite
 			instanceInfo.ppEnabledLayerNames = nullptr;
 		}
 		
+
+		instanceInfo.enabledLayerCount = 0;
+		instanceInfo.ppEnabledLayerNames = nullptr;
+		
 		VkResult result = vkCreateInstance(
 			&instanceInfo,
 			nullptr,
 			&m_Instance);
-
+		
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a Vulkan instance!");

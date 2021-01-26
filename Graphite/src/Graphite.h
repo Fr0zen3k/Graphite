@@ -17,6 +17,10 @@
 #include "Graphite/Core/EntryPoint.h"
 //------------Entry Point-------------------------------------------
 
+// ++++++++++ Temporary ++++++++++++++++++++++++++++++
+#include "Graphite/Renderer/RendererCore/Platform/Vulkan/VulkanRendererAPI.h"
+// +++++++++++++++++++++++++++++++++++++++++++++++++++
+
 #endif //GRAPHITE_GRAPHITE_H
 
 #if defined (_MSC_VER)
