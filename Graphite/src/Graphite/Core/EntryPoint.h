@@ -16,7 +16,7 @@
 
 #include "Application.h"
 #include "Log.h"
-#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
+//#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
 
 /// <summary>
 /// The extern function defined by the Sandbox, used to retrieve a client specified instance of an Application

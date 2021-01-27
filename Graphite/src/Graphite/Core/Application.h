@@ -16,7 +16,7 @@
 
 #include "Window.h"
 
-//#include "Graphite/Renderer/RendererCore/Camera.h"
+#include "Graphite/Renderer/RendererCore/Camera.h"
 
 namespace Graphite {
 
@@ -52,7 +52,7 @@ namespace Graphite {
 
 		//inline void SetActiveCamera(Camera* camera)
 		//{
-            //m_ActiveCamera = camera;
+        //    m_ActiveCamera = camera;
 		//}
 
         /// <summary>

@@ -43,10 +43,10 @@ namespace Graphite {
             });
 	}
 
-	//Camera* Application::GetActiveCameraInstance()
-	//{
-        //return m_ActiveCamera;
-	//}
+//	Camera* Application::GetActiveCameraInstance()
+//	{
+//       return m_ActiveCamera;
+//	}
 
 
 }
