@@ -27,7 +27,7 @@ namespace Graphite
 	{
 	public:
 		VulkanGraphicsContext();
-		~VulkanGraphicsContext();
+		~VulkanGraphicsContext() override;
 
 		bool OnEvent(Event& e) override;
 

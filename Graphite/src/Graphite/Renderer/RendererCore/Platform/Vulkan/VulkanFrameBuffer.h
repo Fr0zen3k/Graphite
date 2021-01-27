@@ -60,12 +60,10 @@ namespace Graphite
 			void CreateCommandBuffer();
 			void CreateUniformBuffer();
 			void CreateDescriptorSet();
+			void CreateImageView();
 
 		private:
-			void Init();
 			void Shutdown();
-
-			void CreateImageView();
 
 		private:
 			VkImage m_Image;
@@ -105,6 +103,7 @@ namespace Graphite
 		void CreateCommandBuffers();
 		void CreateUniformBuffers();
 		void CreateDescriptorSets();
+		void CreateImageViews();
 	private:
 		void Init();
 		void Shutdown();

@@ -40,6 +40,7 @@ namespace Graphite
 		inline static VkDescriptorPool GetSamplerDescriptorPool() { return s_SamplerDescriptorPool; }
 		inline static VkDescriptorSetLayout GetDescriptorSetLayout() { return s_DescriptorSetLayout; }
 		inline static VkDescriptorSetLayout GetSamplerDescriptorSetLayout() { return s_SamplerDescriptorSetLayout; }
+		inline static VkSurfaceFormatKHR GetSwapchainSurfaceFormat() { return s_SwapchainSurfaceFormat; }
 
 		static uint32_t StartDrawing();
 		static void Draw(const std::vector<Mesh*>& meshList, const std::vector<glm::mat4>& modelMatrices, const std::vector<Texture*>& textureList, const std::vector<uint16_t>& meshIndices,
@@ -64,6 +65,7 @@ namespace Graphite
 		static VulkanFrameBuffer* s_FrameBuffer;
 
 		static VkSwapchainKHR s_Swapchain;
+		static VkSurfaceFormatKHR s_SwapchainSurfaceFormat;
 		
 		static VkRenderPass s_RenderPass;
 		

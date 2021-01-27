@@ -20,10 +20,12 @@ namespace Graphite
 
 	VkSwapchainKHR VulkanRendererAPI::s_Swapchain;
 
+	VkSurfaceFormatKHR VulkanRendererAPI::s_SwapchainSurfaceFormat;
+
 	VkRenderPass VulkanRendererAPI::s_RenderPass;
 
 	VkPipeline VulkanRendererAPI::s_GraphicsPipeline;
-	VkPipelineLayout VulkanRendererAPI::s_GraphicsPipelineLayout;
+	VkPipelineLayout VulkanRendererAPI::s_GraphicsPipelineLayout = {};
 
 	VulkanShader* VulkanRendererAPI::s_VertexShader;
 	VulkanShader* VulkanRendererAPI::s_FragmentShader;
@@ -48,20 +50,31 @@ namespace Graphite
 		{
 			s_FragmentShader = new VulkanShader(ShaderType::Fragment, "./Shaders/frag.spv");
 			s_VertexShader = new VulkanShader(ShaderType::Vertex, "./Shaders/vert.spv");
+			std::cout << "Shaders" << std::endl;
 			CreateSwapchain();
-			CreateRenderPass();
-			CreateDescriptorPools();
-			CreateDescriptorSetLayouts();
+			std::cout << "Swapchain" << std::endl;
 			CreatePushConstantRange();
-			CreateGraphicsPipeline();
-			VulkanFrameBuffer::InitDepthTesting();
-			s_FrameBuffer = new VulkanFrameBuffer();
-			s_FrameBuffer->CreateFramebuffers();
+			std::cout << "Push constants" << std::endl;
 			CreateCommandPool();
+			std::cout << "CommantPool" << std::endl;
+			/*
+			VulkanFrameBuffer::InitDepthTesting();
+			std::cout << "Depth" << std::endl;
+			
+			s_FrameBuffer = new VulkanFrameBuffer();
+			
+			s_FrameBuffer->CreateImageViews();
+			
+			s_FrameBuffer->CreateFramebuffers();
 			s_FrameBuffer->CreateCommandBuffers();
 			VulkanTexture::CreateCommonSampler();
 			s_FrameBuffer->CreateUniformBuffers();
+			CreateDescriptorPools();
+			CreateDescriptorSetLayouts();
+			CreateRenderPass();
+			CreateGraphicsPipeline();
 			CreateSynchronisation();
+			*/
 		}
 		catch (const std::runtime_error& e)
 		{
@@ -324,7 +337,7 @@ namespace Graphite
 			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
 			GR_GRAPHICS_CONTEXT->GetSurface());
 
-		VkSurfaceFormatKHR surfaceFormat = swapchainInfo.ChooseBestSurfaceFormat();
+		s_SwapchainSurfaceFormat = swapchainInfo.ChooseBestSurfaceFormat();
 		VkPresentModeKHR presentMode = swapchainInfo.ChooseBestPresentMode();
 		VkExtent2D extent = swapchainInfo.ChooseSwapchainExtent(GR_GRAPHICS_CONTEXT->GetNativeWindow());
 
@@ -339,8 +352,8 @@ namespace Graphite
 		VkSwapchainCreateInfoKHR swapchainCreateInfo = {};
 		swapchainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 		swapchainCreateInfo.surface = GR_GRAPHICS_CONTEXT->GetSurface();
-		swapchainCreateInfo.imageFormat = surfaceFormat.format;
-		swapchainCreateInfo.imageColorSpace = surfaceFormat.colorSpace;
+		swapchainCreateInfo.imageFormat = s_SwapchainSurfaceFormat.format;
+		swapchainCreateInfo.imageColorSpace = s_SwapchainSurfaceFormat.colorSpace;
 		swapchainCreateInfo.presentMode = presentMode;
 		swapchainCreateInfo.imageExtent = extent;
 		swapchainCreateInfo.minImageCount = imageNum;
@@ -382,8 +395,8 @@ namespace Graphite
 		}
 
 		GR_GRAPHICS_CONTEXT->SetSwapchainExtent(extent);
-		GR_GRAPHICS_CONTEXT->SetSwapchainImageFormat(surfaceFormat.format);
-		GR_GRAPHICS_CONTEXT->SetSwapchainColorSpace(surfaceFormat.colorSpace);
+		GR_GRAPHICS_CONTEXT->SetSwapchainImageFormat(s_SwapchainSurfaceFormat.format);
+		GR_GRAPHICS_CONTEXT->SetSwapchainColorSpace(s_SwapchainSurfaceFormat.colorSpace);
 
 	}
 
@@ -494,6 +507,7 @@ namespace Graphite
 			scissors = dynamic_cast<VulkanPerspectiveCamera*>(camera)->GetScissors();
 		}
 
+
 		VkPipelineViewportStateCreateInfo  viewportInfo = {};
 		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 		viewportInfo.viewportCount = 1;
@@ -534,11 +548,13 @@ namespace Graphite
 		colorState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		colorState.colorBlendOp = VK_BLEND_OP_ADD;
 
+		std::array<VkPipelineColorBlendAttachmentState, 1> attachments = {colorState};
+		
 		VkPipelineColorBlendStateCreateInfo colorBlendCreateInfo = {};
 		colorBlendCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlendCreateInfo.logicOpEnable = VK_FALSE;
 		colorBlendCreateInfo.attachmentCount = 1;
-		colorBlendCreateInfo.pAttachments = &colorState;
+		colorBlendCreateInfo.pAttachments = attachments.data();
 
 		// Make an array of descriptor set layouts
 		std::array<VkDescriptorSetLayout, 2> descriptorSetLayouts = {s_DescriptorSetLayout, s_SamplerDescriptorSetLayout};
@@ -549,7 +565,7 @@ namespace Graphite
 		pipelineLayoutCreateInfo.pSetLayouts = descriptorSetLayouts.data();
 		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 		pipelineLayoutCreateInfo.pPushConstantRanges = &s_PushConstantRange;
-
+		
 		VkResult result = vkCreatePipelineLayout(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			&pipelineLayoutCreateInfo,
@@ -587,7 +603,7 @@ namespace Graphite
 
 		pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE;
 		pipelineCreateInfo.basePipelineIndex = -1;
-
+		
 		result = vkCreateGraphicsPipelines(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			VK_NULL_HANDLE,

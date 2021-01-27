@@ -5,6 +5,7 @@
 #include "Graphite/Core/grpch.h"
 
 #include "Application.h"
+//#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
 
 namespace Graphite {
 
@@ -20,7 +21,7 @@ namespace Graphite {
 
     Application::~Application()
     {
-        delete m_ActiveCamera;
+        //delete m_ActiveCamera;
         delete m_Window;
     }
 
@@ -28,6 +29,7 @@ namespace Graphite {
         while (true)
         {
             m_Window->Update();
+//            Renderer2D::OnTick();
         }
     }
 
@@ -41,10 +43,10 @@ namespace Graphite {
             });
 	}
 
-	Camera* Application::GetActiveCameraInstance()
-	{
-        return m_ActiveCamera;
-	}
+	//Camera* Application::GetActiveCameraInstance()
+	//{
+        //return m_ActiveCamera;
+	//}
 
 
 }

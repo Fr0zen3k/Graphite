@@ -9,7 +9,7 @@ namespace Graphite
 #ifndef GR_DIST
 	bool VulkanValidator::s_Status = true;
 #else
-	bool VulkanValidatod::s_Status = false;
+	bool VulkanValidator::s_Status = false;
 #endif
 
 	const std::vector<const char*> VulkanValidator::s_ValidationLayers = { "VK_LAYER_LUNARG_standard_validation" };

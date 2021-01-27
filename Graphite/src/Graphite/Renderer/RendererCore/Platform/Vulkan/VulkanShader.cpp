@@ -36,13 +36,6 @@ namespace Graphite
 	void VulkanShader::SetShaderFilepath(const std::string& filepath)
 	{
 		m_Filepath = filepath;
-
-		if(m_ShaderStageCreateInfo.pName != nullptr)
-		{
-			Shutdown();
-		}
-
-		Init();
 	}
 
 	void VulkanShader::Init()

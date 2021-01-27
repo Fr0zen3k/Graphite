@@ -39,13 +39,14 @@ int main(int argc, char *argv[]) {
 
     Graphite::Application *userApp = Graphite::CreateApp();
 	
-    Graphite::Renderer2D::Init();
+    //Graphite::Renderer2D::Init();
 	
-    userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Orthographic));
+    //userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Orthographic));
+    //Graphite::Renderer2D::InitAPI();
     userApp->run();
     delete userApp;
 
-    Graphite::Renderer2D::Shutdown();
+    //Graphite::Renderer2D::Shutdown();
 
     return 0;
 }

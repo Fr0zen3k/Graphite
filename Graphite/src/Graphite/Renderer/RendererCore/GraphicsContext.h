@@ -20,6 +20,9 @@ namespace Graphite
 	class GRAPHITE_API GraphicsContext
 	{
 	public:
+		GraphicsContext() = default;
+		virtual ~GraphicsContext() = default;
+		
 		virtual bool OnEvent(Event& e) = 0;
 		
 		virtual void SetFrameSize(uint32_t width, uint32_t height) = 0;

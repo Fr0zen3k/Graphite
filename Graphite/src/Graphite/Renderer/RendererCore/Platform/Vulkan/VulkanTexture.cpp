@@ -7,6 +7,7 @@
 #include "VulkanTexture.h"
 #include "../../../Renderer2D/Renderer2D.h"
 #include "VulkanRendererAPI.h"
+#include "VulkanGraphicsContext.h"
 
 namespace Graphite
 {

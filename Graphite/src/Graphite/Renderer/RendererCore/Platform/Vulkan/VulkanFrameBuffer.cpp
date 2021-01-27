@@ -62,6 +62,7 @@ namespace Graphite
 			Frame* frame = new Frame(image);
 			m_Frames.emplace_back(frame);
 		}
+		
 	}
 
 	void VulkanFrameBuffer::CreateFramebuffers()
@@ -101,7 +102,7 @@ namespace Graphite
 
 	VulkanFrameBuffer::Frame::Frame(VkImage image)
 	{
-		Init();
+		
 	}
 
 	VulkanFrameBuffer::Frame::~Frame()
@@ -138,18 +139,15 @@ namespace Graphite
 	}
 
 
-	void VulkanFrameBuffer::Frame::Init()
+	void VulkanFrameBuffer::CreateImageViews()
 	{
-		try
+		for(Frame* f : m_Frames)
 		{
-			CreateImageView();
-		}
-		catch(const std::runtime_error &e)
-		{
-			throw e;
+			f->CreateImageView();
 		}
 	}
 
+	
 	void VulkanFrameBuffer::Frame::Shutdown()
 	{
 		vkDestroyFramebuffer(
@@ -160,31 +158,7 @@ namespace Graphite
 
 	void VulkanFrameBuffer::Frame::CreateImageView()
 	{
-		VkImageViewCreateInfo imageViewCreateInfo = {};
-		imageViewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		imageViewCreateInfo.image = m_Image;
-		imageViewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		imageViewCreateInfo.format = GR_GRAPHICS_CONTEXT->GetSwapchainImageFormat();
-		imageViewCreateInfo.components.r = VK_COMPONENT_SWIZZLE_R;
-		imageViewCreateInfo.components.g = VK_COMPONENT_SWIZZLE_G;
-		imageViewCreateInfo.components.b = VK_COMPONENT_SWIZZLE_B;
-		imageViewCreateInfo.components.a = VK_COMPONENT_SWIZZLE_A;
-		imageViewCreateInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		imageViewCreateInfo.subresourceRange.baseMipLevel = 0;
-		imageViewCreateInfo.subresourceRange.levelCount = 1;
-		imageViewCreateInfo.subresourceRange.baseArrayLayer = 0;
-		imageViewCreateInfo.subresourceRange.layerCount = 1;
-
-		VkResult result = vkCreateImageView(
-			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
-			&imageViewCreateInfo,
-			nullptr,
-			&m_ImageView);
-
-		if(result != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to create an image view!");
-		}
+		m_ImageView = VulkanUtilities::CreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Image, VulkanRendererAPI::GetSwapchainSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
 	void VulkanFrameBuffer::Frame::CreateFramebuffer()
@@ -298,7 +272,7 @@ namespace Graphite
 			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(), 
 			{ VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D24_UNORM_S8_UINT }, 
 			VK_IMAGE_TILING_OPTIMAL,
-			VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT);
+			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
 		s_DepthBufferImage = VulkanUtilities::CreateImage(
 			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
@@ -310,12 +284,13 @@ namespace Graphite
 			VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&s_DepthBufferDeviceMemory);
-
+		/*
 		s_DepthBufferImageView = VulkanUtilities::CreateImageView(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			s_DepthBufferImage,
 			depthBufferFormat,
 			VK_IMAGE_ASPECT_DEPTH_BIT);
+			*/
 	}
 
 	void VulkanFrameBuffer::Frame::ShutdownDepthTesting()

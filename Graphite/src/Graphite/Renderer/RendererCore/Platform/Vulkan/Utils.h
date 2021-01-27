@@ -12,8 +12,6 @@
 #include "GLFW/glfw3.h"
 #include "Graphite/Core/grpch.h"
 
-#include "glm/glm.hpp"
-
 namespace Graphite
 {
 	namespace VulkanUtilities
@@ -168,12 +166,12 @@ namespace Graphite
 					device,
 					f,
 					&props);
-
+				
 				if(tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & fetureFlags) == fetureFlags)
 				{
 					return f;
 				}
-				else if(tiling == VK_IMAGE_TILING_OPTIMAL && (props.linearTilingFeatures & fetureFlags) == fetureFlags)
+				else if(tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & fetureFlags) == fetureFlags)
 				{
 					return f;
 				}
@@ -249,7 +247,7 @@ namespace Graphite
 
 		static uint32_t FindMemoryTypeIndex(
 			VkPhysicalDevice physicalDevice,
-			uint32_t type,
+			uint32_t types,
 			VkMemoryPropertyFlags properties)
 		{
 			VkPhysicalDeviceMemoryProperties memProps;
@@ -260,7 +258,7 @@ namespace Graphite
 
 			for(uint32_t i = 0; i < memProps.memoryTypeCount; i++)
 			{
-				if((type & GR_BIT(i)) && ((memProps.memoryTypes[i].propertyFlags & properties) == properties))
+				if((types & (1 << i)) && (memProps.memoryTypes[i].propertyFlags & properties) == properties)
 				{
 					return i;
 				}
@@ -268,7 +266,7 @@ namespace Graphite
 
 			throw std::runtime_error("Failed to find suitable memory type on the physical device!");
 		}
-
+		
 		static void CreateBuffer(
 			VkPhysicalDevice physicalDevice,
 			VkDevice device,
@@ -300,6 +298,8 @@ namespace Graphite
 				*buffer,
 				&memRequirements);
 
+			std::cout << "buffer create" << std::endl;
+			
 			VkMemoryAllocateInfo memoryAllocInfo = {};
 			memoryAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			memoryAllocInfo.allocationSize = memRequirements.size;
@@ -452,14 +452,14 @@ namespace Graphite
 				logicalDevice,
 				image,
 				&memoryRequirements);
-
+			
 			VkMemoryAllocateInfo memoryAllocInfo = {};
 			memoryAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			memoryAllocInfo.allocationSize = memoryRequirements.size;
 			memoryAllocInfo.memoryTypeIndex = FindMemoryTypeIndex(
 				physicalDevice,
 				memoryRequirements.memoryTypeBits,
-				imageFlags);
+				memoryFlags);
 
 			result = vkAllocateMemory(
 				logicalDevice,
@@ -503,6 +503,8 @@ namespace Graphite
 			viewCreateInfo.subresourceRange.layerCount = 1;
 
 			VkImageView imageView;
+
+			std::cout << image << std::endl;
 
 			VkResult result = vkCreateImageView(
 				logicalDevice,

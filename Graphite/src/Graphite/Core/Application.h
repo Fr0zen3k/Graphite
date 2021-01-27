@@ -16,7 +16,7 @@
 
 #include "Window.h"
 
-#include "Graphite/Renderer/RendererCore/Camera.h"
+//#include "Graphite/Renderer/RendererCore/Camera.h"
 
 namespace Graphite {
 
@@ -48,12 +48,12 @@ namespace Graphite {
         /// <returns> Returns the window reference </returns>
         inline Window* GetWindow() { return m_Window; }
 
-        Camera* GetActiveCameraInstance();
+        //Camera* GetActiveCameraInstance();
 
-		inline void SetActiveCamera(Camera* camera)
-		{
-            m_ActiveCamera = camera;
-		}
+		//inline void SetActiveCamera(Camera* camera)
+		//{
+            //m_ActiveCamera = camera;
+		//}
 
         /// <summary>
         /// Function that retrieves the active application instance
@@ -63,7 +63,7 @@ namespace Graphite {
     private:
         Window* m_Window;
 
-        Camera* m_ActiveCamera;
+        //Camera* m_ActiveCamera;
 
         static Application* s_Instance;
     };
