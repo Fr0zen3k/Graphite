@@ -14,11 +14,9 @@
 
 #include "Graphite/Core/Core.h"
 
-#include "Asset.h"
+//#include "Asset.h"
 
 #include "glm/glm.hpp"
-
-#include "TextureAsset.h"
 
 #include "AssetManager.h"
 
@@ -32,19 +30,25 @@ namespace Graphite
 	class GRAPHITE_API Frame2D
 	{
 	public:
-		Frame2D(AssetPtr<const TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h);
+		Frame2D(AssetPtr<TextureAsset> tex, glm::vec2 topLeft, glm::vec2 bottomRight, float w, float h, float centerX, float centerY);
 		~Frame2D();
 
-		AssetPtr<const TextureAsset> GetTexture() const { return mTexturePtr; }
-		glm::vec2 GetTopLeft() const { return mTopLeft; }
-		glm::vec2 GetBottomRight() const { return mBottomRight; }
+		AssetPtr<TextureAsset> GetTexture() const { return mTexturePtr; }
+		glm::vec2 GetTextureTopLeft() const { return mTopLeft; }
+		glm::vec2 GetTextureBottomRight() const { return mBottomRight; }
+
 		float GetWidth() const { return mWidth; }
 		float GetHeight() const { return mHeight; }
+		float GetCenterX() const { return mCenterX; }
+		float GetCenterY() const { return mCenterY; }
+
+		const Mesh& GetMesh() const { return mMesh; }
 
 	protected:
-		AssetPtr<const TextureAsset> mTexturePtr;
+		AssetPtr<TextureAsset> mTexturePtr;
+		Mesh mMesh;//TODO: Build mesh in constructor
 		glm::vec2 mTopLeft, mBottomRight;
-		float mWidth, mHeight;
+		float mWidth, mHeight, mCenterX, mCenterY;
 	};
 
 
@@ -59,7 +63,8 @@ namespace Graphite
 		void Load(const rapidjson::Value& params);
 		void Unload();
 
-		inline Frame2D& GetFrame(size_t index) const { return mFrames[index]; }
+		inline Frame2D& GetFrame(size_t index) { return mFrames[index]; }
+		inline size_t GetFrameCount() { return mFrames.size(); }
 
 	protected:
 		std::vector<Frame2D> mFrames;

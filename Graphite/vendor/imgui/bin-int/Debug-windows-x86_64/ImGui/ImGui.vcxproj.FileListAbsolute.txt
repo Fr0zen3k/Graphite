@@ -1,2 +1,4 @@
 E:\Graphite\Graphite\vendor\imgui\bin\Debug-windows-x86_64\ImGui\ImGui.pdb
 E:\Graphite\Graphite\vendor\imgui\bin-int\Debug-windows-x86_64\ImGui\ImGui.pdb
+F:\Fer\Projekt\Graphite\Graphite\vendor\imgui\bin\Debug-windows-x86_64\ImGui\ImGui.pdb
+F:\Fer\Projekt\Graphite\Graphite\vendor\imgui\bin-int\Debug-windows-x86_64\ImGui\ImGui.pdb

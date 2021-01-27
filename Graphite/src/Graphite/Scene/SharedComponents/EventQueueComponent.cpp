@@ -16,9 +16,9 @@ namespace Graphite
 	{
 	}
 
-	void EventQueueComponent::post(ComponentEvent* ev)
+	void EventQueueComponent::post(const std::shared_ptr<ComponentEvent>& evPtr)
 	{
-		mEventQueue.emplace_back(ev);
+		mEventQueue.emplace_back(evPtr);
 	}
 
 	void EventQueueComponent::processEvents()
@@ -26,13 +26,13 @@ namespace Graphite
 		while (mEventQueue.size() > 0)
 		{
 			// Get event and event type info
-			ComponentEvent* ev = mEventQueue.front();
-			const std::type_info* evTypeId = typeid(*ev);
+			const ComponentEvent* ev = mEventQueue.front().get();
+			const std::type_info* evTypeId = &typeid(*ev);
 
 			// Callbacks
-			for (auto& callbackPtr : mCallbacksPerType[evTypeId])
+			for (auto& callback : mCallbacksPerType[evTypeId])
 			{
-				callbackPtr->call(*ev);
+				callback.call(*ev);
 			}
 
 			// pop event
@@ -40,8 +40,8 @@ namespace Graphite
 		}
 	}
 
-	void EventQueueComponent::registerCallback(const AbstractCallbackMethodWrapper& callback)
+	void EventQueueComponent::registerCallback(const CallbackMethodWrapper& callback)
 	{
-		mCallbacksPerType[callback.GetEventTypeInfo()].insert(callback.newClone());
+		mCallbacksPerType[callback.GetEventTypeInfo()].push_back(callback);
 	}
 }

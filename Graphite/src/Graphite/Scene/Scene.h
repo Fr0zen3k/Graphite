@@ -17,10 +17,10 @@
 #include "Component.h"
 #include "Graphite/Assets/Asset.h"
 
-#include "Entity.h"
-
 namespace Graphite
 {
+	class Entity;
+
 	class GRAPHITE_API Scene : public Asset
 	{
 	public:
@@ -42,6 +42,8 @@ namespace Graphite
 		void Load(const rapidjson::Value& root);
 		void Unload();
 
+		virtual void Update(float sElapsed);
+
 		// Returns the entity with the specified name. Returns nulptr if it doesn't exist
 		Entity* GetEntity(const std::string& name);
 
@@ -55,8 +57,8 @@ namespace Graphite
 		virtual void onComponentRemoved(Component* c);
 
 	protected:
-		std::set<std::unique_ptr<Entity>> mEntities;
-		std::map<std::string, std::set<std::unique_ptr<Entity>>::iterator> mEntitiesByName;
+		std::set<std::shared_ptr<Entity>> mEntities;
+		std::map<std::string, std::set<std::shared_ptr<Entity>>::iterator> mEntitiesByName;
 
 		// Adds an existing entity to the scene. Takes ownership of it.
 		// If an entity with the given name already exists in the scene, throws NameTaken

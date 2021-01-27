@@ -6,11 +6,15 @@
 namespace Graphite
 {
 	Visible2DComponent::Visible2DComponent(AssetPtr<Animation2DAsset> animPtr):
-		mAnimationPtr(animPtr)
+		mAnimationPtr(animPtr),
+		mAnimFPS(30.0f),
+		mFrameInd(0.0f)
 	{
 	}
 
-	Visible2DComponent::Visible2DComponent(const rapidjson::Value& params)
+	Visible2DComponent::Visible2DComponent(const rapidjson::Value& params):
+		mAnimFPS(30.0f),
+		mFrameInd(0.0f)
 	{
 		std::string name = params["animation"].GetString();
 		mAnimationPtr = AssetManager::instance().GetAnimation(name);
@@ -43,5 +47,26 @@ namespace Graphite
 	{
 		mNodePtr = &CompReq<Node2DComponent>();
 		SetAnimation(mAnimationPtr);
+	}
+
+	void Visible2DComponent::Update(float sElapsed)
+	{
+		mFrameInd += mAnimFPS * sElapsed;
+
+		size_t frameNum = mAnimationPtr->GetFrameCount();
+		mFrameInd = mFrameInd - (std::floor(mFrameInd/ frameNum) * frameNum);
+	}
+
+	void Visible2DComponent::SetAnimationFPS(float fps)
+	{
+		mAnimFPS = fps;
+	}
+	void Visible2DComponent::SetFrameIndex(float index)
+	{
+		mFrameInd = index;
+	}
+	Frame2D& Visible2DComponent::GetCurrentFrame() const
+	{
+		return mAnimationPtr->GetFrame(std::floor(mFrameInd));
 	}
 }

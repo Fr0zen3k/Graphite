@@ -14,16 +14,17 @@
 
 #include "Graphite/Core/Core.h"
 
-#include "../Scene/Scene2D/Scene2D.h"
 #include "Asset.h"
-#include "TextureAsset.h"
-#include "Animation2DAsset.h"
 
 namespace Graphite
 {
+	class TextureAsset;
+	class Animation2DAsset;
+	class Scene2D;
+
 	struct GRAPHITE_API AssetManagementData
 	{
-		std::unique_ptr<Asset> asset = nullptr;
+		std::shared_ptr<Asset> asset;
 		size_t counter = 0;
 	};
 	using AssetMap = std::map<std::string, AssetManagementData>;
@@ -123,23 +124,23 @@ namespace Graphite
 			return mAssetMapPtr != nullptr;
 		}
 
-		_AssT& operator*()
+		_AssT& operator*() const
 		{
-			return *dynamic_cast<_AssT*>(mAssetIterator->second.asset);
+			return *dynamic_cast<_AssT*>(mAssetIterator->second.asset.get());
 		}
 
-		_AssT* operator->()
+		_AssT* operator->() const
 		{
-			return dynamic_cast<_AssT*>(mAssetIterator->second.asset);
+			return dynamic_cast<_AssT*>(mAssetIterator->second.asset.get());
 		}
 
 		template<class _OtherT>
 		operator AssetPtr<_OtherT>()
 		{
-			_OtherT* other = dynamic_cast<_OtherT*>(mAssetIterator->second.asset);
+			_OtherT* other = dynamic_cast<_OtherT*>(mAssetIterator->second.asset.get());
 			if (other == nullptr)
 			{
-				throw std::bad_cast("Cannot cast!");
+				throw std::bad_cast();
 			}
 
 			return AssetPtr<_OtherT>(mAssetMapPtr, mAssetIterator);

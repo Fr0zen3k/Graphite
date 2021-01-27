@@ -23,28 +23,25 @@ namespace Graphite
 		auto it = mAssetsPerFilename.find(filename);
 		if (it == mAssetsPerFilename.end())
 		{
-			Asset* newAsset = nullptr;
+			std::shared_ptr<Asset> newAssetPtr = nullptr;
 
 			std::string ext = filename.substr(filename.find_last_of('.') + 1);
 			if (ext == "scene")
 			{
-				Asset* newAsset = new Scene2D();
+				newAssetPtr = std::make_shared<Scene2D>();
 			}
 			else if (ext == "anim2d")
 			{
-				Asset* newAsset = new Animation2DAsset();
+				newAssetPtr = std::make_shared<Animation2DAsset>();
 			}
 			else if (ext == "png" || ext == "jpg" || ext == "bmp")
 			{
-				Asset* newAsset = new TextureAsset();
+				newAssetPtr = std::make_shared<TextureAsset>();
 			}
 
 			it = mAssetsPerFilename.insert({
 				filename,
-				AssetManagementData{
-					std::make_unique<Asset>(newAsset),
-					0
-				}
+				AssetManagementData{newAssetPtr, 0}
 				}).first;
 		}
 
