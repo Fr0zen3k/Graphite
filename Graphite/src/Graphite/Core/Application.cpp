@@ -5,7 +5,7 @@
 #include "Graphite/Core/grpch.h"
 
 #include "Application.h"
-//#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
+#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
 
 namespace Graphite {
 
@@ -43,10 +43,10 @@ namespace Graphite {
             });
 	}
 
-//	Camera* Application::GetActiveCameraInstance()
-//	{
-//       return m_ActiveCamera;
-//	}
+	Camera* Application::GetActiveCameraInstance()
+	{
+       return m_ActiveCamera;
+	}
 
 
 }
