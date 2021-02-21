@@ -50,31 +50,17 @@ namespace Graphite
 		{
 			s_FragmentShader = new VulkanShader(ShaderType::Fragment, "./Shaders/frag.spv");
 			s_VertexShader = new VulkanShader(ShaderType::Vertex, "./Shaders/vert.spv");
-			std::cout << "Shaders" << std::endl;
 			CreateSwapchain();
-			std::cout << "Swapchain" << std::endl;
 			CreatePushConstantRange();
-			std::cout << "Push constants" << std::endl;
 			CreateCommandPool();
-			std::cout << "CommantPool" << std::endl;
-			/*
-			VulkanFrameBuffer::InitDepthTesting();
-			std::cout << "Depth" << std::endl;
-			
-			s_FrameBuffer = new VulkanFrameBuffer();
-			
-			s_FrameBuffer->CreateImageViews();
-			
-			s_FrameBuffer->CreateFramebuffers();
-			s_FrameBuffer->CreateCommandBuffers();
 			VulkanTexture::CreateCommonSampler();
-			s_FrameBuffer->CreateUniformBuffers();
+			s_FrameBuffer = new VulkanFrameBuffer();
 			CreateDescriptorPools();
 			CreateDescriptorSetLayouts();
 			CreateRenderPass();
 			CreateGraphicsPipeline();
 			CreateSynchronisation();
-			*/
+			
 		}
 		catch (const std::runtime_error& e)
 		{
@@ -164,6 +150,8 @@ namespace Graphite
 	void VulkanRendererAPI::Draw(const std::vector<Mesh*>& meshList, const std::vector<glm::mat4>& modelMatrices, const std::vector<Texture*>& textureList, 
 		const std::vector<uint16_t>& meshIndices, const std::vector<uint16_t>& textureIndices, uint32_t imageIndex)
 	{
+		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
+		
 		if(meshList.size() > MAX_OBJECTS || meshIndices.size() > MAX_OBJECTS)
 		{
 			throw std::runtime_error("Maximum number of objects in a draw call exceeded!");
@@ -194,10 +182,10 @@ namespace Graphite
 
 		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassBeginInfo.pClearValues = clearValues.data();
-		renderPassBeginInfo.framebuffer = s_FrameBuffer->operator[](imageIndex)->GetNativeFramebuffer();
+		renderPassBeginInfo.framebuffer = s_FrameBuffer->operator[](imageIndex).Framebuffer;
 
 		VkResult result = vkBeginCommandBuffer(
-			s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+			s_FrameBuffer->operator[](imageIndex).CommandBuffer,
 			&commandBufferBeginInfo);
 		if(result != VK_SUCCESS)
 		{
@@ -209,13 +197,13 @@ namespace Graphite
 
 		{
 			vkCmdBeginRenderPass(
-				s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+				s_FrameBuffer->operator[](imageIndex).CommandBuffer,
 				&renderPassBeginInfo, 
 				VK_SUBPASS_CONTENTS_INLINE);
 
 			{
 				vkCmdBindPipeline(
-					s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+					s_FrameBuffer->operator[](imageIndex).CommandBuffer,
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					s_GraphicsPipeline);
 
@@ -226,7 +214,7 @@ namespace Graphite
 
 					// Bind a vertex buffer
 					vkCmdBindVertexBuffers(
-						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+						s_FrameBuffer->operator[](imageIndex).CommandBuffer,
 						0,
 						1,
 						vertexBuffers,
@@ -234,14 +222,14 @@ namespace Graphite
 
 					// Bind an index buffer
 					vkCmdBindIndexBuffer(
-						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 
+						s_FrameBuffer->operator[](imageIndex).CommandBuffer, 
 						dynamic_cast<VulkanVertexBuffer*>(meshList[meshIndices[i]]->GetIndexBuffer())->GetNativeBuffer(),
 						0,
 						VK_INDEX_TYPE_UINT32);
 
 					// Send push constant data to the shader directly
 					vkCmdPushConstants(
-						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(), 
+						s_FrameBuffer->operator[](imageIndex).CommandBuffer, 
 						s_GraphicsPipelineLayout,
 						VK_SHADER_STAGE_VERTEX_BIT,
 						0,
@@ -249,11 +237,11 @@ namespace Graphite
 						&modelMatrices[meshIndices[i]]);
 
 					// Bind descriptor sets
-					std::array<VkDescriptorSet, 2> descriptorSetGroup = { s_FrameBuffer->operator[](imageIndex)->GetDescriptorSet(),
+					std::array<VkDescriptorSet, 2> descriptorSetGroup = { s_FrameBuffer->operator[](imageIndex).DescriptorSet,
 						dynamic_cast<VulkanTexture*>(textureList[textureIndices[i]])->GetDescriptorSet() };
 
 					vkCmdBindDescriptorSets(
-						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+						s_FrameBuffer->operator[](imageIndex).CommandBuffer,
 						VK_PIPELINE_BIND_POINT_GRAPHICS,
 						s_GraphicsPipelineLayout,
 						0,
@@ -264,7 +252,7 @@ namespace Graphite
 
 					// Execute the graphics pipeline
 					vkCmdDrawIndexed(
-						s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer(),
+						s_FrameBuffer->operator[](imageIndex).CommandBuffer,
 						static_cast<uint32_t>(meshList[meshIndices[i]]->VertexCount()),
 						1,
 						0,
@@ -273,13 +261,13 @@ namespace Graphite
 				}
 			}
 
-			vkCmdEndRenderPass(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer());
+			vkCmdEndRenderPass(s_FrameBuffer->operator[](imageIndex).CommandBuffer);
 		}
 
 		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-		result = vkEndCommandBuffer(s_FrameBuffer->operator[](imageIndex)->GetCommandBuffer());
+		result = vkEndCommandBuffer(s_FrameBuffer->operator[](imageIndex).CommandBuffer);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to stop recording a command buffer!");
@@ -288,8 +276,6 @@ namespace Graphite
 
 	void VulkanRendererAPI::EndDrawing(uint32_t imageIndex)
 	{
-		s_FrameBuffer->operator[](imageIndex)->UpdateViewProjectionUniform();
-		
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.waitSemaphoreCount = 1;
@@ -297,7 +283,7 @@ namespace Graphite
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = s_FrameBuffer->operator[](imageIndex)->GetCommandBufferPointer();
+		submitInfo.pCommandBuffers = &s_FrameBuffer->operator[](imageIndex).CommandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
 

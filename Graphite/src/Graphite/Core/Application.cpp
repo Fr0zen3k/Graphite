@@ -21,7 +21,7 @@ namespace Graphite {
 
     Application::~Application()
     {
-        //delete m_ActiveCamera;
+        delete m_ActiveCamera;
         delete m_Window;
     }
 
@@ -29,7 +29,7 @@ namespace Graphite {
         while (true)
         {
             m_Window->Update();
-//            Renderer2D::OnTick();
+            Renderer2D::OnTick();
         }
     }
 

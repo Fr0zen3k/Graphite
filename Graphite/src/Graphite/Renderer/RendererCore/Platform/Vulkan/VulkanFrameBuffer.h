@@ -18,101 +18,58 @@
 
 namespace Graphite
 {
-	class GRAPHITE_API VulkanFrameBuffer : public FrameBuffer
+	struct GRAPHITE_API Frame
 	{
-		class GRAPHITE_API Frame
-		{
-		public:
-			Frame(VkImage image);
-			~Frame();
+		VkImage Image;
+		VkImageView ImageView;
 
-			bool OnEvent(Event& e);
+		VkFramebuffer Framebuffer;
 
-			inline void SetImage(VkImage& image)
-			{
-				m_Image = image;
-			}
+		VkCommandBuffer CommandBuffer;
 
-			inline Frame operator =  (Frame f) const
-			{
-				Frame res(f.m_Image);
-				return res;
-			}
+		VkBuffer UniformBufferVP;
+		VkDeviceMemory UniformBufferMemVP;
 
-			inline VkCommandBuffer GetCommandBuffer() const
-			{
-				return m_CommandBuffer;
-			}
-
-			inline VkDescriptorSet GetDescriptorSet() const { return m_DescriptorSet; }
-
-			inline VkFramebuffer GetNativeFramebuffer() const { return m_Framebuffer; }
-
-			inline VkCommandBuffer* GetCommandBufferPointer() { return &m_CommandBuffer; }
-
-			void UpdateViewProjectionUniform();
-
-			static void InitDepthTesting();
-			static void ShutdownDepthTesting();
-			static void UpdateDepthTesting();
-			
-			void CreateFramebuffer();
-			void CreateCommandBuffer();
-			void CreateUniformBuffer();
-			void CreateDescriptorSet();
-			void CreateImageView();
-
-		private:
-			void Shutdown();
-
-		private:
-			VkImage m_Image;
-			VkImageView m_ImageView;
-
-			VkFramebuffer m_Framebuffer;
-
-			VkCommandBuffer m_CommandBuffer;
-
-			VkBuffer m_UniformBufferVP;
-			VkDeviceMemory m_UniformBufferMemVP;
-
-			VkDescriptorSet m_DescriptorSet;
-
-			static VkImage s_DepthBufferImage;
-			static VkDeviceMemory s_DepthBufferDeviceMemory;
-			static VkImageView s_DepthBufferImageView;
-		};
-		
+		VkDescriptorSet DescriptorSet;
+	};
+	
+	class GRAPHITE_API VulkanFrameBuffer : public FrameBuffer
+	{	
 	public:
 		VulkanFrameBuffer();
 		~VulkanFrameBuffer() override;
 
 		bool OnEvent(Event& e) override;
 
-		inline void UpdateViewProjectionUniform(uint32_t currentFrame) { m_Frames[currentFrame]->UpdateViewProjectionUniform(); }
+		void UpdateViewProjectionUniform(uint32_t currentFrame);
 
 		inline size_t Size() const override { return m_BufferSize; }
 
-		inline Frame* operator [] (int i) { return m_Frames[i]; }
+		inline Frame& operator [] (int i) { return m_Frames[i]; }
 
-		inline Frame* GetFrame(uint32_t index) { return m_Frames[index]; }
+		inline Frame& GetFrame(uint32_t index) { return m_Frames[index]; }
 
-		inline static void InitDepthTesting() { Frame::InitDepthTesting(); }
-
-		void CreateFramebuffers();
-		void CreateCommandBuffers();
-		void CreateUniformBuffers();
-		void CreateDescriptorSets();
-		void CreateImageViews();
 	private:
 		void Init();
 		void Shutdown();
 
 		void CreateFrames();
-				
+		void InitDepthTesting();
+		void UpdateDepthTesting();
+		void ShutdownDepthTesting();
+		void CreateFramebuffers();
+		void CreateCommandBuffers();
+		void CreateUniformBuffers();
+		void CreateDescriptorSets();
+		void CreateImageViews();
+		
 	private:
-		std::vector<Frame*> m_Frames;
+		std::vector<Frame> m_Frames;
 		size_t m_BufferSize = 0;
+
+		VkImage m_DepthBufferImage;
+		VkDeviceMemory m_DepthBufferDeviceMemory;
+		VkImageView m_DepthBufferImageView;
 	};
 }
 
