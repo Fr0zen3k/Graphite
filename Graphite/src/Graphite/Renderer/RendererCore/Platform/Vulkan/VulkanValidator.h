@@ -20,29 +20,25 @@ namespace Graphite
 	class GRAPHITE_API VulkanValidator
 	{
 	public:
-		inline static const char* GetExtensionName() { return VK_EXT_DEBUG_REPORT_EXTENSION_NAME; }
+		inline static const char* GetExtensionName() { return VK_EXT_DEBUG_UTILS_EXTENSION_NAME; }
 
 		inline static bool Status() { return s_Status; }
 		
 		static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
-			VkDebugReportFlagsEXT flags,
-			VkDebugReportObjectTypeEXT objType,
-			uint64_t obj,
-			size_t location,
-			int32_t code,
-			const char* layerPrefix,
-			const char* message,
-			void* userData);
+			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+			VkDebugUtilsMessageSeverityFlagsEXT messageType,
+			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+			void* pUserData);
 
-		static VkResult CreateDebugReportCallbackEXT(
+		static VkResult CreateDebugUtilsMessengerEXT(
 			VkInstance instance,
-			const VkDebugReportCallbackCreateInfoEXT* pCreateInfo, 
+			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
 			const VkAllocationCallbacks* pAllocator,
-			VkDebugReportCallbackEXT* pCallback);
+			VkDebugUtilsMessengerEXT* pMessenger);
 
-		static void DestroyDebugReportCallbackEXT(
+		static void DestroyDebugUtilsMessengerEXT(
 			VkInstance instance,
-			VkDebugReportCallbackEXT callback,
+			VkDebugUtilsMessengerEXT debugMessenger,
 			const VkAllocationCallbacks* pAllocator);
 
 		static bool CheckValidationSupport();

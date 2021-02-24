@@ -36,7 +36,6 @@ namespace Graphite
 		CreateFramebuffers();
 		CreateCommandBuffers();
 		CreateUniformBuffers();
-		CreateDescriptorSets();
 	}
 
 	void VulkanFrameBuffer::Shutdown()
@@ -45,7 +44,6 @@ namespace Graphite
 	}
 
 
-	//PRETTY SURE THIS IS THE PROBLEM HERE ------------------------ RECREATE FRAMEBUFFER CLASS
 	void VulkanFrameBuffer::CreateFrames()
 	{
 		uint32_t frameCount;
@@ -80,7 +78,7 @@ namespace Graphite
 			VkFramebufferCreateInfo framebufferCreateInfo = {};
 			framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			framebufferCreateInfo.renderPass = VulkanRendererAPI::GetRenderPass();
-			framebufferCreateInfo.attachmentCount = 1;
+			framebufferCreateInfo.attachmentCount = 2;
 			framebufferCreateInfo.pAttachments = attachments;
 			framebufferCreateInfo.width = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width;
 			framebufferCreateInfo.height = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height;

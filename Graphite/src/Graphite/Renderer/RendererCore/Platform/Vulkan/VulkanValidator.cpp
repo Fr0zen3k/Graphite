@@ -12,58 +12,49 @@ namespace Graphite
 	bool VulkanValidator::s_Status = false;
 #endif
 
-	const std::vector<const char*> VulkanValidator::s_ValidationLayers = { "VK_LAYER_LUNARG_standard_validation" };
+	const std::vector<const char*> VulkanValidator::s_ValidationLayers = { "VK_LAYER_KHRONOS_validation" };
 
 	VKAPI_ATTR VkBool32 VKAPI_CALL VulkanValidator::DebugCallback(
-		VkDebugReportFlagsEXT flags,
-		VkDebugReportObjectTypeEXT objType,
-		uint64_t obj,
-		size_t location,
-		int32_t code,
-		const char* layerPrefix,
-		const char* message,
-		void* userData)
+		VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+		VkDebugUtilsMessageSeverityFlagsEXT messageType,
+		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+		void* pUserData)
 	{
-		if(flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
+		if(messageSeverity > VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
 		{
-			GR_LOG_CRITICAL("VALIDATION ERROR: {0}", message);
+			GR_LOG_CRITICAL("VALIDATION ERROR: {0}", pCallbackData->pMessage);
 		}
-		else if(flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
+		else
 		{
-			GR_LOG_WARN("VALIDATION WARNING: {0}", message);
+			GR_LOG_WARN("VALIDATION WARNING: {0}", pCallbackData->pMessage);
 		}
 
 		return VK_FALSE;
 	}
 
-	VkResult VulkanValidator::CreateDebugReportCallbackEXT(
+	VkResult VulkanValidator::CreateDebugUtilsMessengerEXT(
 		VkInstance instance,
-		const VkDebugReportCallbackCreateInfoEXT* pCreateInfo,
+		const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
 		const VkAllocationCallbacks* pAllocator,
-		VkDebugReportCallbackEXT* pCallback)
+		VkDebugUtilsMessengerEXT* pMessenger)
 	{
-		auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugReportCallbackEXT");
-
-		if(func != nullptr)
-		{
-			return func(instance, pCreateInfo, pAllocator, pCallback);
+		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+		if (func != nullptr) {
+			return func(instance, pCreateInfo, pAllocator, pMessenger);
 		}
-		else
-		{
+		else {
 			return VK_ERROR_EXTENSION_NOT_PRESENT;
 		}
 	}
 
-	void VulkanValidator::DestroyDebugReportCallbackEXT(
+	void VulkanValidator::DestroyDebugUtilsMessengerEXT(
 		VkInstance instance,
-		VkDebugReportCallbackEXT callback,
+		VkDebugUtilsMessengerEXT debugMessenger,
 		const VkAllocationCallbacks* pAllocator)
 	{
-		auto func = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugReportCallbackEXT");
-
-		if (func != nullptr)
-		{
-			func(instance, callback, pAllocator);
+		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+		if (func != nullptr) {
+			func(instance, debugMessenger, pAllocator);
 		}
 	}
 
@@ -84,11 +75,17 @@ namespace Graphite
 			&validationLayerCount,
 			availableLayers.data());
 
+		for(auto a : availableLayers)
+		{
+			std::cout << a.layerName << std::endl;
+		}
+
 		for (const auto& validationLayer : s_ValidationLayers)
 		{
 			bool hasLayer = false;
 			for (const auto& availableLayer : availableLayers)
 			{
+				std::cout << validationLayer << ", " << availableLayer.layerName << std::endl;
 				if (strcmp(validationLayer, availableLayer.layerName) == 0)
 				{
 					hasLayer = true;

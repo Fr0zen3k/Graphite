@@ -54,10 +54,11 @@ namespace Graphite
 			CreatePushConstantRange();
 			CreateCommandPool();
 			VulkanTexture::CreateCommonSampler();
-			s_FrameBuffer = new VulkanFrameBuffer();
-			CreateDescriptorPools();
 			CreateDescriptorSetLayouts();
 			CreateRenderPass();
+			s_FrameBuffer = new VulkanFrameBuffer();
+			CreateDescriptorPools();
+			s_FrameBuffer->CreateDescriptorSets();
 			CreateGraphicsPipeline();
 			CreateSynchronisation();
 			
@@ -147,25 +148,9 @@ namespace Graphite
 	}
 
 	// Recording the commands for the data given for drawing
-	void VulkanRendererAPI::Draw(const std::vector<Mesh*>& meshList, const std::vector<glm::mat4>& modelMatrices, const std::vector<Texture*>& textureList, 
-		const std::vector<uint16_t>& meshIndices, const std::vector<uint16_t>& textureIndices, uint32_t imageIndex)
+	void VulkanRendererAPI::Draw(uint32_t imageIndex)
 	{
 		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
-		
-		if(meshList.size() > MAX_OBJECTS || meshIndices.size() > MAX_OBJECTS)
-		{
-			throw std::runtime_error("Maximum number of objects in a draw call exceeded!");
-		}
-
-		if(meshIndices.size() != textureIndices.size())
-		{
-			throw std::runtime_error("Every mesh in a draw call must have an appropriate texture!");
-		}
-
-		if(meshIndices.size() != modelMatrices.size())
-		{
-			throw std::runtime_error("Numeber of model matrices must match the number of model indices in a draw call!");
-		}
 		
 		VkCommandBufferBeginInfo commandBufferBeginInfo = {};
 		commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -207,58 +192,6 @@ namespace Graphite
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					s_GraphicsPipeline);
 
-				for(size_t i = 0; i < meshIndices.size(); i++)
-				{
-					VkBuffer vertexBuffers[] = { dynamic_cast<VulkanVertexBuffer*>(meshList[meshIndices[i]]->GetVertexBuffer())->GetNativeBuffer() };
-					VkDeviceSize offsets[] = { 0 };
-
-					// Bind a vertex buffer
-					vkCmdBindVertexBuffers(
-						s_FrameBuffer->operator[](imageIndex).CommandBuffer,
-						0,
-						1,
-						vertexBuffers,
-						offsets);
-
-					// Bind an index buffer
-					vkCmdBindIndexBuffer(
-						s_FrameBuffer->operator[](imageIndex).CommandBuffer, 
-						dynamic_cast<VulkanVertexBuffer*>(meshList[meshIndices[i]]->GetIndexBuffer())->GetNativeBuffer(),
-						0,
-						VK_INDEX_TYPE_UINT32);
-
-					// Send push constant data to the shader directly
-					vkCmdPushConstants(
-						s_FrameBuffer->operator[](imageIndex).CommandBuffer, 
-						s_GraphicsPipelineLayout,
-						VK_SHADER_STAGE_VERTEX_BIT,
-						0,
-						sizeof(glm::mat4),
-						&modelMatrices[meshIndices[i]]);
-
-					// Bind descriptor sets
-					std::array<VkDescriptorSet, 2> descriptorSetGroup = { s_FrameBuffer->operator[](imageIndex).DescriptorSet,
-						dynamic_cast<VulkanTexture*>(textureList[textureIndices[i]])->GetDescriptorSet() };
-
-					vkCmdBindDescriptorSets(
-						s_FrameBuffer->operator[](imageIndex).CommandBuffer,
-						VK_PIPELINE_BIND_POINT_GRAPHICS,
-						s_GraphicsPipelineLayout,
-						0,
-						static_cast<uint32_t>(descriptorSetGroup.size()),
-						descriptorSetGroup.data(),
-						0,
-						nullptr);
-
-					// Execute the graphics pipeline
-					vkCmdDrawIndexed(
-						s_FrameBuffer->operator[](imageIndex).CommandBuffer,
-						static_cast<uint32_t>(meshList[meshIndices[i]]->VertexCount()),
-						1,
-						0,
-						0,
-						0);
-				}
 			}
 
 			vkCmdEndRenderPass(s_FrameBuffer->operator[](imageIndex).CommandBuffer);
@@ -398,23 +331,60 @@ namespace Graphite
 		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-		// Add depth description later
-
-		// Add subpasses if necessary when adding multiple subpass support
+		VkAttachmentDescription depthAttachment = {};
+		depthAttachment.format = VulkanUtilities::ChooseSupportedFormat(
+			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
+			{ VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D32_SFLOAT, VK_FORMAT_D24_UNORM_S8_UINT },
+			VK_IMAGE_TILING_OPTIMAL,
+			VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 		VkAttachmentReference colorRef = {};
 		colorRef.attachment = 0;
 		colorRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
+		VkAttachmentReference depthRef = {};
+		depthRef.attachment = 1;
+		depthRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
 		VkSubpassDescription subpass = {};
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		subpass.colorAttachmentCount = 1;
 		subpass.pColorAttachments = &colorRef;
+		subpass.pDepthStencilAttachment = &depthRef;
+
+		std::array<VkSubpassDependency, 2> subpassDependencies;
+
+		subpassDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		subpassDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		subpassDependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		subpassDependencies[0].dstSubpass = 0;
+		subpassDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		subpassDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		subpassDependencies[0].dependencyFlags = 0;
+
+		subpassDependencies[1].srcSubpass = 0;
+		subpassDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		subpassDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;;
+		subpassDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+		subpassDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		subpassDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		subpassDependencies[1].dependencyFlags = 0;
+
+		std::array<VkAttachmentDescription, 2> renderPassAttachments = { colorAttachment, depthAttachment };
 
 		VkRenderPassCreateInfo renderPassCreateInfo = {};
 		renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassCreateInfo.attachmentCount = 1;
-		renderPassCreateInfo.pAttachments = &colorAttachment;
+		renderPassCreateInfo.attachmentCount = static_cast<uint32_t>(renderPassAttachments.size());
+		renderPassCreateInfo.pAttachments = renderPassAttachments.data();
+		renderPassCreateInfo.dependencyCount = static_cast<uint32_t>(subpassDependencies.size());
+		renderPassCreateInfo.pDependencies = subpassDependencies.data();
 		renderPassCreateInfo.subpassCount = 1;
 		renderPassCreateInfo.pSubpasses = &subpass;
 
@@ -431,7 +401,79 @@ namespace Graphite
 
 	void VulkanRendererAPI::CreateGraphicsPipeline()
 	{
-		VkPipelineShaderStageCreateInfo shaderInfos[] = { s_VertexShader->GetCreateInfo(), s_FragmentShader->GetCreateInfo() };
+		//D:/Graphite/Graphite/src/Graphite/Renderer/RendererCore/Platform/Vulkan/Shaders
+		std::ifstream file1("D:/Graphite/Graphite/src/Graphite/Renderer/RendererCore/Platform/Vulkan/Shaders/vert.spv", std::ios::binary | std::ios::ate);
+
+		if(!file1.is_open())
+		{
+			throw std::runtime_error("Failed to open the vertex shader!");
+		}
+
+		size_t fileSize1 = (size_t)file1.tellg();
+		
+		std::vector<char> vertBuffer(fileSize1);
+
+		file1.seekg(0);
+		file1.read(
+			vertBuffer.data(),
+			fileSize1);
+
+		file1.close();
+		
+		std::ifstream file2("D:/Graphite/Graphite/src/Graphite/Renderer/RendererCore/Platform/Vulkan/Shaders/frag.spv", std::ios::ate | std::ios::binary);
+
+		if (!file2.is_open())
+		{
+			throw std::runtime_error("Failed to open the fragment shader!");
+		}
+		
+		size_t fileSize2 = (size_t)file2.tellg();
+		std::vector<char> fragBuffer(fileSize2);
+
+		file2.seekg(0);
+		file2.read(
+			fragBuffer.data(),
+			fileSize2);
+
+		file2.close();
+		
+
+		VkShaderModule vertModule;
+		VkShaderModule fragModule;
+
+		VkShaderModuleCreateInfo shaderCreateInfo = {};
+		shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		shaderCreateInfo.codeSize = vertBuffer.size();
+		shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(vertBuffer.data());
+
+		VkResult result = vkCreateShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &shaderCreateInfo, nullptr, &vertModule);
+		if(result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a vertex shader module!");
+		}
+
+		shaderCreateInfo.codeSize = fragBuffer.size();
+		shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(fragBuffer.data());
+
+		result = vkCreateShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &shaderCreateInfo, nullptr, &fragModule);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to create a fragment shader module!");
+		}
+		
+		VkPipelineShaderStageCreateInfo vertInfo = {};
+		vertInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		vertInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
+		vertInfo.module = vertModule;
+		vertInfo.pName = "main";
+		
+		VkPipelineShaderStageCreateInfo fragInfo = {};
+		fragInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		fragInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+		fragInfo.module = fragModule;
+		fragInfo.pName = "main";
+		
+		VkPipelineShaderStageCreateInfo shaderInfos[] = { vertInfo, fragInfo };
 
 		// .............................. ADD VERTEX BINDING DESCRIPTIONS AND VERTEX INPUT ....................................
 		VkVertexInputBindingDescription vertexBindingDescription = {};
@@ -476,7 +518,7 @@ namespace Graphite
 		VkPipelineInputAssemblyStateCreateInfo inputAssemblyStateCreateInfo = {};
 		inputAssemblyStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-		inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;				// Check if the restart is worth turning on
+		inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
 
 		VkViewport viewport;
 		VkRect2D scissors;
@@ -533,14 +575,12 @@ namespace Graphite
 		colorState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 		colorState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		colorState.colorBlendOp = VK_BLEND_OP_ADD;
-
-		std::array<VkPipelineColorBlendAttachmentState, 1> attachments = {colorState};
 		
 		VkPipelineColorBlendStateCreateInfo colorBlendCreateInfo = {};
 		colorBlendCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		colorBlendCreateInfo.logicOpEnable = VK_FALSE;
 		colorBlendCreateInfo.attachmentCount = 1;
-		colorBlendCreateInfo.pAttachments = attachments.data();
+		colorBlendCreateInfo.pAttachments = &colorState;
 
 		// Make an array of descriptor set layouts
 		std::array<VkDescriptorSetLayout, 2> descriptorSetLayouts = {s_DescriptorSetLayout, s_SamplerDescriptorSetLayout};
@@ -552,7 +592,7 @@ namespace Graphite
 		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 		pipelineLayoutCreateInfo.pPushConstantRanges = &s_PushConstantRange;
 		
-		VkResult result = vkCreatePipelineLayout(
+		result = vkCreatePipelineLayout(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			&pipelineLayoutCreateInfo,
 			nullptr,
@@ -579,6 +619,7 @@ namespace Graphite
 		pipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
 		pipelineCreateInfo.pDynamicState = nullptr;
 		pipelineCreateInfo.pViewportState = &viewportInfo;
+		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyStateCreateInfo;
 		pipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
 		pipelineCreateInfo.pMultisampleState = &multisampleStateCreateInfo;
 		pipelineCreateInfo.pColorBlendState = &colorBlendCreateInfo;
@@ -601,6 +642,9 @@ namespace Graphite
 		{
 			throw std::runtime_error("Failed to create a pipeline");
 		}
+
+		vkDestroyShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), vertModule, nullptr);
+		vkDestroyShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), fragModule, nullptr);
 	}
 
 	void VulkanRendererAPI::RecreateGraphicsPipeline()
@@ -629,11 +673,11 @@ namespace Graphite
 	}
 
 	void VulkanRendererAPI::CreateDescriptorPools()
-	{
+	{		
 		VkDescriptorPoolSize vpPoolSize = {};
 		vpPoolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		vpPoolSize.descriptorCount = static_cast<uint32_t>(s_FrameBuffer->Size());
-
+		
 		std::vector<VkDescriptorPoolSize> poolSizes = { vpPoolSize };
 
 		VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
@@ -641,6 +685,7 @@ namespace Graphite
 		descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(s_FrameBuffer->Size());
 		descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(poolSizes.size());
 		descriptorPoolCreateInfo.pPoolSizes = poolSizes.data();
+		descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 
 		VkResult result = vkCreateDescriptorPool(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
@@ -653,14 +698,17 @@ namespace Graphite
 		}
 
 		VkDescriptorPoolSize samplerPoolSize = {};
-		vpPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-		vpPoolSize.descriptorCount = static_cast<uint32_t>(s_FrameBuffer->Size());
+		samplerPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerPoolSize.descriptorCount = static_cast<uint32_t>(s_FrameBuffer->Size());
+
+		std::vector<VkDescriptorPoolSize> samplerPoolSizes = { samplerPoolSize };
 
 		VkDescriptorPoolCreateInfo samplerDescriptorPoolCreateInfo = {};
 		samplerDescriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		samplerDescriptorPoolCreateInfo.maxSets = MAX_OBJECTS;
 		samplerDescriptorPoolCreateInfo.maxSets = 1;
-		samplerDescriptorPoolCreateInfo.pPoolSizes = &samplerPoolSize;
+		samplerDescriptorPoolCreateInfo.pPoolSizes = samplerPoolSizes.data();
+		samplerDescriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(samplerPoolSizes.size());
 
 		vkCreateDescriptorPool(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),

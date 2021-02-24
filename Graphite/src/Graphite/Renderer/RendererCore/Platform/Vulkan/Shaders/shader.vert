@@ -5,7 +5,7 @@ layout(location = 1) in vec4 color;
 layout(location = 2) in vec2 textureCoordinates;
 layout(location = 3) in vec3 normal;
 
-layout(set = 0, binding = 1) uniform ViewProjection {
+layout(set = 0, binding = 0) uniform ViewProjection {
 	mat4 view;
 	mat4 projection;
 } viewProjection;

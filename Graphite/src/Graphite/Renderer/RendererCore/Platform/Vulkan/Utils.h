@@ -297,8 +297,6 @@ namespace Graphite
 				device,
 				*buffer,
 				&memRequirements);
-
-			std::cout << "buffer create" << std::endl;
 			
 			VkMemoryAllocateInfo memoryAllocInfo = {};
 			memoryAllocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -513,8 +511,6 @@ namespace Graphite
 			{
 				throw std::runtime_error("Failed to create an Image View!");
 			}
-
-			std::cout << "Image View" << std::endl;
 			
 			return imageView;
 		}

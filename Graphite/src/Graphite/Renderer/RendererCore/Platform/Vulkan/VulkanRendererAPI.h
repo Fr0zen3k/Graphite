@@ -43,8 +43,7 @@ namespace Graphite
 		inline static VkSurfaceFormatKHR GetSwapchainSurfaceFormat() { return s_SwapchainSurfaceFormat; }
 
 		static uint32_t StartDrawing();
-		static void Draw(const std::vector<Mesh*>& meshList, const std::vector<glm::mat4>& modelMatrices, const std::vector<Texture*>& textureList, const std::vector<uint16_t>& meshIndices,
-									const std::vector<uint16_t>& textureIndices, uint32_t imageIndex);
+		static void Draw(uint32_t imageIndex);
 		static void EndDrawing(uint32_t imageIndex);
 
 	private:

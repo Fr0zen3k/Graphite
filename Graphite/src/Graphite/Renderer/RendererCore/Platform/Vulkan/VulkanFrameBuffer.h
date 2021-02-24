@@ -43,12 +43,14 @@ namespace Graphite
 
 		void UpdateViewProjectionUniform(uint32_t currentFrame);
 
-		inline size_t Size() const override { return m_BufferSize; }
+		inline size_t Size() const override { return m_Frames.size(); }
 
 		inline Frame& operator [] (int i) { return m_Frames[i]; }
 
 		inline Frame& GetFrame(uint32_t index) { return m_Frames[index]; }
 
+		void CreateDescriptorSets();
+		
 	private:
 		void Init();
 		void Shutdown();
@@ -60,12 +62,10 @@ namespace Graphite
 		void CreateFramebuffers();
 		void CreateCommandBuffers();
 		void CreateUniformBuffers();
-		void CreateDescriptorSets();
 		void CreateImageViews();
 		
 	private:
 		std::vector<Frame> m_Frames;
-		size_t m_BufferSize = 0;
 
 		VkImage m_DepthBufferImage;
 		VkDeviceMemory m_DepthBufferDeviceMemory;

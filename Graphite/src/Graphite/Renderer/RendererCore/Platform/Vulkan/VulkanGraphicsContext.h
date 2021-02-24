@@ -69,7 +69,7 @@ namespace Graphite
 		void ChoosePhysicalDevice();
 		void CreateLogicalDevice();
 		void CreateSurface();
-		void CreateDebugCallback();
+		void CreateDebugMessenger();
 		
 		void GetQueueFamilies();
 
@@ -94,7 +94,7 @@ namespace Graphite
 		VkExtent2D m_SwapchainExtent;
 		VkColorSpaceKHR m_SwapchainColorSpace;
 
-		VkDebugReportCallbackEXT m_DebugCallback;
+		VkDebugUtilsMessengerEXT m_DebugMessenger;
 		
 		std::pair<uint32_t, uint32_t> m_FrameSize;
 		VulkanUtilities::QueueFamilies m_QueueFamilies;

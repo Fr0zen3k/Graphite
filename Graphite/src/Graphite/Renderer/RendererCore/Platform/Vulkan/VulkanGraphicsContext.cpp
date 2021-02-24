@@ -52,7 +52,7 @@ namespace Graphite
 		try
 		{
 			CreateInstance();
-			CreateDebugCallback();
+			CreateDebugMessenger();
 			ChoosePhysicalDevice();
 			CreateSurface();
 			GetQueueFamilies();
@@ -110,24 +110,17 @@ namespace Graphite
 
 		instanceInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		instanceInfo.ppEnabledExtensionNames = extensions.data();
-
-		
-		const char* const* validationLayers = VulkanValidator::GetValidationLayers();
 		
 		if(VulkanValidator::Status())
 		{
 			instanceInfo.enabledLayerCount = static_cast<uint32_t>(VulkanValidator::GetValidationLayerSize());
-			instanceInfo.ppEnabledLayerNames = validationLayers;
+			instanceInfo.ppEnabledLayerNames = VulkanValidator::GetValidationLayers();
 		}
 		else
 		{
 			instanceInfo.enabledLayerCount = 0;
 			instanceInfo.ppEnabledLayerNames = nullptr;
 		}
-		
-
-		instanceInfo.enabledLayerCount = 0;
-		instanceInfo.ppEnabledLayerNames = nullptr;
 		
 		VkResult result = vkCreateInstance(
 			&instanceInfo,
@@ -191,7 +184,7 @@ namespace Graphite
 		for(int index : queueFamilyIndices)
 		{
 			VkDeviceQueueCreateInfo info = {};
-			info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+			info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			info.queueFamilyIndex = index;
 			info.queueCount = 1;
 			float priority = 1.0f;
@@ -289,24 +282,21 @@ namespace Graphite
 		}
 	}
 
-	void VulkanGraphicsContext::CreateDebugCallback()
+	void VulkanGraphicsContext::CreateDebugMessenger()
 	{
 		if (!VulkanValidator::Status()) { return; }
 
-		VkDebugReportCallbackCreateInfoEXT callbackInfo = {};
-		callbackInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-		callbackInfo.flags = VK_DEBUG_REPORT_WARNING_BIT_EXT | VK_DEBUG_REPORT_ERROR_BIT_EXT;
-		callbackInfo.pfnCallback = VulkanValidator::DebugCallback;
+		VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
+		createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+		createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+		createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+		createInfo.pfnUserCallback = VulkanValidator::DebugCallback;
+		createInfo.pUserData = nullptr;
 
-		VkResult result = VulkanValidator::CreateDebugReportCallbackEXT(
-			m_Instance,
-			&callbackInfo,
-			nullptr,
-			&m_DebugCallback);
-
+		VkResult result = VulkanValidator::CreateDebugUtilsMessengerEXT(m_Instance, &createInfo, nullptr, &m_DebugMessenger);
 		if(result != VK_SUCCESS)
 		{
-			throw std::runtime_error("Failed to create a Vulkan debug callback!");
+			throw std::runtime_error("Failed to create a debug messenger");
 		}
 	}
 

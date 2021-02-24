@@ -12,13 +12,13 @@
 namespace Graphite
 {
 
-	GraphicsContext* Renderer2D::s_GraphicsContext;
+	GraphicsContext* Renderer2D::s_GraphicsContext = nullptr;
 
 
 	// ---------------------- TEST -----------------------
-	Quad* Renderer2D::s_TestQuad;
+	Quad* Renderer2D::s_TestQuad = nullptr;
 	Math::Transform* Renderer2D::s_TestTransform = new Math::Transform({ 5.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
-	Texture* Renderer2D::s_TestTexture;
+	Texture* Renderer2D::s_TestTexture = nullptr;
 	// ---------------------- TEST -----------------------
 	
 	
@@ -47,16 +47,13 @@ namespace Graphite
 		{
 			std::cout << e.what() << std::endl;
 		}
-		/*
-		s_TestQuad = new Quad();
-		s_TestTexture = Texture::CreateTexture("C:/Users/Darko/Desktop/i-have-spoken.png");
-		*/
 	}
 
 	void Renderer2D::OnTick()
 	{	
-		uint32_t index = VulkanRendererAPI::StartDrawing();
-		VulkanRendererAPI::EndDrawing(index);
+		int i = VulkanRendererAPI::StartDrawing();
+		VulkanRendererAPI::Draw(i);
+		VulkanRendererAPI::EndDrawing(i);
 	}
 
 	
