@@ -67,17 +67,17 @@ namespace Graphite {
 	{
 
 		m_ProjectionMatrix = glm::ortho(
-			-GR_GRAPHICS_CONTEXT->GetFrameSize().first / 2.0f,
-			GR_GRAPHICS_CONTEXT->GetFrameSize().first / 2.0f,
-			-GR_GRAPHICS_CONTEXT->GetFrameSize().second / 2.0f,
-			GR_GRAPHICS_CONTEXT->GetFrameSize().second / 2.0f);
+			0.0f,
+			(float)GR_GRAPHICS_CONTEXT->GetFrameSize().first,
+			0.0f,
+			(float)GR_GRAPHICS_CONTEXT->GetFrameSize().second);
 		
 		// Add viewport and scissor creations and extend functionality later
 		m_Viewport = {};
 		m_Viewport.x = 0.0f;
 		m_Viewport.y = 0.0f;
-		m_Viewport.width = static_cast<float>(GR_GRAPHICS_CONTEXT->GetFrameSize().first);
-		m_Viewport.height = static_cast<float>(GR_GRAPHICS_CONTEXT->GetFrameSize().second);
+		m_Viewport.width = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().first;
+		m_Viewport.height = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().second;
 		m_Viewport.minDepth = 0.0f;
 		m_Viewport.maxDepth = 1.0f;
 

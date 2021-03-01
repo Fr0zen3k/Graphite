@@ -68,7 +68,7 @@ namespace Graphite {
 		}
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);			//implement later, leave for now
+		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);			//implement later, leave for now
 
 		m_WindowInstance = glfwCreateWindow(m_Data.Width, m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
 //		glfwMakeContextCurrent(m_WindowInstance);

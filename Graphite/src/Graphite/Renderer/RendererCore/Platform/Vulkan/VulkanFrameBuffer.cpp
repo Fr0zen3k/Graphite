@@ -61,19 +61,17 @@ namespace Graphite
 		
 		for(VkImage image : images)
 		{
-			m_Frames.resize(0);
-			Frame f;
+			Frame f = {};
 			f.Image = image;
 			m_Frames.emplace_back(f);
 		}
-		
 	}
 
 	void VulkanFrameBuffer::CreateFramebuffers()
 	{
-		for(Frame& f : m_Frames)
+		for(int i = 0; i < m_Frames.size(); i++)
 		{
-			VkImageView attachments[] = { f.ImageView, m_DepthBufferImageView };
+			VkImageView attachments[] = { m_Frames[i].ImageView, m_DepthBufferImageView };
 
 			VkFramebufferCreateInfo framebufferCreateInfo = {};
 			framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -88,7 +86,7 @@ namespace Graphite
 				GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 				&framebufferCreateInfo,
 				nullptr,
-				&f.Framebuffer);
+				&m_Frames[i].Framebuffer);
 
 			if (result != VK_SUCCESS)
 			{
@@ -99,7 +97,7 @@ namespace Graphite
 	
 	void VulkanFrameBuffer::CreateCommandBuffers()
 	{
-		for (Frame& f : m_Frames)
+		for (int i = 0; i < m_Frames.size(); i++)
 		{
 			VkCommandBufferAllocateInfo commandBufferAllocInfo = {};
 			commandBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -110,7 +108,7 @@ namespace Graphite
 			VkResult result = vkAllocateCommandBuffers(
 				GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 				&commandBufferAllocInfo,
-				&f.CommandBuffer);
+				&m_Frames[i].CommandBuffer);
 
 			if (result != VK_SUCCESS)
 			{
@@ -121,7 +119,7 @@ namespace Graphite
 	
 	void VulkanFrameBuffer::CreateUniformBuffers()
 	{
-		for (Frame& f : m_Frames)
+		for (int i = 0; i < m_Frames.size(); i++)
 		{
 			VkDeviceSize bufferSize = sizeof(ViewProjection);
 
@@ -131,8 +129,8 @@ namespace Graphite
 				bufferSize,
 				VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-				&f.UniformBufferVP,
-				&f.UniformBufferMemVP);
+				&m_Frames[i].UniformBufferVP,
+				&m_Frames[i].UniformBufferMemVP);
 		}
 	}
 	
@@ -162,15 +160,15 @@ namespace Graphite
 
 	void VulkanFrameBuffer::CreateImageViews()
 	{
-		for(Frame& f : m_Frames)
+		for(int i = 0; i < m_Frames.size(); i++)
 		{
-			f.ImageView = VulkanUtilities::CreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), f.Image, VulkanRendererAPI::GetSwapchainSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT);
+			m_Frames[i].ImageView = VulkanUtilities::CreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Frames[i].Image, VulkanRendererAPI::GetSwapchainSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT);
 		}
 	}
 	
 	void VulkanFrameBuffer::CreateDescriptorSets()
 	{
-		for(Frame& f : m_Frames)
+		for(int i = 0; i < m_Frames.size(); i++)
 		{
 			// Create descriptor set
 			VkDescriptorSetLayout layout = VulkanRendererAPI::GetDescriptorSetLayout();
@@ -184,7 +182,7 @@ namespace Graphite
 			VkResult result = vkAllocateDescriptorSets(
 				GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 				&allocInfo,
-				&f.DescriptorSet);
+				&m_Frames[i].DescriptorSet);
 
 			if (result != VK_SUCCESS)
 			{
@@ -193,13 +191,13 @@ namespace Graphite
 
 			// Update the descriptor set buffer bindings
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = f.UniformBufferVP;
+			bufferInfo.buffer = m_Frames[i].UniformBufferVP;
 			bufferInfo.offset = 0;
 			bufferInfo.range = sizeof(ViewProjection);
 
 			VkWriteDescriptorSet writeSet = {};
 			writeSet.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			writeSet.dstSet = f.DescriptorSet;
+			writeSet.dstSet = m_Frames[i].DescriptorSet;
 			writeSet.dstBinding = 0;
 			writeSet.dstArrayElement = 0;
 			writeSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;

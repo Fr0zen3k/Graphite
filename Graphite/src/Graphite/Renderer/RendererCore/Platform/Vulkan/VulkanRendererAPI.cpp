@@ -57,6 +57,7 @@ namespace Graphite
 			CreateDescriptorSetLayouts();
 			CreateRenderPass();
 			s_FrameBuffer = new VulkanFrameBuffer();
+			VulkanTexture::CreateCommonSampler();
 			CreateDescriptorPools();
 			s_FrameBuffer->CreateDescriptorSets();
 			CreateGraphicsPipeline();
@@ -162,15 +163,15 @@ namespace Graphite
 		renderPassBeginInfo.renderArea.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
 
 		std::array<VkClearValue, 2> clearValues = {};
-		clearValues[0].color = {0.24f, 0.23f, 0.24f, 1.0f};
+		clearValues[0].color = { 0.6f, 0.65f, 0.4f, 1.0f };										//{0.24f, 0.23f, 0.24f, 1.0f};
 		clearValues[1].depthStencil.depth = 1.0f;
 
 		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassBeginInfo.pClearValues = clearValues.data();
-		renderPassBeginInfo.framebuffer = s_FrameBuffer->operator[](imageIndex).Framebuffer;
+		renderPassBeginInfo.framebuffer = s_FrameBuffer->GetFrame(imageIndex).Framebuffer;
 
 		VkResult result = vkBeginCommandBuffer(
-			s_FrameBuffer->operator[](imageIndex).CommandBuffer,
+			s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
 			&commandBufferBeginInfo);
 		if(result != VK_SUCCESS)
 		{
@@ -180,27 +181,28 @@ namespace Graphite
 
 		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BEGIN RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-		{
+		
 			vkCmdBeginRenderPass(
-				s_FrameBuffer->operator[](imageIndex).CommandBuffer,
+				s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
 				&renderPassBeginInfo, 
 				VK_SUBPASS_CONTENTS_INLINE);
 
-			{
+			
 				vkCmdBindPipeline(
-					s_FrameBuffer->operator[](imageIndex).CommandBuffer,
+					s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					s_GraphicsPipeline);
 
-			}
+				//Texture* t = Texture::CreateTexture("C:/Users/jankr/OneDrive/Slike/fr0zen.png");
+			
 
-			vkCmdEndRenderPass(s_FrameBuffer->operator[](imageIndex).CommandBuffer);
-		}
+			vkCmdEndRenderPass(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
+		
 
 		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-		result = vkEndCommandBuffer(s_FrameBuffer->operator[](imageIndex).CommandBuffer);
+		result = vkEndCommandBuffer(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to stop recording a command buffer!");
@@ -216,7 +218,7 @@ namespace Graphite
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &s_FrameBuffer->operator[](imageIndex).CommandBuffer;
+		submitInfo.pCommandBuffers = &s_FrameBuffer->GetFrame(imageIndex).CommandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
 
@@ -236,8 +238,9 @@ namespace Graphite
 		presentInfo.waitSemaphoreCount = 1;
 		presentInfo.pWaitSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
 		presentInfo.pSwapchains = &s_Swapchain;
+		presentInfo.swapchainCount = 1;
 		presentInfo.pImageIndices = &imageIndex;
-
+		
 		result = vkQueuePresentKHR(
 			GR_GRAPHICS_CONTEXT->GetPresentationQueue(),
 			&presentInfo);
@@ -259,6 +262,7 @@ namespace Graphite
 		s_SwapchainSurfaceFormat = swapchainInfo.ChooseBestSurfaceFormat();
 		VkPresentModeKHR presentMode = swapchainInfo.ChooseBestPresentMode();
 		VkExtent2D extent = swapchainInfo.ChooseSwapchainExtent(GR_GRAPHICS_CONTEXT->GetNativeWindow());
+		GR_GRAPHICS_CONTEXT->SetSwapchainExtent(extent);
 
 		uint32_t imageNum = swapchainInfo.m_SurfaceCapabilities.minImageCount + 1;
 
@@ -683,7 +687,6 @@ namespace Graphite
 		VkDescriptorPoolCreateInfo descriptorPoolCreateInfo = {};
 		descriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(s_FrameBuffer->Size());
-		descriptorPoolCreateInfo.maxSets = static_cast<uint32_t>(poolSizes.size());
 		descriptorPoolCreateInfo.pPoolSizes = poolSizes.data();
 		descriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 

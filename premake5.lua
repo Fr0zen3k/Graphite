@@ -1,7 +1,7 @@
 workspace "Graphite"
 	architecture "x64"
 
-	configurations 
+	configurations
 	{
 		"Debug",
 		"Release",
@@ -16,7 +16,7 @@ project "Graphite"
 	location "Graphite"
 	kind "SharedLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++latest"
 	staticruntime "off"
 
 	targetdir ("bin/" .. outdir .. "/%{prj.name}")
@@ -24,8 +24,8 @@ project "Graphite"
 
 	pchheader "Graphite/Core/grpch.h"
 	pchsource "Graphite/src/Graphite/Core/grpch.cpp"
-	
-	files 
+
+	files
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
@@ -44,44 +44,44 @@ project "Graphite"
 		"%{prj.name}/vendor/RapidJSON/include",
 		"%{prj.name}/vendor/STBI"
 	}
-	
-	libdirs 
+
+	libdirs
 	{
 		"C:/VulkanSDK/1.2.148.1/Lib",
 		"%{prj.name}/vendor/glfw_x64/lib-vc2019"
 	}
-	
-	links 
+
+	links
 	{
 		"vulkan-1",
 		"ImGui",
 		"glfw3"
 	}
-	
-	defines 
+
+	defines
 	{
 		"GLFW_INCLUDE_VULKAN",
 		"GLM_FORCE_DEPTH_ZERO_TO_ONE"
 	}
-	
+
 	filter "system:windows"
 		systemversion "latest"
 
-		defines	
+		defines
 		{
 			"GR_PLATFORM_WINDOWS",
 			"_CRT_SECURE_NO_WARNINGS",
 			"GR_BUILD_DLL",
 			"GRAPHITE_RENDERER_VULKAN"
 		}
-		
+
 		postbuildcommands
 		{
 			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outdir .. "/Sandbox")
 		}
 
 	filter "configurations:Debug"
-		defines 
+		defines
 		{
 			"GR_DEBUG",
 			"GR_ENABLE_ASSERT"
@@ -89,12 +89,12 @@ project "Graphite"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines 
+		defines
 		{
 			"GR_RELEASE",
 			"GR_ENABLE_ASSERT"
 		}
-		
+
 		optimize "On"
 
 	filter "configurations:Dist"
@@ -105,13 +105,13 @@ project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++latest"
 	staticruntime "on"
 
 	targetdir ("bin/" .. outdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outdir .. "/%{prj.name}")
 
-	files 
+	files
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
@@ -132,7 +132,7 @@ project "Sandbox"
 		"Graphite/vendor/RapidJSON/include",
 		"Graphite/vendor/imgui"
 	}
-	links 
+	links
 	{
 		"Graphite"
 	}
