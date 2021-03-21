@@ -50,7 +50,6 @@ namespace Graphite
 		static void CreateSwapchain();
 		static void CreateRenderPass();
 		static void CreateGraphicsPipeline();
-		static void RecreateGraphicsPipeline();
 		static void CreateCommandPool();
 		static void CreateDescriptorPools();
 		static void CreatePushConstantRange();

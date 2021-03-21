@@ -193,8 +193,29 @@ namespace Graphite
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					s_GraphicsPipeline);
 
-				//Texture* t = Texture::CreateTexture("C:/Users/jankr/OneDrive/Slike/fr0zen.png");
-			
+				VkViewport viewport = {};
+				viewport.x = 0.0f;
+				viewport.y = 0.0f;
+				viewport.width = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().first;
+				viewport.height = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().second;
+				viewport.minDepth = 0.0f;
+				viewport.maxDepth = 1.0f;
+
+				vkCmdSetViewport(
+					s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
+					0,
+					1,
+					&viewport);
+
+				VkRect2D scissors = {};
+				scissors.offset = { 0, 0 };
+				scissors.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
+
+				vkCmdSetScissor(
+					s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
+					0,
+					1,
+					&scissors);
 
 			vkCmdEndRenderPass(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
 		
@@ -329,7 +350,7 @@ namespace Graphite
 		colorAttachment.format = GR_GRAPHICS_CONTEXT->GetSwapchainImageFormat();
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;					// VK_ATTACHMENT_STORE_OP_DONT_CARE
 		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -524,34 +545,17 @@ namespace Graphite
 		inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
 
-		VkViewport viewport;
-		VkRect2D scissors;
-		Camera* camera = Application::Get()->GetActiveCameraInstance();
-
-		if (camera->GetCameraType() == CameraType::Orthographic)
-		{
-			viewport = dynamic_cast<VulkanOrthographicCamera*>(camera)->GetViewport();
-			scissors = dynamic_cast<VulkanOrthographicCamera*>(camera)->GetScissors();
-		}
-		else if (camera->GetCameraType() == CameraType::Perspective)
-		{
-			viewport = dynamic_cast<VulkanPerspectiveCamera*>(camera)->GetViewport();
-			scissors = dynamic_cast<VulkanPerspectiveCamera*>(camera)->GetScissors();
-		}
-
-
-		VkPipelineViewportStateCreateInfo  viewportInfo = {};
-		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewportInfo.viewportCount = 1;
-		viewportInfo.pViewports = &viewport;
-		viewportInfo.scissorCount = 1;
-		viewportInfo.pScissors = &scissors;
+		VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 		
+		VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+		dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		dynamicStateInfo.dynamicStateCount = 2;
+		dynamicStateInfo.pDynamicStates = dynamicStates;
 
 		VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = {};
 		rasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
-		rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
+		rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_TRUE;
 		rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;			// Make sure to modify for when creating a lvl editor
 		rasterizationStateCreateInfo.lineWidth = 1.0f;
 		rasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;				// Check if better exists
@@ -621,8 +625,8 @@ namespace Graphite
 		pipelineCreateInfo.stageCount = 2;
 		pipelineCreateInfo.pStages = shaderInfos;
 		pipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
-		pipelineCreateInfo.pDynamicState = nullptr;
-		pipelineCreateInfo.pViewportState = &viewportInfo;
+		pipelineCreateInfo.pDynamicState = &dynamicStateInfo;
+		pipelineCreateInfo.pViewportState = nullptr;
 		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyStateCreateInfo;
 		pipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
 		pipelineCreateInfo.pMultisampleState = &multisampleStateCreateInfo;
@@ -650,12 +654,6 @@ namespace Graphite
 		vkDestroyShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), vertModule, nullptr);
 		vkDestroyShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), fragModule, nullptr);
 	}
-
-	void VulkanRendererAPI::RecreateGraphicsPipeline()
-	{
-		
-	}
-
 
 	void VulkanRendererAPI::CreateCommandPool()
 	{

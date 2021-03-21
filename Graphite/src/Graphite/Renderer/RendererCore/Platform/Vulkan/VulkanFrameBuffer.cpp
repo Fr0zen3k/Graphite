@@ -81,7 +81,7 @@ namespace Graphite
 			framebufferCreateInfo.width = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width;
 			framebufferCreateInfo.height = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height;
 			framebufferCreateInfo.layers = 1;
-
+			
 			VkResult result = vkCreateFramebuffer(
 				GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 				&framebufferCreateInfo,
@@ -162,7 +162,11 @@ namespace Graphite
 	{
 		for(int i = 0; i < m_Frames.size(); i++)
 		{
-			m_Frames[i].ImageView = VulkanUtilities::CreateImageView(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), m_Frames[i].Image, VulkanRendererAPI::GetSwapchainSurfaceFormat().format, VK_IMAGE_ASPECT_COLOR_BIT);
+			m_Frames[i].ImageView = VulkanUtilities::CreateImageView(
+				GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+				m_Frames[i].Image,
+				VulkanRendererAPI::GetSwapchainSurfaceFormat().format,
+				VK_IMAGE_ASPECT_COLOR_BIT);
 		}
 	}
 	

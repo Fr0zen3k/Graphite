@@ -33,9 +33,6 @@ namespace Graphite
 		glm::vec3 GetPosition() const override;
 		glm::mat4 GetViewMatrix() const override;
 		glm::mat4 GetProjectionMatrix() const override;
-
-		inline VkViewport GetViewport() const { return m_Viewport; }
-		inline VkRect2D GetScissors() const { return m_Scissors; }
 		
 		void Translate(glm::vec3 position) override;
 		
@@ -58,8 +55,6 @@ namespace Graphite
 	private:
 		Math::Transform m_Transform;
 		glm::mat4 m_ProjectionMatrix;
-		VkViewport m_Viewport;
-		VkRect2D m_Scissors;
 		float m_FieldOfView;
 		float m_AspectRation;
 	};

@@ -65,25 +65,11 @@ namespace Graphite {
 
 	void VulkanOrthographicCamera::Init()
 	{
-
 		m_ProjectionMatrix = glm::ortho(
 			0.0f,
 			(float)GR_GRAPHICS_CONTEXT->GetFrameSize().first,
 			0.0f,
 			(float)GR_GRAPHICS_CONTEXT->GetFrameSize().second);
-		
-		// Add viewport and scissor creations and extend functionality later
-		m_Viewport = {};
-		m_Viewport.x = 0.0f;
-		m_Viewport.y = 0.0f;
-		m_Viewport.width = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().first;
-		m_Viewport.height = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().second;
-		m_Viewport.minDepth = 0.0f;
-		m_Viewport.maxDepth = 1.0f;
-
-		m_Scissors = {};
-		m_Scissors.offset = { 0, 0 };
-		m_Scissors.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
 	}
 
 }
