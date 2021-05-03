@@ -149,7 +149,7 @@ namespace Graphite
 	}
 
 	// Recording the commands for the data given for drawing
-	void VulkanRendererAPI::Draw(uint32_t imageIndex)
+	void VulkanRendererAPI::Draw(uint32_t imageIndex, VulkanVertexBuffer* pVertexBuffer, VulkanIndexBuffer* pIndexBuffer, VulkanTexture* pTexture, glm::mat4* pModelMatrix)
 	{
 		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
 		
@@ -216,6 +216,17 @@ namespace Graphite
 					0,
 					1,
 					&scissors);
+
+				// Data binding
+				if(pVertexBuffer != nullptr && pIndexBuffer != nullptr)
+				{
+					
+				}
+
+				if(pTexture != nullptr)
+				{
+					
+				}
 
 			vkCmdEndRenderPass(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
 		

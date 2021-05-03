@@ -13,10 +13,6 @@
 
 #include "../RendererCore/GraphicsContext.h"
 
-#include "../RendererCore/MeshCore/Quad.h"
-#include "../../Math/Transform.h"
-#include "../RendererCore/Texture.h"
-
 namespace Graphite
 {
 
@@ -27,16 +23,11 @@ namespace Graphite
 		static void InitAPI();
 		static void OnTick();
 		static void Shutdown();
+		
 		static GraphicsContext* GetGraphicsContext();
 		
 	private:
 		static GraphicsContext* s_GraphicsContext;
-
-		// ---------------------- TEST -----------------------
-		static Quad* s_TestQuad;
-		static Math::Transform* s_TestTransform;
-		static Texture* s_TestTexture;
-		// ---------------------- TEST -----------------------
 	};
 
 }

@@ -12,7 +12,7 @@
 
 #include "Mesh.h"
 
-#include "../Utilities.h"
+#include "Graphite/Renderer/RendererCore/Utilities.h"
 
 namespace Graphite
 {

@@ -10,9 +10,9 @@
 #include "Graphite/Core/grpch.h"
 #include "Graphite/Core/Core.h"
 
-#include "../Utilities.h"
-#include "../VertexBuffer.h"
-#include "../IndexBuffer.h"
+#include "Graphite/Renderer/RendererCore/Utilities.h"
+#include "Graphite/Renderer/RendererCore/VertexBuffer.h"
+#include "Graphite/Renderer/RendererCore/IndexBuffer.h"
 
 #include "glm/glm.hpp"
 

@@ -17,8 +17,9 @@
 
 #include "VulkanFrameBuffer.h"
 #include "VulkanShader.h"
-#include "../../MeshCore/Mesh.h"
-#include "../../Texture.h"
+#include "VulkanTexture.h"
+#include "VulkanIndexBuffer.h"
+#include "VulkanVertexBuffer.h"
 
 namespace Graphite
 {
@@ -43,7 +44,7 @@ namespace Graphite
 		inline static VkSurfaceFormatKHR GetSwapchainSurfaceFormat() { return s_SwapchainSurfaceFormat; }
 
 		static uint32_t StartDrawing();
-		static void Draw(uint32_t imageIndex);
+		static void Draw(uint32_t imageIndex, VulkanVertexBuffer * pVertexBuffer, VulkanIndexBuffer * pIndexBuffer, VulkanTexture * pTexture, glm::mat4 * pModelMatrix);
 		static void EndDrawing(uint32_t imageIndex);
 
 	private:
