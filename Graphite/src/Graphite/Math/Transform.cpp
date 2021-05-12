@@ -11,14 +11,14 @@ namespace Graphite
 		}
 
 		void Transform::Rotate(glm::vec3& vector, float angle) {
-			glm::quat quaternion = glm::quat(glm::radians(angle), glm::normalize(vector));
+			glm::quat quaternion = glm::quat(glm::cos(glm::radians(angle)/2), glm::normalize(vector) * glm::sin(glm::radians(angle) / 2));
 			m_Rotation = quaternion * m_Rotation;
 		}
 
 		void Transform::Rotate(const std::vector<Rotation>& rotations) {
 			for (Rotation rot : rotations) {
 				rot.vec = glm::normalize(rot.vec);
-				glm::quat quaternion = glm::quat(glm::radians(rot.angle), rot.vec);
+				glm::quat quaternion = glm::quat(glm::cos(glm::radians(rot.angle) / 2), glm::normalize(rot.vec) * glm::sin(glm::radians(rot.angle) / 2));
 				m_Rotation = glm::cross(quaternion, m_Rotation);
 			}
 		}

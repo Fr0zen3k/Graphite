@@ -25,7 +25,13 @@ namespace Graphite {
 
 	glm::mat4 VulkanOrthographicCamera::GetViewMatrix() const
 	{
-		return m_Transform.GetModelMatrix();
+		glm::mat4 ret = m_Transform.GetModelMatrix();
+		ret[0] *= 1.0f;
+		ret[1] *= 1.0f;
+		ret[2] *= 1.0f;
+		ret = glm::inverse(ret);
+		ret[1] *= -1.0f;
+		return ret;
 	}
 
 	glm::mat4 VulkanOrthographicCamera::GetProjectionMatrix() const

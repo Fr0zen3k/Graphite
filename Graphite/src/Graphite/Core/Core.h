@@ -10,6 +10,9 @@
 #ifndef GRAPHITE_CORE_H
 #define GRAPHITE_CORE_H
 
+typedef uint32_t GameObjectID;
+typedef uint32_t MeshID;
+
 #ifdef GR_PLATFORM_WINDOWS
     #ifdef GR_BUILD_DLL
         #define GRAPHITE_API __declspec(dllexport)
@@ -34,7 +37,6 @@
 
 #ifdef GRAPHITE_RENDERER_VULKAN
 	#define GR_GRAPHICS_CONTEXT dynamic_cast<VulkanGraphicsContext*>(Renderer2D::GetGraphicsContext())
-	#define RENDERER_API Graphite::VulkanRendererAPI
 #endif
 
 
