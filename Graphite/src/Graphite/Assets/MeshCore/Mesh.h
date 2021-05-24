@@ -29,6 +29,8 @@ namespace Graphite
 		void SetMeshColor(const glm::vec4& color);
 		void SetVertexColors(glm::vec4* colors);
 
+		float GetMaxDistance() const;
+
 		inline size_t VertexCount() const { return m_VertexBuffer->Size(); }
 		inline size_t IndexCount() const { return m_IndexBuffer->Size(); }
 

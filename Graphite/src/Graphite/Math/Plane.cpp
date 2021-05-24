@@ -52,12 +52,12 @@ namespace Graphite
 
 	float Plane::Distance(const glm::mat4x2& lineParameters) const
 	{
-		
+		return false;
 	}
 
 	float Plane::Distance(const Plane& plane) const
 	{
-		
+		return false;
 	}
 
 	bool Plane::OnPlane(const glm::vec3& point) const
@@ -72,7 +72,7 @@ namespace Graphite
 
 	bool Plane::OnPlane(const glm::mat4x2& lineParameters) const
 	{
-		
+		return false;
 	}
 
 	bool Plane::Parallel(const Plane& plane) const
@@ -83,7 +83,7 @@ namespace Graphite
 
 	bool Plane::Parallel(const glm::mat4x2& lineParameters) const
 	{
-		
+		return false;
 	}
 
 	bool Plane::Parallel(const glm::vec3 vector) const

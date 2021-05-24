@@ -3,7 +3,7 @@
 
 namespace Graphite
 {
-	CsvLogger::CsvLogger(const std::string& path, std::vector<const std::string&>& rows, const char& delimiter) : m_FilePath(path), m_RowNames(rows), m_Delimiter(delimiter)
+	CsvLogger::CsvLogger(const std::string& path, std::vector<std::string>& rows, const char& delimiter) : m_FilePath(path), m_RowNames(std::vector<std::string>(rows)), m_Delimiter(delimiter)
 	{
 		m_FileStream.open(m_FilePath);
 
@@ -30,7 +30,7 @@ namespace Graphite
 		m_FileStream.close();
 	}
 
-	void CsvLogger::AddDataRow(std::vector<const std::string&>& row)
+	void CsvLogger::AddDataRow(std::vector<std::string>& row)
 	{
 		if(m_QueuePos != 0)
 		{
@@ -73,7 +73,7 @@ namespace Graphite
 		m_DataQueue.resize(0);
 	}
 
-	void CsvLogger::QueueData(const std::string& data)
+	void CsvLogger::QueueData(std::string data)
 	{
 		m_DataQueue.emplace_back(data);
 	}

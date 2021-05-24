@@ -174,6 +174,11 @@ namespace Graphite
 		vkGetPhysicalDeviceFeatures(
 			m_PhysicalDevice,
 			&m_PhysicalDeviceFeatures);
+
+		if(m_PhysicalDeviceProperties.limits.maxPushConstantsSize < 256)
+		{
+			throw std::runtime_error("Insufficient device push constants size.");
+		}
 	}
 
 	void VulkanGraphicsContext::CreateLogicalDevice()

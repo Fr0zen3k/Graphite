@@ -15,17 +15,17 @@ namespace Graphite
 	class GRAPHITE_API CsvLogger
 	{
 	public:
-		CsvLogger(const std::string& path, std::vector<const std::string&>& rows, const char& delimiter = ',');
+		CsvLogger(const std::string& path, std::vector<std::string>& rows, const char& delimiter = ',');
 		virtual ~CsvLogger();
 
-		void AddDataRow(std::vector<const std::string&>& row);
-		void QueueData(const std::string& data);
+		void AddDataRow(std::vector<std::string>& row);
+		void QueueData(std::string data);
 
 		void Flush();
 	private:
 		const std::string& m_FilePath;
-		std::vector<const std::string&> m_RowNames;
-		std::vector<const std::string&> m_DataQueue;
+		std::vector<std::string> m_RowNames;
+		std::vector<std::string> m_DataQueue;
 		std::ofstream m_FileStream;
 		const char& m_Delimiter;
 		uint32_t m_QueuePos = 0;

@@ -36,9 +36,6 @@ namespace Graphite
 		ViewFrustum(float aspect, float fov, float nearPlane, float farPlane);
 		
 	private:
-		void Init(Plane topPlane, Plane bottomPlane, Plane leftPlane, Plane rightPlane, Plane nearPlane, Plane farPlane);
-
-	private:
 		Plane m_Top;
 		Plane m_Bottom;
 		Plane m_Left;

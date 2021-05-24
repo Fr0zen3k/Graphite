@@ -736,7 +736,7 @@ namespace Graphite
 	void VulkanRendererAPI::CreatePushConstantRange()
 	{
 		s_PushConstantRange = {};
-		s_PushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		s_PushConstantRange.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
 		s_PushConstantRange.offset = 0;
 		s_PushConstantRange.size = sizeof(glm::mat4);
 	}

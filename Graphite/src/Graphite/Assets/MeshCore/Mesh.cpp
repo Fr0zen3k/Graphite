@@ -72,5 +72,18 @@ namespace Graphite
 		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, size);
 	}
 
+	float Mesh::GetMaxDistance() const
+	{
+		float max = 0.0f;
 
+		for(int i = 0; i < m_VertexBuffer->Size(); i++)
+		{
+			if(glm::length(m_Vertices[i].position) > max)
+			{
+				max = glm::length(m_Vertices[i].position);
+			}
+		}
+
+		return max;
+	}
 }

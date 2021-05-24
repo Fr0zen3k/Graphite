@@ -10,16 +10,28 @@ layout(set = 0, binding = 0) uniform ViewProjection {
 	mat4 projection;
 } viewProjection;
 
-layout(push_constant) uniform Model {
+layout(push_constant) uniform PushData {
 	mat4 modelMatrix;
-} model;
+	mat4 normalMatrix;
+	vec3 ambientColor;
+	vec3 specularColor;
+	vec3 lightPosition;
+	float Ka;
+	float Kd;
+	float Ks;
+	float shinyCoef;
+} pushData;
 
-layout(location = 0) out vec4 fragColor;
-layout(location = 1) out vec2 fragTextureCoordinates;
+layout(location = 0) out vec2 fragTextureCoordinates;
+layout(location = 1) out vec3 normalInterpolation;
+layout(location = 2) out vec3 vertexPosition;
 
 void main() {
-	gl_Position = viewProjection.projection * viewProjection.view * model.modelMatrix * vec4(position, 1);
+	vec4 vertPos = viewProjection.view * pushData.modelMatrix * vec4(position, 1);
 
-	fragColor = color;
 	fragTextureCoordinates = textureCoordinates;
+	normalInterpolation = vec3(pushData.normalMatrix * vec4(normal, 0.0));
+	vertexPosition = vec3(vertPos) / vertPos.w;
+
+	gl_Position = viewProjection.projection * vertPos;
 }
