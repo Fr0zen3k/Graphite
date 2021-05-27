@@ -2,6 +2,17 @@
 #include "Renderer3D.h"
 
 #include "Graphite/Renderer/RendererCore/Platform/Vulkan/VulkanRendererAPI.h"
+#include "Graphite/Renderer/RendererCore/Platform/Vulkan/VulkanIndexBuffer.h"
+#include "Graphite/Renderer/RendererCore/Platform/Vulkan/VulkanVertexBuffer.h"
+#include "Graphite/Renderer/RendererCore/Platform/Vulkan/VulkanTexture.h"
+#include "Graphite/Renderer/RendererCore/Camera.h"
+#include "Graphite/Renderer/RendererCore/VertexBuffer.h"
+#include "Graphite/Renderer/RendererCore/IndexBuffer.h"
+#include "Graphite/Renderer/RendererCore/Texture.h"
+
+#include "Graphite/Assets/Management/GameObjectManager.h"
+
+#include "Graphite/Core/Application.h"
 
 namespace Graphite
 {
@@ -36,7 +47,68 @@ namespace Graphite
 	{
 		int i = VulkanRendererAPI::StartDrawing();
 
-		// for every gameobject, if in frustum and culling is enabled, draw appropriate lod or max lod if lod management is disabled
+		Camera* camera = Application::Get()->GetActiveCameraInstance();
+
+		for(GameObjectID id = 1; id < GameObjectManager::Size(); id++)
+		{
+			GameObject* object = GameObjectManager::GetGameObject(id);
+
+			if(s_Settings.culling)
+			{
+				if(!camera->InViewFrustum(object->GetBoundingSphere(), object->GetTransform().GetPosition()))
+				{
+					continue;
+				}
+
+				Mesh* mesh;
+				
+				if(s_Settings.LOD)
+				{
+					float distance = glm::length(object->GetTransform().GetPosition() - camera->GetPosition()) - camera->GetNear();
+
+					float lod = distance / (camera->GetFar() - camera->GetNear());
+					
+					mesh = object->GetMesh(lod);
+				}
+				else
+				{
+					mesh = object->GetMesh();
+				}
+
+				VulkanVertexBuffer* vertexBuffer = dynamic_cast<VulkanVertexBuffer*>(mesh->GetVertexBuffer());
+				VulkanIndexBuffer* indexBuffer = dynamic_cast<VulkanIndexBuffer*>(mesh->GetIndexBuffer());
+				VulkanTexture* texture = dynamic_cast<VulkanTexture*>(object->GetTexture());
+				glm::mat4 model = object->GetTransform().GetModelMatrix();
+				Material material = object->GetMaterial();
+
+				VulkanRendererAPI::Draw(i, vertexBuffer, indexBuffer, texture, model, material);
+			}
+			else
+			{
+				Mesh* mesh;
+
+				if (s_Settings.LOD)
+				{
+					float distance = glm::length(object->GetTransform().GetPosition() - camera->GetPosition()) - camera->GetNear();
+
+					float lod = distance / (camera->GetFar() - camera->GetNear());
+
+					mesh = object->GetMesh(lod);
+				}
+				else
+				{
+					mesh = object->GetMesh();
+				}
+
+				VulkanVertexBuffer* vertexBuffer = dynamic_cast<VulkanVertexBuffer*>(mesh->GetVertexBuffer());
+				VulkanIndexBuffer* indexBuffer = dynamic_cast<VulkanIndexBuffer*>(mesh->GetIndexBuffer());
+				VulkanTexture* texture = dynamic_cast<VulkanTexture*>(object->GetTexture());
+				glm::mat4 model = object->GetTransform().GetModelMatrix();
+				Material material = object->GetMaterial();
+
+				VulkanRendererAPI::Draw(i, vertexBuffer, indexBuffer, texture, model, material);
+			}
+		}
 		
 		VulkanRendererAPI::EndDrawing(i);
 	}

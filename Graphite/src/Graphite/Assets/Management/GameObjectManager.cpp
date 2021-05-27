@@ -20,6 +20,11 @@ namespace Graphite
 
 	GameObjectID GameObjectManager::AddGameObject(const std::string& meshPath)
 	{
+		if(meshPath == "")
+		{
+			return 0;
+		}
+		
 		GameObject* object = new GameObject(meshPath);
 
 		s_GameObjects.emplace_back(object);
