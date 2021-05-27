@@ -1,3 +1,6 @@
 [submodule "Graphite/vendor/RapidJSON"]
 	path = Graphite/vendor/RapidJSON
 	url = https://github.com/Tencent/rapidjson.git
+[submodule "Graphite/vendor/assimp"]
+	path = Graphite/vendor/assimp
+	url = https://github.com/assimp/assimp
