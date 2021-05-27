@@ -15,6 +15,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+#include "Graphite/Math/BoundingSphere.h"
+
 namespace Graphite
 {
 
@@ -51,7 +53,12 @@ namespace Graphite
 		virtual void SetFieldOfViewDeg(float degFOV = 60.0f) = 0;
 		virtual void SetFieldOfViewRad(float radFOV = 1.0f / 3.0f * glm::pi<float>()) = 0;
 
+		virtual bool InViewFrustum(BoundingSphere sphere, glm::vec3 position) const = 0;
+
 		virtual CameraType GetCameraType() const = 0;
+
+		virtual float GetNear() const = 0;
+		virtual float GetFar() const = 0;
 
 		static Camera* CreateCamera(CameraType type);
 	};

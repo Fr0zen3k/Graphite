@@ -2,6 +2,7 @@
 
 #include "Renderer2D.h"
 #include "../RendererCore/Platform/Vulkan/VulkanRendererAPI.h"
+#include "Graphite/Assets/Material.h"
 
 #include "glm/glm.hpp"
 
@@ -38,7 +39,7 @@ namespace Graphite
 	void Renderer2D::OnTick()
 	{	
 		int i = VulkanRendererAPI::StartDrawing();
-		VulkanRendererAPI::Draw(i, nullptr, nullptr, nullptr, nullptr);
+		VulkanRendererAPI::Draw(i, nullptr, nullptr, nullptr, glm::mat4(1.0f), Material());
 		VulkanRendererAPI::EndDrawing(i);
 	}
 

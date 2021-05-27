@@ -23,7 +23,7 @@ namespace Graphite
 		Material(float ka, float kd, float ks, float shininess);
 		virtual ~Material() = default;
 
-		std::vector<float> GetData() const;
+		std::vector<float> GetData(const glm::mat4& modelView) const;
 
 		inline void SetAmbientReflection(float ka) { m_Ka = ka; }
 		inline void SetDiffuseReflection(float kd) { m_Kd = kd; }

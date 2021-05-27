@@ -14,19 +14,21 @@ namespace Graphite
 
 	}
 
-	std::vector<float> Material::GetData() const
+	std::vector<float> Material::GetData(const glm::mat4& modelView) const
 	{
 		std::vector<float> data;
 
-		data.emplace_back(m_AmbientColor[0]);
-		data.emplace_back(m_AmbientColor[1]);
-		data.emplace_back(m_AmbientColor[2]);
-		data.emplace_back(m_SpecularColor[0]);
-		data.emplace_back(m_SpecularColor[1]);
-		data.emplace_back(m_SpecularColor[2]);
-		data.emplace_back(m_LightPosition[0]);
-		data.emplace_back(m_LightPosition[1]);
-		data.emplace_back(m_LightPosition[2]);
+		glm::vec4 light = modelView * glm::vec4(m_LightPosition, 1.0f);
+
+		data.emplace_back(m_AmbientColor.x);
+		data.emplace_back(m_AmbientColor.y);
+		data.emplace_back(m_AmbientColor.z);
+		data.emplace_back(m_SpecularColor.x);
+		data.emplace_back(m_SpecularColor.y);
+		data.emplace_back(m_SpecularColor.z);
+		data.emplace_back(light.x / light.w);
+		data.emplace_back(light.y / light.w);
+		data.emplace_back(light.z / light.w);
 		data.emplace_back(m_Ka);
 		data.emplace_back(m_Kd);
 		data.emplace_back(m_Ks);

@@ -3,46 +3,26 @@
 
 namespace Graphite
 {
-	std::vector<GameObjectManager::GameObjectContainer> GameObjectManager::s_GameObjects;
+	std::vector<GameObject*> GameObjectManager::s_GameObjects;
 	
 	void GameObjectManager::Init()
 	{
-		GameObjectContainer c;
-		s_GameObjects.emplace_back(c);
+		s_GameObjects.emplace_back(nullptr);
 	}
 
 	void GameObjectManager::Shutdown()
 	{
 		for(int i = 0; i < s_GameObjects.size(); i++)
 		{
-			if(s_GameObjects[i].gameObject != nullptr)
-			{
-				delete s_GameObjects[i].gameObject;
-			}
+			delete s_GameObjects[i];
 		}
 	}
 
-	GameObjectID GameObjectManager::AddGameObject(const std::string& path, LOD lod)
+	GameObjectID GameObjectManager::AddGameObject(const std::string& meshPath)
 	{
-		if(path == "")
-		{
-			return 0;
-		}
-		
-		for(int i = 0; i < s_GameObjects.size(); i++)
-		{
-			if(s_GameObjects[i].path == path)
-			{
-				s_GameObjects[i].gameObject->AddLOD(path, lod);
-				return i;
-			}
-		}
+		GameObject* object = new GameObject(meshPath);
 
-		GameObjectContainer c;
-		c.path = path;
-		c.gameObject = new GameObject(path, lod);
-
-		s_GameObjects.emplace_back(c);
+		s_GameObjects.emplace_back(object);
 
 		return s_GameObjects.size() - 1;
 	}

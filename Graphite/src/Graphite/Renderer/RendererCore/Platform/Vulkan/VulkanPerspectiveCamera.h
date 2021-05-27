@@ -14,6 +14,8 @@
 #include "Graphite/Math/Transform.h"
 #include "Graphite/EventCore/Events.h"
 #include "../../Camera.h"
+#include "Graphite/Math/BoundingSphere.h"
+#include "Graphite/Math/ViewFrustum.h"
 
 #include "glm/glm.hpp"
 #include <glm/gtx/quaternion.hpp>
@@ -52,6 +54,11 @@ namespace Graphite
 		inline void SetFieldOfViewDeg(float degFOV = 60.0f) override { m_FieldOfView = glm::radians(degFOV); }
 		inline void SetFieldOfViewRad(float radFOV = 1.0f / 3.0f * glm::pi<float>()) override { m_FieldOfView = radFOV; }
 
+		bool InViewFrustum(BoundingSphere sphere, glm::vec3 position) const override;
+
+		inline float GetNear() const override { return m_Near; }
+		inline float GetFar() const override { return m_Far; }
+		
 	private:
 		void Init();
 
@@ -60,8 +67,12 @@ namespace Graphite
 		glm::mat4 m_ProjectionMatrix;
 		VkViewport m_Viewport;
 		VkRect2D m_Scissors;
-		float m_FieldOfView;
+		float m_FieldOfView = 30.0f;
 		float m_AspectRation;
+		float m_Near = 0.001f;
+		float m_Far = 1000.0f;
+
+		ViewFrustum m_ViewFrustum;
 	};
 
 }

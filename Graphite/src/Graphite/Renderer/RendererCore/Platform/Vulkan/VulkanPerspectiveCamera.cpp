@@ -1,7 +1,7 @@
 #include "Graphite/Core/grpch.h"
 #include "VulkanPerspectiveCamera.h"
 
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../../Renderer3D/Renderer3D.h"
 #include "VulkanGraphicsContext.h"
 #include "../../GraphicsContext.h"
 
@@ -10,6 +10,8 @@ namespace Graphite {
 	VulkanPerspectiveCamera::VulkanPerspectiveCamera()
 	{
 		// Initialize the projection matrix
+		m_ProjectionMatrix = glm::perspective(30.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.001f, 1000.0f);
+		m_ViewFrustum = ViewFrustum::PerspectiveFrustum(30.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.001f, 1000.0f);
 		Init();
 		m_Transform = Math::Transform();
 	}
@@ -26,7 +28,7 @@ namespace Graphite {
 
 	glm::mat4 VulkanPerspectiveCamera::GetViewMatrix() const
 	{
-		return m_Transform.GetModelMatrix();
+		return glm::inverse(m_Transform.GetModelMatrix());
 	}
 
 	glm::mat4 VulkanPerspectiveCamera::GetProjectionMatrix() const
@@ -79,6 +81,14 @@ namespace Graphite {
 		m_Scissors = {};
 		m_Scissors.offset = { 0, 0 };
 		m_Scissors.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
+	}
+
+	bool VulkanPerspectiveCamera::InViewFrustum(BoundingSphere sphere, glm::vec3 position) const
+	{
+		glm::mat4 view = GetViewMatrix();
+		glm::vec4 newPos = view * glm::vec4(position, 1.0f);
+
+		return m_ViewFrustum.Check(sphere, glm::vec3(newPos.x / newPos.w, newPos.y / newPos.w, newPos.z / newPos.w));
 	}
 
 }

@@ -42,7 +42,8 @@ project "Graphite"
 		"C:/VulkanSDK/1.2.148.1/Include",
 		"%{prj.name}/vendor/imgui",
 		"%{prj.name}/vendor/RapidJSON/include",
-		"%{prj.name}/vendor/STBI"
+		"%{prj.name}/vendor/STBI",
+		"%{prj.name}/vendor/assimp/include"
 	}
 
 	libdirs
@@ -130,7 +131,8 @@ project "Sandbox"
 		"Graphite/vendor/imgui",
 		"Graphite/vendor/STBI",
 		"Graphite/vendor/RapidJSON/include",
-		"Graphite/vendor/imgui"
+		"Graphite/vendor/imgui",
+		"%{prj.name}/vendor/assimp/include"
 	}
 	links
 	{

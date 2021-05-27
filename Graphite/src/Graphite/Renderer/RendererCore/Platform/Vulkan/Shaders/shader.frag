@@ -1,8 +1,8 @@
 #version 450
 
 layout(location = 0) in vec2 textureCoordinates;
-layout(location = 1) out vec3 normal;
-layout(location = 2) out vec3 vertex;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec3 vertex;
 
 layout(set = 1, binding = 0) uniform sampler2D textureSampler;
 
@@ -21,8 +21,11 @@ layout(push_constant) uniform PushData {
 layout(location = 0) out vec4 outColor;
 
 void main() {
+	vec4 light4 = pushData.modelMatrix * vec4(pushData.lightPosition, 1.0);
+	vec3 light = vec3(light4) / light4.w;
+
 	vec3 N = normalize(normal);
-	vec3 L = normalize(pushData.lightPosition - vertex);
+	vec3 L = normalize(light - vertex);
 
 	float lambertian = max(dot(N, L), 0.0);
 	float specular = 0.0;

@@ -21,6 +21,8 @@
 #include "VulkanIndexBuffer.h"
 #include "VulkanVertexBuffer.h"
 
+#include "Graphite/Assets/Material.h"
+
 namespace Graphite
 {
 
@@ -44,7 +46,7 @@ namespace Graphite
 		inline static VkSurfaceFormatKHR GetSwapchainSurfaceFormat() { return s_SwapchainSurfaceFormat; }
 
 		static uint32_t StartDrawing();
-		static void Draw(uint32_t imageIndex, VulkanVertexBuffer * pVertexBuffer, VulkanIndexBuffer * pIndexBuffer, VulkanTexture * pTexture, glm::mat4 * pModelMatrix);
+		static void Draw(uint32_t imageIndex, VulkanVertexBuffer * pVertexBuffer, VulkanIndexBuffer * pIndexBuffer, VulkanTexture * pTexture, const glm::mat4& modelMatrix, const Material& material);
 		static void EndDrawing(uint32_t imageIndex);
 
 	private:

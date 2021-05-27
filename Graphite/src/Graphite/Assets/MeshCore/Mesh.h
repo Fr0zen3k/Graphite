@@ -42,6 +42,8 @@ namespace Graphite
 		uint32_t* m_Indices;
 		VertexBuffer* m_VertexBuffer;
 		IndexBuffer* m_IndexBuffer;
+
+		float m_BoundingRadius = 0.0f;
 	};
 
 }

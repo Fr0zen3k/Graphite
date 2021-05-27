@@ -74,11 +74,16 @@ namespace Graphite
 
 	float Mesh::GetMaxDistance() const
 	{
+		if(m_BoundingRadius > 0)
+		{
+			return m_BoundingRadius;
+		}
+
 		float max = 0.0f;
 
-		for(int i = 0; i < m_VertexBuffer->Size(); i++)
+		for (int i = 0; i < m_VertexBuffer->Size(); i++)
 		{
-			if(glm::length(m_Vertices[i].position) > max)
+			if (glm::length(m_Vertices[i].position) > max)
 			{
 				max = glm::length(m_Vertices[i].position);
 			}

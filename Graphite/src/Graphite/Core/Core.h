@@ -37,7 +37,7 @@ typedef uint32_t TextureID;
 #endif
 
 #ifdef GRAPHITE_RENDERER_VULKAN
-	#define GR_GRAPHICS_CONTEXT dynamic_cast<VulkanGraphicsContext*>(Renderer2D::GetGraphicsContext())
+	#define GR_GRAPHICS_CONTEXT dynamic_cast<VulkanGraphicsContext*>(Renderer3D::GetGraphicsContext())
 #endif
 
 

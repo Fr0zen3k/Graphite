@@ -21,7 +21,7 @@ namespace Graphite {
 	class GRAPHITE_API GameObject
 	{
 	public:
-		GameObject(const std::string& meshPath = "", const std::string& texturePath = "");
+		GameObject(const std::string& meshPath = "");
 		virtual ~GameObject() = default;
 
 		inline MeshID GetMeshID() const { return m_Mesh; }

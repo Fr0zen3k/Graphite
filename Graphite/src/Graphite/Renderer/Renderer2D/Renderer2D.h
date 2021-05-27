@@ -8,7 +8,6 @@
 #define GRAPHITE_RENDERER2D_H
 
 #include "Graphite/Core/grpch.h"
-
 #include "Graphite/Core/Core.h"
 
 #include "../RendererCore/GraphicsContext.h"

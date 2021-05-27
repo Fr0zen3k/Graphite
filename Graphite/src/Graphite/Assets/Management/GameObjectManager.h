@@ -20,18 +20,12 @@ namespace Graphite {
 		static void Init();
 		static void Shutdown();
 
-		inline static GameObject* GetGameObject(GameObjectID gameObject) { return s_GameObjects[gameObject].gameObject; }
+		inline static GameObject* GetGameObject(GameObjectID gameObject) { return s_GameObjects[gameObject]; }
 		
-		static GameObjectID AddGameObject(const std::string& path, LOD lod = 5);
+		static GameObjectID AddGameObject(const std::string& meshPath);
 		
 	private:
-		struct GameObjectContainer
-		{
-			GameObject* gameObject = nullptr;
-			std::string path = "";
-		};
-
-		static std::vector<GameObjectContainer> s_GameObjects;
+		static std::vector<GameObject*> s_GameObjects;
 	};
 
 }

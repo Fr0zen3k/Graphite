@@ -48,6 +48,11 @@ namespace Graphite
 
 		inline void SetFieldOfViewDeg(float degFOV = 60.0f) override { m_FieldOfView = glm::radians(degFOV); }
 		inline void SetFieldOfViewRad(float radFOV = 1.0f / 3.0f * glm::pi<float>()) override { m_FieldOfView = radFOV; }
+
+		inline bool InViewFrustum(BoundingSphere sphere, glm::vec3 position) const override { return true; };
+
+		inline float GetNear() const override { return m_Near; }
+		inline float GetFar() const override { return m_Far; }
 		
 	private:
 		void Init();
@@ -57,6 +62,8 @@ namespace Graphite
 		glm::mat4 m_ProjectionMatrix;
 		float m_FieldOfView;
 		float m_AspectRation;
+		float m_Near = 0.001f;
+		float m_Far = 1000.0f;
 	};
 	
 }

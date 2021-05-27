@@ -7,7 +7,7 @@
 #include "VulkanPerspectiveCamera.h"
 #include "../../Camera.h"
 #include "VulkanGraphicsContext.h"
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../../Renderer3D/Renderer3D.h"
 #include "VulkanIndexBuffer.h"
 #include "VulkanTexture.h"
 #include "VulkanVertexBuffer.h"
@@ -149,7 +149,7 @@ namespace Graphite
 	}
 
 	// Recording the commands for the data given for drawing
-	void VulkanRendererAPI::Draw(uint32_t imageIndex, VulkanVertexBuffer* pVertexBuffer, VulkanIndexBuffer* pIndexBuffer, VulkanTexture* pTexture, glm::mat4* pModelMatrix)
+	void VulkanRendererAPI::Draw(uint32_t imageIndex, VulkanVertexBuffer* pVertexBuffer, VulkanIndexBuffer* pIndexBuffer, VulkanTexture* pTexture, const glm::mat4& modelMatrix, const Material& material)
 	{
 		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
 		
@@ -173,6 +173,7 @@ namespace Graphite
 		VkResult result = vkBeginCommandBuffer(
 			s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
 			&commandBufferBeginInfo);
+		
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to start recording a command buffer!");
@@ -218,14 +219,64 @@ namespace Graphite
 					&scissors);
 
 				// Data binding
-				if(pVertexBuffer != nullptr && pIndexBuffer != nullptr)
+				if(pVertexBuffer != nullptr && pIndexBuffer != nullptr && pTexture != nullptr)
 				{
-					
-				}
+					VkBuffer vertexBuffers[] = { pVertexBuffer->GetNativeBuffer() };
+					VkDeviceSize offsets[] = { 0 };
 
-				if(pTexture != nullptr)
-				{
+					vkCmdBindVertexBuffers(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, 0, 1, vertexBuffers, offsets);
+
+					vkCmdBindIndexBuffer(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, pIndexBuffer->GetNativeBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+					glm::mat4 view = Application::Get()->GetActiveCameraInstance()->GetViewMatrix();
+					view[1] *= -1.0f;
 					
+					glm::mat4 normalMatrix = glm::transpose(glm::inverse(view * modelMatrix));
+					
+					std::vector<float> pushData(0);
+
+					for(int i = 0; i < 4; i++)
+					{
+						for(int j = 0; j < 4; j++)
+						{
+							pushData.emplace_back(modelMatrix[i][j]);
+						}
+					}
+
+					for (int i = 0; i < 4; i++)
+					{
+						for (int j = 0; j < 4; j++)
+						{
+							pushData.emplace_back(normalMatrix[i][j]);
+						}
+					}
+
+					for(float f : material.GetData(view * modelMatrix))
+					{
+						pushData.emplace_back(f);
+					}
+
+					vkCmdPushConstants(
+						s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
+						s_GraphicsPipelineLayout,
+						VK_SHADER_STAGE_ALL_GRAPHICS,
+						0,
+						sizeof(float) * pushData.size(),
+						pushData.data());
+
+					std::array<VkDescriptorSet, 2> descriptorSets = { s_FrameBuffer->GetFrame(imageIndex).DescriptorSet, pTexture->GetDescriptorSet() };
+
+					vkCmdBindDescriptorSets(
+						s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, 
+						VK_PIPELINE_BIND_POINT_GRAPHICS, 
+						s_GraphicsPipelineLayout, 
+						0, 
+						static_cast<uint32_t>(descriptorSets.size()), 
+						descriptorSets.data(), 
+						0, 
+						nullptr);
+
+					vkCmdDrawIndexed(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, pIndexBuffer->Size(), 1, 0, 0, 0);
 				}
 
 			vkCmdEndRenderPass(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
