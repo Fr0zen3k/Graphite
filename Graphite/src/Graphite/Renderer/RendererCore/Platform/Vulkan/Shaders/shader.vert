@@ -13,13 +13,10 @@ layout(set = 0, binding = 0) uniform ViewProjection {
 layout(push_constant) uniform PushData {
 	mat4 modelMatrix;
 	mat4 normalMatrix;
-	vec3 ambientColor;
-	vec3 specularColor;
-	vec3 lightPosition;
-	float Ka;
-	float Kd;
-	float Ks;
-	float shinyCoef;
+	vec4 ambientColor;
+	vec4 specularColor;
+	vec4 lightPosition;
+	vec4 phongData;
 } pushData;
 
 layout(location = 0) out vec2 fragTextureCoordinates;

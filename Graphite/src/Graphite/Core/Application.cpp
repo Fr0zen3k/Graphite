@@ -5,7 +5,7 @@
 #include "Graphite/Core/grpch.h"
 
 #include "Application.h"
-#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
+#include "Graphite/Renderer/Renderer3D/Renderer3D.h"
 
 namespace Graphite {
 
@@ -29,7 +29,7 @@ namespace Graphite {
         while (true)
         {
             m_Window->Update();
-            Renderer2D::OnTick();
+            Renderer3D::OnTick();
         }
     }
 

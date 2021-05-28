@@ -3,6 +3,8 @@
 
 namespace Graphite
 {
+	std::vector<std::vector<Mesh*>> MeshManager::s_MeshList;
+	
 	void MeshManager::Init()
 	{
 		std::vector<Mesh*> v(1, nullptr);
@@ -32,11 +34,25 @@ namespace Graphite
 		{
 			return 0;
 		}
+
+		Mesh* m = new Mesh(vertexBuffer, indexBuffer);
+		std::vector<Mesh*> meshes;
+		meshes.emplace_back(m);
+		s_MeshList.emplace_back(meshes);
+
+		return s_MeshList.size() - 1;
 	}
 
 	bool MeshManager::AddMeshLOD(MeshID mesh, const std::vector<Vertex>& vertexBuffer, const std::vector<uint32_t>& indexBuffer)
 	{
+		if(mesh >= s_MeshList.size())
+		{
+			return false;
+		}
+		
 		Mesh* m = new Mesh(vertexBuffer, indexBuffer);
 		s_MeshList[mesh].emplace_back(m);
+
+		return true;
 	}
 }

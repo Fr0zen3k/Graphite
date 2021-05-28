@@ -25,7 +25,6 @@
 
 namespace Graphite
 {
-
 	class GRAPHITE_API VulkanRendererAPI
 	{
 	public:

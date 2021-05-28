@@ -9,20 +9,21 @@ layout(set = 1, binding = 0) uniform sampler2D textureSampler;
 layout(push_constant) uniform PushData {
 	mat4 modelMatrix;
 	mat4 normalMatrix;
-	vec3 ambientColor;
-	vec3 specularColor;
-	vec3 lightPosition;
-	float Ka;
-	float Kd;
-	float Ks;
-	float shinyCoef;
+	vec4 ambientColor;
+	vec4 specularColor;
+	vec4 lightPosition;
+	vec4 phongData;
 } pushData;
 
 layout(location = 0) out vec4 outColor;
 
 void main() {
-	vec4 light4 = pushData.modelMatrix * vec4(pushData.lightPosition, 1.0);
-	vec3 light = vec3(light4) / light4.w;
+	float Ka = pushData.phongData.x;
+	float Kd = pushData.phongData.y;
+	float Ks = pushData.phongData.z;
+	float shininess = pushData.phongData.w;
+
+	vec3 light = vec3(pushData.lightPosition) / pushData.lightPosition.w;
 
 	vec3 N = normalize(normal);
 	vec3 L = normalize(light - vertex);
@@ -35,10 +36,10 @@ void main() {
 		vec3 reflection = reflect(-L, N);
 
 		float specularAngle = max(dot(reflection, vert), 0.0);
-		specular = pow(specularAngle, pushData.shinyCoef);
+		specular = pow(specularAngle, shininess);
 	}
 
 	vec3 diffuseColor = vec3(texture(textureSampler, textureCoordinates));
 
-	outColor = vec4(pushData.Ka * pushData.ambientColor + pushData.Kd * diffuseColor + pushData.Ks * specular * pushData.specularColor, 1.0);
+	outColor = Ka * pushData.ambientColor + Kd * vec4(diffuseColor, 1.0) + Ks * specular * pushData.specularColor;
 }

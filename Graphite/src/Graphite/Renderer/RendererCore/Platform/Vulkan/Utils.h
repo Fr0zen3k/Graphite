@@ -11,11 +11,22 @@
 
 #include "GLFW/glfw3.h"
 #include "Graphite/Core/grpch.h"
+#include "glm/glm.hpp"
 
 namespace Graphite
 {
 	namespace VulkanUtilities
 	{
+		struct PushConstantsData
+		{
+			glm::mat4 model;
+			glm::mat4 normal;
+			glm::vec4 ambient;
+			glm::vec4 specular;
+			glm::vec4 light;
+			glm::vec4 phongData;
+		};
+		
 		struct QueueFamilies
 		{
 			int GraphicsFamily = -1;

@@ -16,7 +16,7 @@
 
 #include "Application.h"
 #include "Log.h"
-#include "Graphite/Renderer/Renderer2D/Renderer2D.h"
+#include "Graphite/Renderer/Renderer3D/Renderer3D.h"
 
 /// <summary>
 /// The extern function defined by the Sandbox, used to retrieve a client specified instance of an Application
@@ -39,14 +39,14 @@ int main(int argc, char *argv[]) {
 
     Graphite::Application *userApp = Graphite::CreateApp();
 	
-    Graphite::Renderer2D::Init();
+    Graphite::Renderer3D::Init();
 	
-    userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Orthographic));
-    Graphite::Renderer2D::InitAPI();
+    userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Perspective));
+    Graphite::Renderer3D::InitAPI();
     userApp->run();
     delete userApp;
 
-    Graphite::Renderer2D::Shutdown();
+    Graphite::Renderer3D::Shutdown();
 
     return 0;
 }

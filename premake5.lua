@@ -43,20 +43,23 @@ project "Graphite"
 		"%{prj.name}/vendor/imgui",
 		"%{prj.name}/vendor/RapidJSON/include",
 		"%{prj.name}/vendor/STBI",
-		"%{prj.name}/vendor/assimp/include"
+		"%{prj.name}/vendor/assimp/include",
+		"%{prj.name}/vendor/assimp/build/include"
 	}
 
 	libdirs
 	{
 		"C:/VulkanSDK/1.2.148.1/Lib",
-		"%{prj.name}/vendor/glfw_x64/lib-vc2019"
+		"%{prj.name}/vendor/glfw_x64/lib-vc2019",
+		"%{prj.name}/vendor/assimp/build/lib/Debug"
 	}
 
 	links
 	{
 		"vulkan-1",
 		"ImGui",
-		"glfw3"
+		"glfw3",
+		"assimp-vc142-mtd"
 	}
 
 	defines
@@ -132,7 +135,8 @@ project "Sandbox"
 		"Graphite/vendor/STBI",
 		"Graphite/vendor/RapidJSON/include",
 		"Graphite/vendor/imgui",
-		"%{prj.name}/vendor/assimp/include"
+		"%{prj.name}/vendor/assimp/include",
+		"%{prj.name}/vendor/assimp/build/include"
 	}
 	links
 	{

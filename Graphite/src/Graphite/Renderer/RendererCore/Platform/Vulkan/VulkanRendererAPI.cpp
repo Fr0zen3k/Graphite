@@ -57,7 +57,6 @@ namespace Graphite
 			CreateDescriptorSetLayouts();
 			CreateRenderPass();
 			s_FrameBuffer = new VulkanFrameBuffer();
-			VulkanTexture::CreateCommonSampler();
 			CreateDescriptorPools();
 			s_FrameBuffer->CreateDescriptorSets();
 			CreateGraphicsPipeline();
@@ -233,36 +232,22 @@ namespace Graphite
 					
 					glm::mat4 normalMatrix = glm::transpose(glm::inverse(view * modelMatrix));
 					
-					std::vector<float> pushData(0);
+					VulkanUtilities::PushConstantsData data;
 
-					for(int i = 0; i < 4; i++)
-					{
-						for(int j = 0; j < 4; j++)
-						{
-							pushData.emplace_back(modelMatrix[i][j]);
-						}
-					}
-
-					for (int i = 0; i < 4; i++)
-					{
-						for (int j = 0; j < 4; j++)
-						{
-							pushData.emplace_back(normalMatrix[i][j]);
-						}
-					}
-
-					for(float f : material.GetData(view * modelMatrix))
-					{
-						pushData.emplace_back(f);
-					}
+					data.model = modelMatrix;
+					data.normal = normalMatrix;
+					data.ambient = glm::vec4(material.GetAmbient(), 1.0f);
+					data.specular = glm::vec4(material.GetSpecular(), 1.0f);
+					data.light = view * modelMatrix * glm::vec4(material.GetLight(), 1.0f);
+					data.phongData = glm::vec4(material.GetKa(), material.GetKd(), material.GetKs(), material.GetShininess());
 
 					vkCmdPushConstants(
 						s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
 						s_GraphicsPipelineLayout,
 						VK_SHADER_STAGE_ALL_GRAPHICS,
 						0,
-						sizeof(float) * pushData.size(),
-						pushData.data());
+						sizeof(VulkanUtilities::PushConstantsData),
+						&data);
 
 					std::array<VkDescriptorSet, 2> descriptorSets = { s_FrameBuffer->GetFrame(imageIndex).DescriptorSet, pTexture->GetDescriptorSet() };
 
@@ -789,7 +774,7 @@ namespace Graphite
 		s_PushConstantRange = {};
 		s_PushConstantRange.stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
 		s_PushConstantRange.offset = 0;
-		s_PushConstantRange.size = sizeof(glm::mat4);
+		s_PushConstantRange.size = sizeof(VulkanUtilities::PushConstantsData);
 	}
 
 	void VulkanRendererAPI::CreateSynchronisation()

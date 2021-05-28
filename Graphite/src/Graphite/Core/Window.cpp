@@ -27,7 +27,6 @@ namespace Graphite {
 
 	void Window::Update() {
 		glfwPollEvents();
-		glfwSwapBuffers(m_WindowInstance);
 	}
 
 	void Window::SetVSync(bool status) {

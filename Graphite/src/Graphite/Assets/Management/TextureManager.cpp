@@ -3,6 +3,8 @@
 
 namespace Graphite
 {
+	std::vector<TextureManager::TextureContainer> TextureManager::s_Textures;
+	
 	void TextureManager::Init()
 	{
 		TextureContainer c;

@@ -5,7 +5,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "VulkanTexture.h"
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../../Renderer3D/Renderer3D.h"
 #include "VulkanRendererAPI.h"
 #include "VulkanGraphicsContext.h"
 

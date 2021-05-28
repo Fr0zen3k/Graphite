@@ -1,7 +1,7 @@
 #include "Graphite/Core/grpch.h"
 #include "VulkanOrthographicCamera.h"
 
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../../Renderer3D/Renderer3D.h"
 #include "VulkanGraphicsContext.h"
 #include "../../GraphicsContext.h"
 

@@ -23,8 +23,6 @@ namespace Graphite
 		Material(float ka, float kd, float ks, float shininess);
 		virtual ~Material() = default;
 
-		std::vector<float> GetData(const glm::mat4& modelView) const;
-
 		inline void SetAmbientReflection(float ka) { m_Ka = ka; }
 		inline void SetDiffuseReflection(float kd) { m_Kd = kd; }
 		inline void SetSpecularReflection(float ks) { m_Ks = ks; }
@@ -33,6 +31,15 @@ namespace Graphite
 		inline void SetAmbientColor(const glm::vec3& color) { m_AmbientColor = color; }
 		inline void SetSpecularColor(const glm::vec3& color) { m_SpecularColor = color; }
 		inline void SetRelativeLightPosition(const glm::vec3& lightPosition) { m_LightPosition = lightPosition; }
+
+		inline glm::vec3 GetAmbient() const { return m_AmbientColor; }
+		inline glm::vec3 GetSpecular() const { return m_SpecularColor; }
+		inline glm::vec3 GetLight() const { return m_LightPosition; }
+
+		inline float GetKa() const { return m_Ka; }
+		inline float GetKd() const { return m_Kd; }
+		inline float GetKs() const { return m_Ks; }
+		inline float GetShininess() const { return m_Shininess; }
 		
 	private:
 		glm::vec3 m_AmbientColor = {0.0f, 0.0f, 0.0f};

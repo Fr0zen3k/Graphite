@@ -5,7 +5,7 @@
 #ifdef GRAPHITE_RENDERER_VULKAN
 
 #include "VulkanGraphicsContext.h"
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../../Renderer3D/Renderer3D.h"
 
 namespace Graphite
 {

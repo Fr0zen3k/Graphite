@@ -11,6 +11,8 @@
 #include "Graphite/Renderer/RendererCore/Texture.h"
 
 #include "Graphite/Assets/Management/GameObjectManager.h"
+#include "Graphite/Assets/Management/MeshManager.h"
+#include "Graphite/Assets/Management/TextureManager.h"
 
 #include "Graphite/Core/Application.h"
 
@@ -21,13 +23,17 @@ namespace Graphite
 	
 	void Renderer3D::Init()
 	{
+		GameObjectManager::Init();
+		MeshManager::Init();
+		TextureManager::Init();
+		
 		try
 		{
 			s_GraphicsContext = GraphicsContext::GetContext();
 		}
 		catch (std::runtime_error& e)
 		{
-			std::cout << e.what() << std::endl;
+			GR_LOG_CRITICAL(e.what());
 		}
 	}
 
@@ -39,7 +45,7 @@ namespace Graphite
 		}
 		catch (std::runtime_error& e)
 		{
-			std::cout << e.what() << std::endl;
+			GR_LOG_CRITICAL(e.what());
 		}
 	}
 
@@ -49,6 +55,8 @@ namespace Graphite
 
 		Camera* camera = Application::Get()->GetActiveCameraInstance();
 
+		VulkanRendererAPI::Draw(i, nullptr, nullptr, nullptr, glm::mat4(1.0f), Material());
+		
 		for(GameObjectID id = 1; id < GameObjectManager::Size(); id++)
 		{
 			GameObject* object = GameObjectManager::GetGameObject(id);
@@ -117,6 +125,10 @@ namespace Graphite
 	{
 		VulkanRendererAPI::Shutdown();
 		delete s_GraphicsContext;
+
+		GameObjectManager::Shutdown();
+		MeshManager::Shutdown();
+		TextureManager::Shutdown();
 	}
 
 	void Renderer3D::UpdateSettings(RendererSettings settings)

@@ -7,7 +7,7 @@
 #include "Utils.h"
 #include "VulkanFrameBuffer.h"
 #include "VulkanGraphicsContext.h"
-#include "../../../Renderer2D/Renderer2D.h"
+#include "../../../Renderer3D/Renderer3D.h"
 #include "VulkanRendererAPI.h"
 
 namespace Graphite
