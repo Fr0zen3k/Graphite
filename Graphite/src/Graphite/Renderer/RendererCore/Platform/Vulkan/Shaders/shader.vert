@@ -24,7 +24,7 @@ layout(location = 1) out vec3 normalInterpolation;
 layout(location = 2) out vec3 vertexPosition;
 
 void main() {
-	vec4 vertPos = viewProjection.view * pushData.modelMatrix * vec4(position, 1);
+	vec4 vertPos = viewProjection.view * pushData.modelMatrix * vec4(position, 1.0);
 
 	fragTextureCoordinates = textureCoordinates;
 	normalInterpolation = vec3(pushData.normalMatrix * vec4(normal, 0.0));

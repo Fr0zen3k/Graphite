@@ -13,8 +13,8 @@ namespace Graphite
 {
 	struct GRAPHITE_API RendererSettings
 	{
-		bool LOD = true;
-		bool culling = true;
+		bool LOD = false;
+		bool culling = false;
 	};
 	
 	class GRAPHITE_API Renderer3D

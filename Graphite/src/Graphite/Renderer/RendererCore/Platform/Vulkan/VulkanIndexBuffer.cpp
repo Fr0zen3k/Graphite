@@ -29,7 +29,7 @@ namespace Graphite
 			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			bufferSize,
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+			VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
 			&m_NativeBuffer,
 			&m_BufferMemory);
@@ -57,7 +57,7 @@ namespace Graphite
 		memcpy(
 			data,
 			pIndices,
-			m_Size * sizeof(Vertex));
+			m_Size * sizeof(uint32_t));
 		vkUnmapMemory(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			stagingBufferMemory);

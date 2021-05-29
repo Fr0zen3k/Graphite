@@ -18,14 +18,14 @@ namespace Graphite
 		}
 	}
 
-	GameObjectID GameObjectManager::AddGameObject(const std::string& meshPath)
+	GameObjectID GameObjectManager::AddGameObject(const std::string& meshPath, const std::string& texturePath)
 	{
-		if(meshPath == "")
+		if(meshPath == "" || texturePath == "")
 		{
 			return 0;
 		}
 		
-		GameObject* object = new GameObject(meshPath);
+		GameObject* object = new GameObject(meshPath, texturePath);
 
 		s_GameObjects.emplace_back(object);
 

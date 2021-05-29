@@ -107,7 +107,7 @@ namespace Graphite
 
 		stbi_image_free(rawData);
 
-		VulkanUtilities::CreateImage(
+		m_Image = VulkanUtilities::CreateImage(
 			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			m_Width,
@@ -134,6 +134,14 @@ namespace Graphite
 			m_Image,
 			m_Width,
 			m_Height);
+
+		VulkanUtilities::TransitionImageLayout(
+			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
+			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),
+			VulkanRendererAPI::GetGraphicsCommandPool(),
+			m_Image,
+			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		vkDestroyBuffer(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),

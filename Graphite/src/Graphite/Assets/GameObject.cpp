@@ -5,15 +5,23 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
-#include "Management/MeshManager.h"
-#include "Management/TextureManager.h"
-
 namespace Graphite
 {
 
-	GameObject::GameObject(const std::string& meshPath)
+	GameObject::GameObject(const std::string& meshPath, const std::string& texturePath)
 	{
 		InitMesh(meshPath);
+		InitTexture(texturePath);
+	}
+
+	GameObject::~GameObject()
+	{
+		delete m_Texture;
+
+		for(Mesh* m : m_MeshLOD)
+		{
+			delete m;
+		}
 	}
 	
 	void GameObject::AddLOD(const std::string& path)
@@ -73,18 +81,30 @@ namespace Graphite
 				vertexBuffer[i].position -= center;
 			}
 
-			MeshManager::AddMeshLOD(m_Mesh, vertexBuffer, indexBuffer);
+			Mesh* m = new Mesh(vertexBuffer, indexBuffer);
+			m_MeshLOD.emplace_back(m);
 		}
 	}
 
 	Mesh* GameObject::GetMesh(float lodLevel) const
 	{
-		return MeshManager::GetMesh(m_Mesh, lodLevel);
+		if(lodLevel > 1.0f)
+		{
+			lodLevel = 1.0f;
+		}
+
+		if(lodLevel < 0.0f)
+		{
+			lodLevel = 0.0f;
+		}
+		
+		int index = (1.0f - lodLevel) * (m_MeshLOD.size() - 1);
+		return m_MeshLOD[index];
 	}
 
 	Texture* GameObject::GetTexture() const
 	{
-		return TextureManager::GetTexture(m_Texture);
+		return m_Texture;
 	}
 
 	void GameObject::InitMesh(const std::string& path)
@@ -120,16 +140,11 @@ namespace Graphite
 
 			m_Material = Material(glm::vec3(ambient.r, ambient.g, ambient.b), glm::vec3(specular.r, specular.g, specular.b), glm::vec3(0.0f, 0.0f, 3.0f), 1.0f, 1.0f, 1.0f, shininess);
 
-			aiString texturePath;
-			material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), texturePath);
-
-			InitTexture(texturePath.C_Str());
-
 			for (int i = 0; i < mesh->mNumVertices; i++)
 			{
 				glm::vec3 position(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 				glm::vec3 normal(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-				glm::vec2 uv(mesh->mTextureCoords[i]->x, mesh->mTextureCoords[i]->y);
+				glm::vec2 uv(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
 
 				Vertex v;
 				v.position = position;
@@ -161,13 +176,13 @@ namespace Graphite
 				vertexBuffer[i].position -= center;
 			}
 
-			m_Mesh = MeshManager::AddMesh(vertexBuffer, indexBuffer);
+			m_MeshLOD.emplace_back(new Mesh(vertexBuffer, indexBuffer));
 		}
 	}
 
 	void GameObject::InitTexture(const std::string& path)
 	{
-		m_Texture = TextureManager::AddTexture(path);
+		m_Texture = Texture::CreateTexture(path);
 	}
 
 	BoundingSphere GameObject::GetBoundingSphere() const

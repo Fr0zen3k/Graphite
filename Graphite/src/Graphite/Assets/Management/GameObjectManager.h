@@ -22,7 +22,7 @@ namespace Graphite {
 
 		inline static GameObject* GetGameObject(GameObjectID gameObject) { return s_GameObjects[gameObject]; }
 		
-		static GameObjectID AddGameObject(const std::string& meshPath);
+		static GameObjectID AddGameObject(const std::string& meshPath, const std::string& texturePath);
 
 		inline static size_t Size() { return s_GameObjects.size(); }
 		

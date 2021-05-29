@@ -38,8 +38,8 @@ namespace Graphite
 		inline IndexBuffer* GetIndexBuffer() { return m_IndexBuffer; }
 		
 	private:
-		Vertex* m_Vertices;
-		uint32_t* m_Indices;
+		std::vector<Vertex> m_Vertices;
+		std::vector<uint32_t> m_Indices;
 		VertexBuffer* m_VertexBuffer;
 		IndexBuffer* m_IndexBuffer;
 

@@ -21,19 +21,19 @@ namespace Graphite {
 	class GRAPHITE_API GameObject
 	{
 	public:
-		GameObject(const std::string& meshPath = "");
-		virtual ~GameObject() = default;
-
-		inline MeshID GetMeshID() const { return m_Mesh; }
-		inline TextureID GetTextureID() const { return m_Texture; }
+		GameObject(const std::string& meshPath = "", const std::string& texturePath = "");
+		virtual ~GameObject();
+		
 		inline Math::Transform& GetTransform() { return m_Transform; }
 		BoundingSphere GetBoundingSphere() const;
 		inline Material& GetMaterial() { return m_Material; }
 
 		void AddLOD(const std::string& path);
 
-		Mesh* GetMesh(float lodLevel = 0.0f) const;
+		Mesh* GetMesh(float lodLevel = 1.0f) const;
 		Texture* GetTexture() const;
+
+		inline void SetMaterial(const Material& material) { m_Material = material; }
 		
 	private:
 		void InitMesh(const std::string& path);
@@ -41,9 +41,8 @@ namespace Graphite {
 
 	private:
 		Math::Transform m_Transform;
-		
-		MeshID m_Mesh;
-		TextureID m_Texture;
+		std::vector<Mesh*> m_MeshLOD;
+		Texture* m_Texture;
 		Material m_Material;
 	};
 

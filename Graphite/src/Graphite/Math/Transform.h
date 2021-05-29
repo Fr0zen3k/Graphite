@@ -70,7 +70,7 @@ namespace Graphite
 			/// Change the position by translating for the given vector
 			/// </summary>
 			/// <param name="translation"></param>
-			inline void Translate(glm::vec3& translation) { m_Position = translation; }
+			inline void Translate(const glm::vec3& translation) { m_Position = translation; }
 
 			/// <returns>position</returns>
 			inline glm::vec3 GetPosition() const { return m_Position; }

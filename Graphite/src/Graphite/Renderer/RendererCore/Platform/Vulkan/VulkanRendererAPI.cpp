@@ -150,6 +150,8 @@ namespace Graphite
 	// Recording the commands for the data given for drawing
 	void VulkanRendererAPI::Draw(uint32_t imageIndex, VulkanVertexBuffer* pVertexBuffer, VulkanIndexBuffer* pIndexBuffer, VulkanTexture* pTexture, const glm::mat4& modelMatrix, const Material& material)
 	{
+		Application::Get()->GetActiveCameraInstance()->Translate(glm::vec3(-1.0f, -1.0f, -1.0f));
+		
 		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
 		
 		VkCommandBufferBeginInfo commandBufferBeginInfo = {};
@@ -228,7 +230,6 @@ namespace Graphite
 					vkCmdBindIndexBuffer(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, pIndexBuffer->GetNativeBuffer(), 0, VK_INDEX_TYPE_UINT32);
 
 					glm::mat4 view = Application::Get()->GetActiveCameraInstance()->GetViewMatrix();
-					view[1] *= -1.0f;
 					
 					glm::mat4 normalMatrix = glm::transpose(glm::inverse(view * modelMatrix));
 					

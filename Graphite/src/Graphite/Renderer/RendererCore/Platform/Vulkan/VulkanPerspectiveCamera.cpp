@@ -11,6 +11,7 @@ namespace Graphite {
 	{
 		// Initialize the projection matrix
 		m_ProjectionMatrix = glm::perspective(30.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.001f, 1000.0f);
+		m_ProjectionMatrix[1] *= -1.0f;
 		m_ViewFrustum = ViewFrustum::PerspectiveFrustum(30.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.001f, 1000.0f);
 		Init();
 		m_Transform = Math::Transform();

@@ -5,27 +5,15 @@ namespace Graphite
 {
 	Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
 	{
-		m_Vertices = new Vertex[vertices.size()];
-		m_Indices = new uint32_t[indices.size()];
+		m_Vertices = std::vector<Vertex>(vertices);
+		m_Indices = std::vector<uint32_t>(indices);
 
-		for(int i = 0; i < vertices.size(); i++)
-		{
-			m_Vertices[i] = vertices[i];
-		}
-
-		for(int i = 0; i < indices.size(); i++)
-		{
-			m_Indices[i] = indices[i];
-		}
-
-		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, vertices.size());
-		m_IndexBuffer = IndexBuffer::CreateIndexBuffer(m_Indices, indices.size());
+		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices.data(), vertices.size());
+		m_IndexBuffer = IndexBuffer::CreateIndexBuffer(m_Indices.data(), indices.size());
 	}
 
 	Mesh::~Mesh()
 	{
-		delete[] m_Vertices;
-		delete[] m_Indices;
 		delete m_VertexBuffer;
 		delete m_IndexBuffer;
 	}
@@ -41,7 +29,7 @@ namespace Graphite
 
 		delete m_VertexBuffer;
 
-		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, size);
+		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices.data(), size);
 	}
 
 	void Mesh::SetMeshColor(const glm::vec4& color)
@@ -55,7 +43,7 @@ namespace Graphite
 
 		delete m_VertexBuffer;
 
-		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, size);
+		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices.data(), size);
 	}
 
 	void Mesh::SetVertexColors(glm::vec4* colors)
@@ -69,7 +57,7 @@ namespace Graphite
 
 		delete m_VertexBuffer;
 
-		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices, size);
+		m_VertexBuffer = VertexBuffer::CreateVertexBuffer(m_Vertices.data(), size);
 	}
 
 	float Mesh::GetMaxDistance() const

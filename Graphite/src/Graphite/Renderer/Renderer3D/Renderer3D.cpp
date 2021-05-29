@@ -11,8 +11,6 @@
 #include "Graphite/Renderer/RendererCore/Texture.h"
 
 #include "Graphite/Assets/Management/GameObjectManager.h"
-#include "Graphite/Assets/Management/MeshManager.h"
-#include "Graphite/Assets/Management/TextureManager.h"
 
 #include "Graphite/Core/Application.h"
 
@@ -24,8 +22,6 @@ namespace Graphite
 	void Renderer3D::Init()
 	{
 		GameObjectManager::Init();
-		MeshManager::Init();
-		TextureManager::Init();
 		
 		try
 		{
@@ -127,8 +123,6 @@ namespace Graphite
 		delete s_GraphicsContext;
 
 		GameObjectManager::Shutdown();
-		MeshManager::Shutdown();
-		TextureManager::Shutdown();
 	}
 
 	void Renderer3D::UpdateSettings(RendererSettings settings)

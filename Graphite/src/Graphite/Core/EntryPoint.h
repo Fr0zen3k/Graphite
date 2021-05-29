@@ -17,6 +17,7 @@
 #include "Application.h"
 #include "Log.h"
 #include "Graphite/Renderer/Renderer3D/Renderer3D.h"
+#include "Graphite/Assets/Management/GameObjectManager.h"
 
 /// <summary>
 /// The extern function defined by the Sandbox, used to retrieve a client specified instance of an Application
@@ -37,12 +38,17 @@ int main(int argc, char *argv[]) {
     GR_CORE_LOG_WARN("Core logger init");
     GR_LOG_CRITICAL("Client app logger init");
 
+    GR_CORE_LOG_TRACE(argv[0]);
+
     Graphite::Application *userApp = Graphite::CreateApp();
 	
     Graphite::Renderer3D::Init();
 	
     userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Perspective));
     Graphite::Renderer3D::InitAPI();
+
+    GameObjectID id = Graphite::GameObjectManager::AddGameObject("D:/IRG/irglab/irgLab/vjezba3/resources/glava/glava.obj", "C:/Users/jankr/OneDrive/Slike/fr0zen.png");
+	
     userApp->run();
     delete userApp;
 

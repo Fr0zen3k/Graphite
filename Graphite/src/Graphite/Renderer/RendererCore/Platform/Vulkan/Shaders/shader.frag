@@ -40,6 +40,8 @@ void main() {
 	}
 
 	vec3 diffuseColor = vec3(texture(textureSampler, textureCoordinates));
+	vec3 ambientColor = vec3(pushData.ambientColor);
+	vec3 specularColor = vec3(pushData.specularColor);
 
-	outColor = Ka * pushData.ambientColor + Kd * vec4(diffuseColor, 1.0) + Ks * specular * pushData.specularColor;
+	outColor = vec4(Ka * ambientColor + Kd * diffuseColor + Ks * specular * specularColor, 1.0);
 }
