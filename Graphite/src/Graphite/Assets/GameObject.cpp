@@ -5,6 +5,9 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
+
+#include "glm/gtx/string_cast.hpp"
+
 namespace Graphite
 {
 
@@ -129,16 +132,8 @@ namespace Graphite
 			aiMesh* mesh = scene->mMeshes[0];
 
 			uint32_t materialIndex = mesh->mMaterialIndex;
-			aiMaterial* material = scene->mMaterials[materialIndex];
 
-			aiColor3D specular, ambient;
-			material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-			material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-
-			float shininess;
-			material->Get(AI_MATKEY_SHININESS, shininess);
-
-			m_Material = Material(glm::vec3(ambient.r, ambient.g, ambient.b), glm::vec3(specular.r, specular.g, specular.b), glm::vec3(0.0f, 0.0f, 3.0f), 1.0f, 1.0f, 1.0f, shininess);
+			m_Material = Material(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(10.0f, 10.0f, 10.0f), 1.0f, 1.0f, 0.25f, 6.0f);
 
 			for (int i = 0; i < mesh->mNumVertices; i++)
 			{

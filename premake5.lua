@@ -64,8 +64,7 @@ project "Graphite"
 
 	defines
 	{
-		"GLFW_INCLUDE_VULKAN",
-		"GLM_FORCE_DEPTH_ZERO_TO_ONE"
+		"GLFW_INCLUDE_VULKAN"
 	}
 
 	filter "system:windows"

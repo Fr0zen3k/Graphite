@@ -223,11 +223,11 @@ namespace Graphite
 	class GRAPHITE_API Input
 	{
 	public:
-		static bool grIsKeyPressed(int keycode);
-		static bool grIsMouseButtonPressed(int keycode);
-		static bool grIsMouseInWindow();
+		static bool IsKeyPressed(int keycode);
+		static bool IsMouseButtonPressed(int keycode);
+		static bool IsMouseInWindow();
 
-		static std::pair<double, double> grGetMousePosition();
+		static std::pair<double, double> GetMousePosition();
 	};
 }
 

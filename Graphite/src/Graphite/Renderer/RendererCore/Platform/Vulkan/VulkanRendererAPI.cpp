@@ -149,11 +149,7 @@ namespace Graphite
 
 	// Recording the commands for the data given for drawing
 	void VulkanRendererAPI::Draw(uint32_t imageIndex, VulkanVertexBuffer* pVertexBuffer, VulkanIndexBuffer* pIndexBuffer, VulkanTexture* pTexture, const glm::mat4& modelMatrix, const Material& material)
-	{
-		Application::Get()->GetActiveCameraInstance()->Translate(glm::vec3(-1.0f, -1.0f, -1.0f));
-		
-		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
-		
+	{			
 		VkCommandBufferBeginInfo commandBufferBeginInfo = {};
 		commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -164,7 +160,7 @@ namespace Graphite
 		renderPassBeginInfo.renderArea.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
 
 		std::array<VkClearValue, 2> clearValues = {};
-		clearValues[0].color = { 0.6f, 0.65f, 0.4f, 1.0f };										//{0.24f, 0.23f, 0.24f, 1.0f};
+		clearValues[0].color = { 0.45f, 0.45f, 0.47f, 1.0f };										//{0.24f, 0.23f, 0.24f, 1.0f};
 		clearValues[1].depthStencil.depth = 1.0f;
 
 		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -195,30 +191,6 @@ namespace Graphite
 					VK_PIPELINE_BIND_POINT_GRAPHICS,
 					s_GraphicsPipeline);
 
-				VkViewport viewport = {};
-				viewport.x = 0.0f;
-				viewport.y = 0.0f;
-				viewport.width = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().first;
-				viewport.height = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().second;
-				viewport.minDepth = 0.0f;
-				viewport.maxDepth = 1.0f;
-
-				vkCmdSetViewport(
-					s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
-					0,
-					1,
-					&viewport);
-
-				VkRect2D scissors = {};
-				scissors.offset = { 0, 0 };
-				scissors.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
-
-				vkCmdSetScissor(
-					s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
-					0,
-					1,
-					&scissors);
-
 				// Data binding
 				if(pVertexBuffer != nullptr && pIndexBuffer != nullptr && pTexture != nullptr)
 				{
@@ -239,7 +211,7 @@ namespace Graphite
 					data.normal = normalMatrix;
 					data.ambient = glm::vec4(material.GetAmbient(), 1.0f);
 					data.specular = glm::vec4(material.GetSpecular(), 1.0f);
-					data.light = view * modelMatrix * glm::vec4(material.GetLight(), 1.0f);
+					data.light = glm::vec4(material.GetLight(), 1.0f);
 					data.phongData = glm::vec4(material.GetKa(), material.GetKd(), material.GetKs(), material.GetShininess());
 
 					vkCmdPushConstants(
@@ -249,7 +221,7 @@ namespace Graphite
 						0,
 						sizeof(VulkanUtilities::PushConstantsData),
 						&data);
-
+					
 					std::array<VkDescriptorSet, 2> descriptorSets = { s_FrameBuffer->GetFrame(imageIndex).DescriptorSet, pTexture->GetDescriptorSet() };
 
 					vkCmdBindDescriptorSets(
@@ -262,7 +234,7 @@ namespace Graphite
 						0, 
 						nullptr);
 
-					vkCmdDrawIndexed(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, pIndexBuffer->Size(), 1, 0, 0, 0);
+					vkCmdDrawIndexed(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, static_cast<uint32_t>(pIndexBuffer->Size()), 1, 0, 0, 0);
 				}
 
 			vkCmdEndRenderPass(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
@@ -276,9 +248,11 @@ namespace Graphite
 		{
 			throw std::runtime_error("Failed to stop recording a command buffer!");
 		}
+
+		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
 	}
 
-	void VulkanRendererAPI::EndDrawing(uint32_t imageIndex)
+	void VulkanRendererAPI::EndDrawing(uint32_t* imageIndex)
 	{
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -287,7 +261,7 @@ namespace Graphite
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &s_FrameBuffer->GetFrame(imageIndex).CommandBuffer;
+		submitInfo.pCommandBuffers = &s_FrameBuffer->GetFrame(*imageIndex).CommandBuffer;
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
 
@@ -300,7 +274,7 @@ namespace Graphite
 		{
 			throw std::runtime_error("Failed to submit a commang buffer to the graphics queue!");
 		}
-
+		
 		// Present the image to screen
 		VkPresentInfoKHR presentInfo = {};
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -308,7 +282,7 @@ namespace Graphite
 		presentInfo.pWaitSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
 		presentInfo.pSwapchains = &s_Swapchain;
 		presentInfo.swapchainCount = 1;
-		presentInfo.pImageIndices = &imageIndex;
+		presentInfo.pImageIndices = imageIndex;
 		
 		result = vkQueuePresentKHR(
 			GR_GRAPHICS_CONTEXT->GetPresentationQueue(),
@@ -444,7 +418,7 @@ namespace Graphite
 
 		subpassDependencies[1].srcSubpass = 0;
 		subpassDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		subpassDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;;
+		subpassDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		subpassDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
 		subpassDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 		subpassDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
@@ -514,21 +488,23 @@ namespace Graphite
 		VkShaderModule vertModule;
 		VkShaderModule fragModule;
 
-		VkShaderModuleCreateInfo shaderCreateInfo = {};
-		shaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		shaderCreateInfo.codeSize = vertBuffer.size();
-		shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(vertBuffer.data());
+		VkShaderModuleCreateInfo vertShaderCreateInfo = {};
+		vertShaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		vertShaderCreateInfo.codeSize = vertBuffer.size();
+		vertShaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(vertBuffer.data());
 
-		VkResult result = vkCreateShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &shaderCreateInfo, nullptr, &vertModule);
+		VkResult result = vkCreateShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &vertShaderCreateInfo, nullptr, &vertModule);
 		if(result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a vertex shader module!");
 		}
 
-		shaderCreateInfo.codeSize = fragBuffer.size();
-		shaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(fragBuffer.data());
+		VkShaderModuleCreateInfo fragShaderCreateInfo = {};
+		fragShaderCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+		fragShaderCreateInfo.codeSize = fragBuffer.size();
+		fragShaderCreateInfo.pCode = reinterpret_cast<const uint32_t*>(fragBuffer.data());
 
-		result = vkCreateShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &shaderCreateInfo, nullptr, &fragModule);
+		result = vkCreateShaderModule(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), &fragShaderCreateInfo, nullptr, &fragModule);
 		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to create a fragment shader module!");
@@ -546,7 +522,7 @@ namespace Graphite
 		fragInfo.module = fragModule;
 		fragInfo.pName = "main";
 		
-		VkPipelineShaderStageCreateInfo shaderInfos[] = { vertInfo, fragInfo };
+		VkPipelineShaderStageCreateInfo shaderInfos[2] = { vertInfo, fragInfo };
 
 		// .............................. ADD VERTEX BINDING DESCRIPTIONS AND VERTEX INPUT ....................................
 		VkVertexInputBindingDescription vertexBindingDescription = {};
@@ -593,17 +569,30 @@ namespace Graphite
 		inputAssemblyStateCreateInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		inputAssemblyStateCreateInfo.primitiveRestartEnable = VK_FALSE;
 
-		VkDynamicState dynamicStates[] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
-		
-		VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
-		dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-		dynamicStateInfo.dynamicStateCount = 2;
-		dynamicStateInfo.pDynamicStates = dynamicStates;
+		VkViewport viewport = {};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = (float)GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width;
+		viewport.height = (float)GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		// Create a scissor info struct
+		VkRect2D scissor = {};
+		scissor.offset = { 0,0 };
+		scissor.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();	
+
+		VkPipelineViewportStateCreateInfo viewportStateCreateInfo = {};
+		viewportStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportStateCreateInfo.viewportCount = 1;
+		viewportStateCreateInfo.pViewports = &viewport;
+		viewportStateCreateInfo.scissorCount = 1;
+		viewportStateCreateInfo.pScissors = &scissor;
 
 		VkPipelineRasterizationStateCreateInfo rasterizationStateCreateInfo = {};
 		rasterizationStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 		rasterizationStateCreateInfo.depthClampEnable = VK_FALSE;
-		rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_TRUE;
+		rasterizationStateCreateInfo.rasterizerDiscardEnable = VK_FALSE;
 		rasterizationStateCreateInfo.polygonMode = VK_POLYGON_MODE_FILL;			// Make sure to modify for when creating a lvl editor
 		rasterizationStateCreateInfo.lineWidth = 1.0f;
 		rasterizationStateCreateInfo.cullMode = VK_CULL_MODE_BACK_BIT;				// Check if better exists
@@ -617,6 +606,7 @@ namespace Graphite
 		multisampleStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 		multisampleStateCreateInfo.sampleShadingEnable = VK_FALSE;
 		multisampleStateCreateInfo.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+		multisampleStateCreateInfo.pSampleMask = nullptr;
 
 
 		// Add support for choosing different blending options for interesting color driven effects
@@ -673,8 +663,8 @@ namespace Graphite
 		pipelineCreateInfo.stageCount = 2;
 		pipelineCreateInfo.pStages = shaderInfos;
 		pipelineCreateInfo.pVertexInputState = &vertexInputCreateInfo;
-		pipelineCreateInfo.pDynamicState = &dynamicStateInfo;
-		pipelineCreateInfo.pViewportState = nullptr;
+		pipelineCreateInfo.pDynamicState = nullptr;
+		pipelineCreateInfo.pViewportState = &viewportStateCreateInfo;
 		pipelineCreateInfo.pInputAssemblyState = &inputAssemblyStateCreateInfo;
 		pipelineCreateInfo.pRasterizationState = &rasterizationStateCreateInfo;
 		pipelineCreateInfo.pMultisampleState = &multisampleStateCreateInfo;
@@ -750,14 +740,11 @@ namespace Graphite
 		samplerPoolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		samplerPoolSize.descriptorCount = static_cast<uint32_t>(s_FrameBuffer->Size());
 
-		std::vector<VkDescriptorPoolSize> samplerPoolSizes = { samplerPoolSize };
-
 		VkDescriptorPoolCreateInfo samplerDescriptorPoolCreateInfo = {};
 		samplerDescriptorPoolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		samplerDescriptorPoolCreateInfo.maxSets = MAX_OBJECTS;
-		samplerDescriptorPoolCreateInfo.maxSets = 1;
-		samplerDescriptorPoolCreateInfo.pPoolSizes = samplerPoolSizes.data();
-		samplerDescriptorPoolCreateInfo.poolSizeCount = static_cast<uint32_t>(samplerPoolSizes.size());
+		samplerDescriptorPoolCreateInfo.pPoolSizes = &samplerPoolSize;
+		samplerDescriptorPoolCreateInfo.poolSizeCount = 1;
 
 		vkCreateDescriptorPool(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),

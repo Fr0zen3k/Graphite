@@ -1,7 +1,7 @@
 #version 450
 
 layout(location = 0) in vec3 position;
-layout(location = 1) in vec4 color;
+layout(location = 1) in vec3 color;
 layout(location = 2) in vec2 textureCoordinates;
 layout(location = 3) in vec3 normal;
 
@@ -22,13 +22,15 @@ layout(push_constant) uniform PushData {
 layout(location = 0) out vec2 fragTextureCoordinates;
 layout(location = 1) out vec3 normalInterpolation;
 layout(location = 2) out vec3 vertexPosition;
+layout(location = 3) out vec3 vertColor;
 
 void main() {
 	vec4 vertPos = viewProjection.view * pushData.modelMatrix * vec4(position, 1.0);
 
 	fragTextureCoordinates = textureCoordinates;
-	normalInterpolation = vec3(pushData.normalMatrix * vec4(normal, 0.0));
+	normalInterpolation = normal;
 	vertexPosition = vec3(vertPos) / vertPos.w;
+	vertColor = color;
 
 	gl_Position = viewProjection.projection * vertPos;
 }

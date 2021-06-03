@@ -235,13 +235,12 @@ namespace Graphite
 
 	void VulkanTexture::CreateDescriptorSet()
 	{
-		VkDescriptorSetLayout layout = VulkanRendererAPI::GetSamplerDescriptorSetLayout();
 		
 		VkDescriptorSetAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = VulkanRendererAPI::GetSamplerDescriptorPool();
 		allocInfo.descriptorSetCount = 1;
-		allocInfo.pSetLayouts = &layout;
+		allocInfo.pSetLayouts = VulkanRendererAPI::GetSamplerDescriptorSetLayout();
 
 		VkResult result = vkAllocateDescriptorSets(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
@@ -323,8 +322,6 @@ namespace Graphite
 
 	void VulkanTexture::CreateCommonSampler()
 	{
-		// Most notable when dealing with renderer and texture settings
-
 		VkSamplerCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		createInfo.magFilter = VK_FILTER_LINEAR;
@@ -334,7 +331,7 @@ namespace Graphite
 		createInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		createInfo.anisotropyEnable = VK_TRUE;
 		createInfo.maxAnisotropy = 16;
-		createInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
+		createInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
 		createInfo.unnormalizedCoordinates = VK_FALSE;
 		createInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 		createInfo.mipLodBias = 0.0f;

@@ -69,8 +69,8 @@ namespace Graphite
 		VkRect2D m_Scissors;
 		float m_FieldOfView = 30.0f;
 		float m_AspectRation;
-		float m_Near = 0.001f;
-		float m_Far = 1000.0f;
+		float m_Near = 0.01f;
+		float m_Far = 100.0f;
 
 		ViewFrustum m_ViewFrustum;
 	};

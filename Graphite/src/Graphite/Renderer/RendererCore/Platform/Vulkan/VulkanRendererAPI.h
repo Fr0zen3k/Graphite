@@ -41,12 +41,12 @@ namespace Graphite
 		inline static VkDescriptorPool GetDescriptorPool() { return s_DescriptorPool; }
 		inline static VkDescriptorPool GetSamplerDescriptorPool() { return s_SamplerDescriptorPool; }
 		inline static VkDescriptorSetLayout GetDescriptorSetLayout() { return s_DescriptorSetLayout; }
-		inline static VkDescriptorSetLayout GetSamplerDescriptorSetLayout() { return s_SamplerDescriptorSetLayout; }
+		inline static VkDescriptorSetLayout* GetSamplerDescriptorSetLayout() { return &s_SamplerDescriptorSetLayout; }
 		inline static VkSurfaceFormatKHR GetSwapchainSurfaceFormat() { return s_SwapchainSurfaceFormat; }
 
 		static uint32_t StartDrawing();
 		static void Draw(uint32_t imageIndex, VulkanVertexBuffer * pVertexBuffer, VulkanIndexBuffer * pIndexBuffer, VulkanTexture * pTexture, const glm::mat4& modelMatrix, const Material& material);
-		static void EndDrawing(uint32_t imageIndex);
+		static void EndDrawing(uint32_t* imageIndex);
 
 	private:
 		static void CreateSwapchain();

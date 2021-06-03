@@ -30,7 +30,6 @@ namespace Graphite {
 		ret[1] *= 1.0f;
 		ret[2] *= 1.0f;
 		ret = glm::inverse(ret);
-		ret[1] *= -1.0f;
 		return ret;
 	}
 

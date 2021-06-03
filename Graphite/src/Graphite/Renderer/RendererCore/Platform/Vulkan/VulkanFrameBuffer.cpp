@@ -71,13 +71,13 @@ namespace Graphite
 	{
 		for(int i = 0; i < m_Frames.size(); i++)
 		{
-			VkImageView attachments[] = { m_Frames[i].ImageView, m_DepthBufferImageView };
+			std::array<VkImageView, 2> attachments = { m_Frames[i].ImageView, m_DepthBufferImageView };
 
 			VkFramebufferCreateInfo framebufferCreateInfo = {};
 			framebufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			framebufferCreateInfo.renderPass = VulkanRendererAPI::GetRenderPass();
-			framebufferCreateInfo.attachmentCount = 2;
-			framebufferCreateInfo.pAttachments = attachments;
+			framebufferCreateInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+			framebufferCreateInfo.pAttachments = attachments.data();
 			framebufferCreateInfo.width = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().width;
 			framebufferCreateInfo.height = GR_GRAPHICS_CONTEXT->GetSwapchainExtent().height;
 			framebufferCreateInfo.layers = 1;
@@ -207,8 +207,6 @@ namespace Graphite
 			writeSet.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			writeSet.descriptorCount = 1;
 			writeSet.pBufferInfo = &bufferInfo;
-
-			// ADD A MATERIAL UNIFORM LATER WHEN IMPLEMENTED FOR 3D ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 			vkUpdateDescriptorSets(
 				GR_GRAPHICS_CONTEXT->GetLogicalDevice(),

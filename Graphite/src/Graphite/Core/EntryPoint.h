@@ -45,11 +45,19 @@ int main(int argc, char *argv[]) {
     Graphite::Renderer3D::Init();
 	
     userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Perspective));
+
+    userApp->Start();
+	
+    userApp->GetActiveCameraInstance()->Translate(glm::vec3(0.0f, 0.0f, 15.0f));
+	
     Graphite::Renderer3D::InitAPI();
 
-    GameObjectID id = Graphite::GameObjectManager::AddGameObject("D:/IRG/irglab/irgLab/vjezba3/resources/glava/glava.obj", "C:/Users/jankr/OneDrive/Slike/fr0zen.png");
+    GameObjectID id = Graphite::GameObjectManager::AddGameObject("C:/Users/jankr/OneDrive/Desktop/Moon_2K.obj", "C:/Users/jankr/OneDrive/Desktop/Textures/Diffuse_2K.png");
 	
     userApp->run();
+
+    userApp->Shutdown();
+	
     delete userApp;
 
     Graphite::Renderer3D::Shutdown();

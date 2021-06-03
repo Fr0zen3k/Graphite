@@ -23,7 +23,7 @@ namespace Graphite
 
 	void VulkanIndexBuffer::AllocateNativeBuffer(uint32_t* pIndices)
 	{
-		VkDeviceSize bufferSize = sizeof(Vertex) * m_Size;
+		VkDeviceSize bufferSize = sizeof(uint32_t) * m_Size;
 
 		VulkanUtilities::CreateBuffer(
 			GR_GRAPHICS_CONTEXT->GetPhysicalDevice(),

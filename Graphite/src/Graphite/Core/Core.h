@@ -11,8 +11,6 @@
 #define GRAPHITE_CORE_H
 
 typedef uint32_t GameObjectID;
-typedef uint32_t MeshID;
-typedef uint32_t TextureID;
 
 #ifdef GR_PLATFORM_WINDOWS
     #ifdef GR_BUILD_DLL

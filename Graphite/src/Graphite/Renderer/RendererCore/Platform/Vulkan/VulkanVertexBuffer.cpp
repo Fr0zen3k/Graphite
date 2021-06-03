@@ -67,7 +67,7 @@ namespace Graphite
 		vkUnmapMemory(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			stagingBufferMemory);
-
+		
 		VulkanUtilities::CopyBuffer(
 			GR_GRAPHICS_CONTEXT->GetLogicalDevice(),
 			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),

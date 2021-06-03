@@ -24,10 +24,6 @@ namespace Graphite
 		{
 			GR_LOG_CRITICAL("VALIDATION ERROR: {0}", pCallbackData->pMessage);
 		}
-		else
-		{
-			GR_LOG_WARN("VALIDATION WARNING: {0}", pCallbackData->pMessage);
-		}
 
 		return VK_FALSE;
 	}

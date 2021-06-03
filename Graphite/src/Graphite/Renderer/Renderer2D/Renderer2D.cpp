@@ -38,9 +38,9 @@ namespace Graphite
 
 	void Renderer2D::OnTick()
 	{	
-		int i = VulkanRendererAPI::StartDrawing();
+		uint32_t i = VulkanRendererAPI::StartDrawing();
 		VulkanRendererAPI::Draw(i, nullptr, nullptr, nullptr, glm::mat4(1.0f), Material());
-		VulkanRendererAPI::EndDrawing(i);
+		VulkanRendererAPI::EndDrawing(&i);
 	}
 
 	

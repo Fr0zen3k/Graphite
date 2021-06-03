@@ -25,8 +25,8 @@ namespace Graphite {
 		unsigned int Height;
 
 		WindowInfo(const std::string & title = "Graphite Engine", 
-					unsigned int width = 1000, 
-					unsigned int height = 500)
+					unsigned int width = 1440, 
+					unsigned int height = 900)
 			: Title(title), Width(width), Height(height) { }
 	};
 

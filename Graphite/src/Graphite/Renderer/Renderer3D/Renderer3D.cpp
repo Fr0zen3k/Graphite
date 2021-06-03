@@ -14,6 +14,12 @@
 
 #include "Graphite/Core/Application.h"
 
+
+
+
+#include "glm/gtx/string_cast.hpp"
+
+
 namespace Graphite
 {
 	GraphicsContext* Renderer3D::s_GraphicsContext = nullptr;
@@ -47,7 +53,7 @@ namespace Graphite
 
 	void Renderer3D::OnTick()
 	{
-		int i = VulkanRendererAPI::StartDrawing();
+		uint32_t i = VulkanRendererAPI::StartDrawing();
 
 		Camera* camera = Application::Get()->GetActiveCameraInstance();
 
@@ -114,7 +120,7 @@ namespace Graphite
 			}
 		}
 		
-		VulkanRendererAPI::EndDrawing(i);
+		VulkanRendererAPI::EndDrawing(&i);
 	}
 
 	void Renderer3D::Shutdown()

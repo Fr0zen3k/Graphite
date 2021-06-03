@@ -48,6 +48,12 @@ namespace Graphite {
         /// <returns> Returns the window reference </returns>
         inline Window* GetWindow() { return m_Window; }
 
+        // FOR GAME LOGIC
+        virtual void Start() {}
+    	virtual void Tick() {}
+    	virtual void Shutdown() {}
+    	
+
         Camera* GetActiveCameraInstance();
 
 		inline void SetActiveCamera(Camera* camera)
@@ -60,10 +66,16 @@ namespace Graphite {
         /// </summary>
         /// <returns> Returns the active application instance </returns>
         inline static Application* Get() { return s_Instance; }
+
+        inline static void SetAppDir(const std::string& path) { s_ApplicationDirectory = path; }
+
+        inline static std::string GetAppDir() { return s_ApplicationDirectory; }
     private:
         Window* m_Window;
 
         Camera* m_ActiveCamera;
+
+        static std::string s_ApplicationDirectory;
 
         static Application* s_Instance;
     };

@@ -10,9 +10,9 @@ namespace Graphite {
 	VulkanPerspectiveCamera::VulkanPerspectiveCamera()
 	{
 		// Initialize the projection matrix
-		m_ProjectionMatrix = glm::perspective(30.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.001f, 1000.0f);
-		m_ProjectionMatrix[1] *= -1.0f;
-		m_ViewFrustum = ViewFrustum::PerspectiveFrustum(30.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.001f, 1000.0f);
+		m_ProjectionMatrix = glm::perspective(glm::radians(45.0f), 1.0f * Application::Get()->GetWindow()->GetWidth() / Application::Get()->GetWindow()->GetHeight(), 0.1f, 100.0f);
+		m_ProjectionMatrix[1][1] *= -1.0f;
+		m_ViewFrustum = ViewFrustum::PerspectiveFrustum(45.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.01f, 100.0f);
 		Init();
 		m_Transform = Math::Transform();
 	}
@@ -29,7 +29,11 @@ namespace Graphite {
 
 	glm::mat4 VulkanPerspectiveCamera::GetViewMatrix() const
 	{
-		return glm::inverse(m_Transform.GetModelMatrix());
+		glm::mat4 m = glm::inverse(m_Transform.GetModelMatrix());
+		m[0] = glm::normalize(m[0]);
+		m[1] = glm::normalize(m[1]);
+		m[2] = glm::normalize(m[2]);
+		return m;
 	}
 
 	glm::mat4 VulkanPerspectiveCamera::GetProjectionMatrix() const
@@ -74,8 +78,8 @@ namespace Graphite {
 		m_Viewport = {};
 		m_Viewport.x = 0.0f;
 		m_Viewport.y = 0.0f;
-		m_Viewport.width = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().first;
-		m_Viewport.height = (float)GR_GRAPHICS_CONTEXT->GetFrameSize().second;
+		m_Viewport.width = (float)Application::Get()->GetWindow()->GetWidth();
+		m_Viewport.height = (float)Application::Get()->GetWindow()->GetHeight();
 		m_Viewport.minDepth = 0.0f;
 		m_Viewport.maxDepth = 1.0f;
 

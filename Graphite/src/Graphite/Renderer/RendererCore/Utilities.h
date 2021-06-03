@@ -25,7 +25,7 @@ namespace Graphite
 	struct Vertex
 	{
 		glm::vec3 position;			// Position (x, y, z)
-		glm::vec4 color;			// Color (r, g, b)
+		glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);			// Color (r, g, b)
 		glm::vec2 textureCoords;	// Texture Coordinates (u, v)
 		glm::vec3 normal;
 	};
