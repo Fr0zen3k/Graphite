@@ -14,7 +14,7 @@ namespace Graphite
 	struct GRAPHITE_API RendererSettings
 	{
 		bool LOD = true;
-		bool culling = false;
+		bool culling = true;
 	};
 	
 	class GRAPHITE_API Renderer3D
@@ -28,6 +28,9 @@ namespace Graphite
 		static void UpdateSettings(RendererSettings settings);
 
 		inline static RendererSettings GetSettings() { return s_Settings; }
+		inline static void SetCulling(bool culling) { s_Settings.culling = culling; }
+		inline static bool GetCulling() { return s_Settings.culling; }
+		inline static bool GetLOD() { return s_Settings.LOD; }
 
 		static GraphicsContext* GetGraphicsContext();
 

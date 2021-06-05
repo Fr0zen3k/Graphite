@@ -10,9 +10,9 @@ namespace Graphite {
 	VulkanPerspectiveCamera::VulkanPerspectiveCamera()
 	{
 		// Initialize the projection matrix
-		m_ProjectionMatrix = glm::perspective(glm::radians(45.0f), 1.0f * Application::Get()->GetWindow()->GetWidth() / Application::Get()->GetWindow()->GetHeight(), 0.1f, 100.0f);
+		m_ProjectionMatrix = glm::perspective(glm::radians(45.0f), 1.0f * Application::Get()->GetWindow()->GetWidth() / Application::Get()->GetWindow()->GetHeight(), 0.001f, 100.0f);
 		m_ProjectionMatrix[1][1] *= -1.0f;
-		m_ViewFrustum = ViewFrustum::PerspectiveFrustum(45.0f, 1.0f * GR_GRAPHICS_CONTEXT->GetFrameSize().first / GR_GRAPHICS_CONTEXT->GetFrameSize().second, 0.01f, 100.0f);
+		m_ViewFrustum = ViewFrustum(m_ProjectionMatrix);
 		Init();
 		m_Transform = Math::Transform();
 	}

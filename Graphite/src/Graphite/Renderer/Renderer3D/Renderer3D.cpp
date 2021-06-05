@@ -14,9 +14,6 @@
 
 #include "Graphite/Core/Application.h"
 
-
-
-
 #include "glm/gtx/string_cast.hpp"
 
 
@@ -57,7 +54,25 @@ namespace Graphite
 
 		Camera* camera = Application::Get()->GetActiveCameraInstance();
 
+		// TEST
+
+		int drawCount = 1;
+		uint32_t vertexCount = 0, indexCount = 0;
+		double totalDrawLength = 0.0;
+		std::chrono::high_resolution_clock::time_point start;
+		
+		// TEST
+
+		
+		// TEST
+		start = std::chrono::high_resolution_clock::now();
+		// TEST
+		
 		VulkanRendererAPI::Draw(i, nullptr, nullptr, nullptr, glm::mat4(1.0f), Material());
+
+		// TEST
+		totalDrawLength += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count();
+		// TEST
 		
 		for(GameObjectID id = 1; id < GameObjectManager::Size(); id++)
 		{
@@ -65,6 +80,7 @@ namespace Graphite
 
 			if(s_Settings.culling)
 			{
+				
 				if(!camera->InViewFrustum(object->GetBoundingSphere(), object->GetTransform().GetPosition()))
 				{
 					continue;
@@ -91,7 +107,23 @@ namespace Graphite
 				glm::mat4 model = object->GetTransform().GetModelMatrix();
 				Material material = object->GetMaterial();
 
+				// TEST
+				start = std::chrono::high_resolution_clock::now();
+				// TEST
+				
 				VulkanRendererAPI::Draw(i, vertexBuffer, indexBuffer, texture, model, material);
+
+				// TEST
+				totalDrawLength += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count();
+				// TEST
+
+				// TEST
+
+				drawCount++;
+				vertexCount += vertexBuffer->Size();
+				indexCount += indexBuffer->Size();
+
+				// TEST
 			}
 			else
 			{
@@ -116,11 +148,32 @@ namespace Graphite
 				glm::mat4 model = object->GetTransform().GetModelMatrix();
 				Material material = object->GetMaterial();
 
+				// TEST
+				start = std::chrono::high_resolution_clock::now();
+				// TEST
+				
 				VulkanRendererAPI::Draw(i, vertexBuffer, indexBuffer, texture, model, material);
+
+				// TEST
+				totalDrawLength += std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start).count();
+				// TEST
+
+				// TEST
+
+				drawCount++;
+				vertexCount += vertexBuffer->Size();
+				indexCount += indexBuffer->Size();
+
+				// TEST
 			}
 		}
 		
 		VulkanRendererAPI::EndDrawing(&i);
+
+		Application::Get()->GetBenchmarker()->SetDrawCallCount(drawCount);
+		Application::Get()->GetBenchmarker()->SetVertexCount(vertexCount);
+		Application::Get()->GetBenchmarker()->SetIndexCount(indexCount);
+		Application::Get()->GetBenchmarker()->SetAvgDrawCall(totalDrawLength / drawCount);
 	}
 
 	void Renderer3D::Shutdown()

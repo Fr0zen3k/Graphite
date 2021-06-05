@@ -13,10 +13,10 @@
 #define GRAPHITE_APPLICATION_H
 
 #include "Core.h"
-
 #include "Window.h"
-
 #include "Graphite/Renderer/RendererCore/Camera.h"
+#include "Benchmarking/Benchmarker.h"
+
 
 namespace Graphite {
 
@@ -34,7 +34,7 @@ namespace Graphite {
         /// <summary>
         /// The function called once every game loop
         /// </summary>
-        void run();
+        void Run();
 
         /// <summary>
         /// Event callback function handling all events propagated to the application
@@ -67,9 +67,16 @@ namespace Graphite {
         /// <returns> Returns the active application instance </returns>
         inline static Application* Get() { return s_Instance; }
 
-        inline static void SetAppDir(const std::string& path) { s_ApplicationDirectory = path; }
+        static void SetAppDir(const std::string& path);
 
         inline static std::string GetAppDir() { return s_ApplicationDirectory; }
+
+        static double DeltaTime();
+
+    	// Test
+        static Benchmarker* GetBenchmarker() { return s_Benchmarker; }
+        static void InitBenchmarking() { s_Benchmarker = new Benchmarker(); }
+    	
     private:
         Window* m_Window;
 
@@ -78,6 +85,12 @@ namespace Graphite {
         static std::string s_ApplicationDirectory;
 
         static Application* s_Instance;
+
+        static std::chrono::high_resolution_clock::time_point s_LastTick;
+        static std::chrono::high_resolution_clock::time_point s_CurrentTick;
+
+    	// Test
+        static Benchmarker* s_Benchmarker;
     };
 
     /// <summary>

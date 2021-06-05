@@ -278,6 +278,8 @@ namespace Graphite
 	{
 		int channels;
 
+		stbi_set_flip_vertically_on_load(true);
+		
 		stbi_uc * file = stbi_load(
 			filePath.c_str(),
 			&m_Width,

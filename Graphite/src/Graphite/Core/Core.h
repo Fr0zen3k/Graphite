@@ -35,7 +35,7 @@ typedef uint32_t GameObjectID;
 #endif
 
 #ifdef GRAPHITE_RENDERER_VULKAN
-	#define GR_GRAPHICS_CONTEXT dynamic_cast<VulkanGraphicsContext*>(Renderer3D::GetGraphicsContext())
+	#define GR_GRAPHICS_CONTEXT dynamic_cast<Graphite::VulkanGraphicsContext*>(Graphite::Renderer3D::GetGraphicsContext())
 #endif
 
 

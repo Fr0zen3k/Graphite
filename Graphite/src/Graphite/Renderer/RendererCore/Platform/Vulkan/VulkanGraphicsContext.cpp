@@ -174,6 +174,9 @@ namespace Graphite
 		vkGetPhysicalDeviceFeatures(
 			m_PhysicalDevice,
 			&m_PhysicalDeviceFeatures);
+		vkGetPhysicalDeviceMemoryProperties(
+			m_PhysicalDevice, 
+			&m_PhysicalDeviceMemoryProperties);
 
 		if(m_PhysicalDeviceProperties.limits.maxPushConstantsSize < 256)
 		{
@@ -305,6 +308,13 @@ namespace Graphite
 		}
 	}
 
+	void VulkanGraphicsContext::SetBenchmarkingValues() const
+	{
+		Application::Get()->GetBenchmarker()->SetGPUBrand(m_PhysicalDeviceProperties.deviceName);
+		Application::Get()->GetBenchmarker()->SetMaxTextureSize(m_PhysicalDeviceProperties.limits.maxImageDimension2D);
+		Application::Get()->GetBenchmarker()->SetMaxPushConstantSize(m_PhysicalDeviceProperties.limits.maxPushConstantsSize);
+		Application::Get()->GetBenchmarker()->SetVRAM(m_PhysicalDeviceMemoryProperties.memoryHeaps[0].size / 1024);
+	}
 
 }
 

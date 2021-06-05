@@ -33,8 +33,6 @@ namespace Graphite
 
 		static bool OnEvent(const Event& e);
 
-		static bool BindShader(VulkanShader* shader);
-
 		inline static VkCommandPool GetGraphicsCommandPool() { return s_GraphicsCommandPool; }
 		inline static VkSwapchainKHR GetSwapchain() { return s_Swapchain; }
 		inline static VkRenderPass GetRenderPass() { return s_RenderPass; }
@@ -71,9 +69,6 @@ namespace Graphite
 		
 		static VkPipeline s_GraphicsPipeline;
 		static VkPipelineLayout s_GraphicsPipelineLayout;
-
-		static VulkanShader* s_VertexShader;
-		static VulkanShader* s_FragmentShader;
 
 		static VkCommandPool s_GraphicsCommandPool;
 

@@ -22,6 +22,7 @@ namespace Graphite
 	{
 	public:
 		ViewFrustum() = default;
+		ViewFrustum(const glm::mat4& projection);
 		ViewFrustum(float t, float b, float l, float r, float n, float f);
 		ViewFrustum(float aspect, float fov, float nearPlane, float farPlane);
 		

@@ -27,9 +27,6 @@ namespace Graphite
 	VkPipeline VulkanRendererAPI::s_GraphicsPipeline;
 	VkPipelineLayout VulkanRendererAPI::s_GraphicsPipelineLayout = {};
 
-	VulkanShader* VulkanRendererAPI::s_VertexShader;
-	VulkanShader* VulkanRendererAPI::s_FragmentShader;
-
 	VkCommandPool VulkanRendererAPI::s_GraphicsCommandPool;
 
 	VkDescriptorPool VulkanRendererAPI::s_DescriptorPool;
@@ -48,8 +45,7 @@ namespace Graphite
 	{
 		try
 		{
-			s_FragmentShader = new VulkanShader(ShaderType::Fragment, "./Shaders/frag.spv");
-			s_VertexShader = new VulkanShader(ShaderType::Vertex, "./Shaders/vert.spv");
+			GR_GRAPHICS_CONTEXT->SetBenchmarkingValues();
 			CreateSwapchain();
 			CreatePushConstantRange();
 			CreateCommandPool();
@@ -87,8 +83,6 @@ namespace Graphite
 		vkDestroyDescriptorPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_SamplerDescriptorPool, nullptr);
 
 		delete s_FrameBuffer;
-		delete s_FragmentShader;
-		delete s_VertexShader;
 
 		vkDestroyCommandPool(GR_GRAPHICS_CONTEXT->GetLogicalDevice(), s_GraphicsCommandPool, nullptr);
 
@@ -102,24 +96,6 @@ namespace Graphite
 	bool VulkanRendererAPI::OnEvent(const Event& e)
 	{
 		return false;
-	}
-
-	bool VulkanRendererAPI::BindShader(VulkanShader* shader)
-	{
-		if (shader->GetShaderType() == ShaderType::Vertex)
-		{
-			s_VertexShader = shader;
-			return true;
-		}
-		else if (shader->GetShaderType() == ShaderType::Fragment)
-		{
-			s_FragmentShader = shader;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
 	}
 
 	uint32_t VulkanRendererAPI::StartDrawing()
@@ -144,12 +120,6 @@ namespace Graphite
 			VK_NULL_HANDLE,
 			&imageIndex);
 
-		return imageIndex;
-	}
-
-	// Recording the commands for the data given for drawing
-	void VulkanRendererAPI::Draw(uint32_t imageIndex, VulkanVertexBuffer* pVertexBuffer, VulkanIndexBuffer* pIndexBuffer, VulkanTexture* pTexture, const glm::mat4& modelMatrix, const Material& material)
-	{			
 		VkCommandBufferBeginInfo commandBufferBeginInfo = {};
 		commandBufferBeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -160,7 +130,7 @@ namespace Graphite
 		renderPassBeginInfo.renderArea.extent = GR_GRAPHICS_CONTEXT->GetSwapchainExtent();
 
 		std::array<VkClearValue, 2> clearValues = {};
-		clearValues[0].color = { 0.45f, 0.45f, 0.47f, 1.0f };										//{0.24f, 0.23f, 0.24f, 1.0f};
+		clearValues[0].color = { 0.12f, 0.13f, 0.12f, 1.0f };
 		clearValues[1].depthStencil.depth = 1.0f;
 
 		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
@@ -170,8 +140,8 @@ namespace Graphite
 		VkResult result = vkBeginCommandBuffer(
 			s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
 			&commandBufferBeginInfo);
-		
-		if(result != VK_SUCCESS)
+
+		if (result != VK_SUCCESS)
 		{
 			throw std::runtime_error("Failed to start recording a command buffer!");
 		}
@@ -179,52 +149,57 @@ namespace Graphite
 
 		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ BEGIN RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-		
-			vkCmdBeginRenderPass(
+
+		vkCmdBeginRenderPass(
+			s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
+			&renderPassBeginInfo,
+			VK_SUBPASS_CONTENTS_INLINE);
+
+
+		vkCmdBindPipeline(
+			s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
+			VK_PIPELINE_BIND_POINT_GRAPHICS,
+			s_GraphicsPipeline);
+
+		return imageIndex;
+	}
+
+	// Recording the commands for the data given for drawing
+	void VulkanRendererAPI::Draw(uint32_t imageIndex, VulkanVertexBuffer* pVertexBuffer, VulkanIndexBuffer* pIndexBuffer, VulkanTexture* pTexture, const glm::mat4& modelMatrix, const Material& material)
+	{	
+		if(pVertexBuffer != nullptr && pIndexBuffer != nullptr && pTexture != nullptr)
+		{
+			VkBuffer vertexBuffers[] = { pVertexBuffer->GetNativeBuffer() };
+			VkDeviceSize offsets[] = { 0 };
+
+			vkCmdBindVertexBuffers(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, 0, 1, vertexBuffers, offsets);
+
+			vkCmdBindIndexBuffer(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, pIndexBuffer->GetNativeBuffer(), 0, VK_INDEX_TYPE_UINT32);
+
+			glm::mat4 view = Application::Get()->GetActiveCameraInstance()->GetViewMatrix();
+					
+			glm::mat4 normalMatrix = glm::transpose(glm::inverse(view * modelMatrix));
+					
+			VulkanUtilities::PushConstantsData data;
+
+			data.model = modelMatrix;
+			data.normal = normalMatrix;
+			data.ambient = glm::vec4(material.GetAmbient(), 1.0f);
+			data.specular = glm::vec4(material.GetSpecular(), 1.0f);
+			data.light = glm::vec4(material.GetLight(), 1.0f);
+			data.phongData = glm::vec4(material.GetKa(), material.GetKd(), material.GetKs(), material.GetShininess());
+
+			vkCmdPushConstants(
 				s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
-				&renderPassBeginInfo, 
-				VK_SUBPASS_CONTENTS_INLINE);
-
-			
-				vkCmdBindPipeline(
-					s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
-					VK_PIPELINE_BIND_POINT_GRAPHICS,
-					s_GraphicsPipeline);
-
-				// Data binding
-				if(pVertexBuffer != nullptr && pIndexBuffer != nullptr && pTexture != nullptr)
-				{
-					VkBuffer vertexBuffers[] = { pVertexBuffer->GetNativeBuffer() };
-					VkDeviceSize offsets[] = { 0 };
-
-					vkCmdBindVertexBuffers(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, 0, 1, vertexBuffers, offsets);
-
-					vkCmdBindIndexBuffer(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, pIndexBuffer->GetNativeBuffer(), 0, VK_INDEX_TYPE_UINT32);
-
-					glm::mat4 view = Application::Get()->GetActiveCameraInstance()->GetViewMatrix();
+				s_GraphicsPipelineLayout,
+				VK_SHADER_STAGE_ALL_GRAPHICS,
+				0,
+				sizeof(VulkanUtilities::PushConstantsData),
+				&data);
 					
-					glm::mat4 normalMatrix = glm::transpose(glm::inverse(view * modelMatrix));
-					
-					VulkanUtilities::PushConstantsData data;
+			std::array<VkDescriptorSet, 2> descriptorSets = { s_FrameBuffer->GetFrame(imageIndex).DescriptorSet, pTexture->GetDescriptorSet() };
 
-					data.model = modelMatrix;
-					data.normal = normalMatrix;
-					data.ambient = glm::vec4(material.GetAmbient(), 1.0f);
-					data.specular = glm::vec4(material.GetSpecular(), 1.0f);
-					data.light = glm::vec4(material.GetLight(), 1.0f);
-					data.phongData = glm::vec4(material.GetKa(), material.GetKd(), material.GetKs(), material.GetShininess());
-
-					vkCmdPushConstants(
-						s_FrameBuffer->GetFrame(imageIndex).CommandBuffer,
-						s_GraphicsPipelineLayout,
-						VK_SHADER_STAGE_ALL_GRAPHICS,
-						0,
-						sizeof(VulkanUtilities::PushConstantsData),
-						&data);
-					
-					std::array<VkDescriptorSet, 2> descriptorSets = { s_FrameBuffer->GetFrame(imageIndex).DescriptorSet, pTexture->GetDescriptorSet() };
-
-					vkCmdBindDescriptorSets(
+			vkCmdBindDescriptorSets(
 						s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, 
 						VK_PIPELINE_BIND_POINT_GRAPHICS, 
 						s_GraphicsPipelineLayout, 
@@ -234,26 +209,26 @@ namespace Graphite
 						0, 
 						nullptr);
 
-					vkCmdDrawIndexed(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, static_cast<uint32_t>(pIndexBuffer->Size()), 1, 0, 0, 0);
-				}
-
-			vkCmdEndRenderPass(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
-		
-
-		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-
-		result = vkEndCommandBuffer(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer);
-		if(result != VK_SUCCESS)
-		{
-			throw std::runtime_error("Failed to stop recording a command buffer!");
+			vkCmdDrawIndexed(s_FrameBuffer->GetFrame(imageIndex).CommandBuffer, static_cast<uint32_t>(pIndexBuffer->Size()), 1, 0, 0, 0);
 		}
-
-		s_FrameBuffer->UpdateViewProjectionUniform(imageIndex);
 	}
 
 	void VulkanRendererAPI::EndDrawing(uint32_t* imageIndex)
 	{
+		vkCmdEndRenderPass(s_FrameBuffer->GetFrame(*imageIndex).CommandBuffer);
+
+
+		// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END RENDER PASS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+		VkResult result = vkEndCommandBuffer(s_FrameBuffer->GetFrame(*imageIndex).CommandBuffer);
+		if (result != VK_SUCCESS)
+		{
+			throw std::runtime_error("Failed to stop recording a command buffer!");
+		}
+
+		s_FrameBuffer->UpdateViewProjectionUniform(*imageIndex);
+		
 		VkSubmitInfo submitInfo = {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.waitSemaphoreCount = 1;
@@ -265,7 +240,7 @@ namespace Graphite
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &s_RenderFinishSemaphores[s_CurrentFrame];
 
-		VkResult result = vkQueueSubmit(
+		result = vkQueueSubmit(
 			GR_GRAPHICS_CONTEXT->GetGraphicsQueue(),
 			1,
 			&submitInfo,
@@ -449,7 +424,7 @@ namespace Graphite
 	void VulkanRendererAPI::CreateGraphicsPipeline()
 	{
 		//D:/Graphite/Graphite/src/Graphite/Renderer/RendererCore/Platform/Vulkan/Shaders
-		std::ifstream file1("D:/Graphite/Graphite/src/Graphite/Renderer/RendererCore/Platform/Vulkan/Shaders/vert.spv", std::ios::binary | std::ios::ate);
+		std::ifstream file1(Application::GetAppDir() + "Shaders/vert.spv", std::ios::binary | std::ios::ate);
 
 		if(!file1.is_open())
 		{
@@ -467,7 +442,7 @@ namespace Graphite
 
 		file1.close();
 		
-		std::ifstream file2("D:/Graphite/Graphite/src/Graphite/Renderer/RendererCore/Platform/Vulkan/Shaders/frag.spv", std::ios::ate | std::ios::binary);
+		std::ifstream file2(Application::GetAppDir() + "Shaders/frag.spv", std::ios::ate | std::ios::binary);
 
 		if (!file2.is_open())
 		{

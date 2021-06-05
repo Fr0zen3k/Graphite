@@ -1,4 +1,4 @@
-#include "Graphite/Core/grpch.h"
+	#include "Graphite/Core/grpch.h"
 #include "GameObject.h"
 
 #include "assimp/Importer.hpp"
@@ -133,7 +133,7 @@ namespace Graphite
 
 			uint32_t materialIndex = mesh->mMaterialIndex;
 
-			m_Material = Material(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(10.0f, 10.0f, 10.0f), 1.0f, 1.0f, 0.25f, 6.0f);
+			m_Material = Material(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(10.0f, 10.0f, 10.0f), 1.0f, 0.64f, 0.5f, 6.0f);
 
 			for (int i = 0; i < mesh->mNumVertices; i++)
 			{

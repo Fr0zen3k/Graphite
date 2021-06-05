@@ -27,7 +27,7 @@ namespace Graphite
 		std::vector<std::string> m_RowNames;
 		std::vector<std::string> m_DataQueue;
 		std::ofstream m_FileStream;
-		const char& m_Delimiter;
+		char m_Delimiter;
 		uint32_t m_QueuePos = 0;
 	};
 }

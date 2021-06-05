@@ -3,6 +3,73 @@
 
 namespace Graphite
 {
+
+	ViewFrustum::ViewFrustum(const glm::mat4& projection)
+	{
+		glm::mat4 inverse = glm::inverse(projection);
+
+		glm::vec4 p1, p2, p3;
+
+		// Near
+		p1 = inverse * glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f);
+		p2 = inverse * glm::vec4(-1.0f, -1.0f, 0.0f, 1.0f);
+		p3 = inverse * glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		p1 /= p1.w;
+		p2 /= p2.w;
+		p3 /= p3.w;
+
+		m_Near = Plane(p2 - p1, p3 - p1, p1);
+
+		// Far
+		p1 = inverse * glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f);
+		p2 = inverse * glm::vec4(-1.0f, -1.0f, 1.0f, 1.0f);
+		p3 = inverse * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		p1 /= p1.w;
+		p2 /= p2.w;
+		p3 /= p3.w;
+
+		m_Far = Plane(p3 - p1, p2 - p1, p1);
+
+		// Left
+		p1 = inverse * glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f);
+		p2 = inverse * glm::vec4(-1.0f, -1.0f, 1.0f, 1.0f);
+		p3 = inverse * glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f);
+		p1 /= p1.w;
+		p2 /= p2.w;
+		p3 /= p3.w;
+
+		m_Left = Plane(p2 - p1, p3 - p1, p1);
+
+		// Right
+		p1 = inverse * glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		p2 = inverse * glm::vec4(1.0f, -1.0f, 0.0f, 1.0f);
+		p3 = inverse * glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		p1 /= p1.w;
+		p2 /= p2.w;
+		p3 /= p3.w;
+
+		m_Right = Plane(p2 - p1, p3 - p1, p1);
+
+		// Bottom
+		p1 = inverse * glm::vec4(-1.0f, 1.0f, 0.0f, 1.0f);
+		p2 = inverse * glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+		p3 = inverse * glm::vec4(-1.0f, 1.0f, 1.0f, 1.0f);
+		p1 /= p1.w;
+		p2 /= p2.w;
+		p3 /= p3.w;
+
+		m_Bottom = Plane(p2 - p1, p3 - p1, p1);
+
+		// Top
+		p1 = inverse * glm::vec4(1.0f, -1.0f, 0.0f, 1.0f);
+		p2 = inverse * glm::vec4(-1.0f, -1.0f, 0.0f, 1.0f);
+		p3 = inverse * glm::vec4(1.0f, -1.0f, 1.0f, 1.0f);
+		p1 /= p1.w;
+		p2 /= p2.w;
+		p3 /= p3.w;
+
+		m_Top = Plane(p2 - p1, p3 - p1, p1);
+	}
 	
 	bool ViewFrustum::Check(const BoundingBox& boundingBox, const glm::mat4& transformMatrix) const
 	{
@@ -137,16 +204,18 @@ namespace Graphite
 
 	ViewFrustum::ViewFrustum(float aspect, float fov, float nearPlane, float farPlane)
 	{
+		fov = glm::radians(fov);
+		
 		glm::vec3 flt, flb, frt, frb, nlt, nlb, nrt, nrb;
 		
-		flt = glm::vec3(-farPlane * glm::tan(aspect * fov), farPlane, farPlane * glm::tan(fov));
-		flb = glm::vec3(-farPlane * glm::tan(aspect * fov), farPlane, -farPlane * glm::tan(fov));
-		frt = glm::vec3(farPlane * glm::tan(aspect * fov), farPlane, farPlane * glm::tan(fov));
-		flb = glm::vec3(farPlane * glm::tan(aspect * fov), farPlane, -farPlane * glm::tan(fov));
-		nlb = glm::vec3(-nearPlane * glm::tan(aspect * fov), nearPlane, -nearPlane * glm::tan(fov));
-		nlt = glm::vec3(-nearPlane * glm::tan(aspect * fov), nearPlane, nearPlane * glm::tan(fov));
-		nrb = glm::vec3(nearPlane * glm::tan(aspect * fov), nearPlane, -nearPlane * glm::tan(fov));
-		nrt = glm::vec3(nearPlane * glm::tan(aspect * fov), nearPlane, nearPlane * glm::tan(fov));
+		flt = glm::vec3(-farPlane * glm::tan(aspect * fov / 2.0f), farPlane, farPlane * glm::tan(fov / 2.0f));
+		flb = glm::vec3(-farPlane * glm::tan(aspect * fov / 2.0f), farPlane, -farPlane * glm::tan(fov / 2.0f));
+		frt = glm::vec3(farPlane * glm::tan(aspect * fov / 2.0f), farPlane, farPlane * glm::tan(fov / 2.0f));
+		flb = glm::vec3(farPlane * glm::tan(aspect * fov / 2.0f), farPlane, -farPlane * glm::tan(fov / 2.0f));
+		nlb = glm::vec3(-nearPlane * glm::tan(aspect * fov / 2.0f), nearPlane, -nearPlane * glm::tan(fov / 2.0f));
+		nlt = glm::vec3(-nearPlane * glm::tan(aspect * fov / 2.0f), nearPlane, nearPlane * glm::tan(fov / 2.0f));
+		nrb = glm::vec3(nearPlane * glm::tan(aspect * fov / 2.0f), nearPlane, -nearPlane * glm::tan(fov / 2.0f));
+		nrt = glm::vec3(nearPlane * glm::tan(aspect * fov / 2.0f), nearPlane, nearPlane * glm::tan(fov / 2.0f));
 
 		m_Near = Plane(nlt - nlb, frb - nlb, nlb);
 		m_Far = Plane(frt - frb, flb - frb, frb);

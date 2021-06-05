@@ -61,6 +61,8 @@ namespace Graphite
 		inline void SetSwapchainExtent(VkExtent2D extent) { m_SwapchainExtent = extent; }
 		inline void SetSwapchainImageFormat(VkFormat format) { m_SwapchainImageFormat = format; }
 		inline void SetSwapchainColorSpace(VkColorSpaceKHR colorSpace) { m_SwapchainColorSpace = colorSpace; }
+
+		inline void SetBenchmarkingValues() const;
 		
 	private:
 		void Init();
@@ -83,6 +85,7 @@ namespace Graphite
 		VkPhysicalDevice m_PhysicalDevice;
 		VkPhysicalDeviceProperties m_PhysicalDeviceProperties;
 		VkPhysicalDeviceFeatures m_PhysicalDeviceFeatures;
+		VkPhysicalDeviceMemoryProperties m_PhysicalDeviceMemoryProperties;
 		VkDevice m_LogicalDevice;
 		VkQueue m_GraphicsQueue;
 		VkQueue m_PresentationQueue;

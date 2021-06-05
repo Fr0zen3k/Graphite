@@ -32,13 +32,12 @@ extern Graphite::Application * Graphite::CreateApp();
 /// <param name="argv"></param>
 /// <returns></returns>
 int main(int argc, char *argv[]) {
-
+    srand(time(nullptr));
+	
     Graphite::Log::init();
 
     GR_CORE_LOG_WARN("Core logger init");
     GR_LOG_CRITICAL("Client app logger init");
-
-    GR_CORE_LOG_TRACE(argv[0]);
 
     Graphite::Application *userApp = Graphite::CreateApp();
 	
@@ -46,15 +45,16 @@ int main(int argc, char *argv[]) {
 	
     userApp->SetActiveCamera(Graphite::Camera::CreateCamera(Graphite::CameraType::Perspective));
 
-    userApp->Start();
+    Graphite::Application::SetAppDir(std::string(argv[0]));
+    Graphite::Application::InitBenchmarking();
 	
     userApp->GetActiveCameraInstance()->Translate(glm::vec3(0.0f, 0.0f, 15.0f));
 	
     Graphite::Renderer3D::InitAPI();
 
-    GameObjectID id = Graphite::GameObjectManager::AddGameObject("C:/Users/jankr/OneDrive/Desktop/Moon_2K.obj", "C:/Users/jankr/OneDrive/Desktop/Textures/Diffuse_2K.png");
+    userApp->Start();
 	
-    userApp->run();
+    userApp->Run();
 
     userApp->Shutdown();
 	
