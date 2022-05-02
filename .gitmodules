@@ -4,3 +4,6 @@
 [submodule "Graphite/vendor/assimp"]
 	path = Graphite/vendor/assimp
 	url = https://github.com/assimp/assimp
+[submodule "Graphite/vendor/glfw"]
+	path = Graphite/vendor/glfw
+	url = git@github.com:glfw/glfw.git

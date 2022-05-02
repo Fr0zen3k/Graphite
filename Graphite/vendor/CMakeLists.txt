@@ -3,7 +3,7 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/glfw")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/glm")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/RapidJSON")
 
-# Set the headers of dependencies needed for compilation of the engine
+# Set the headers of dependencies needed for compilation of the engine (not currently used)
 set(
         DEPENDENCY_HEADERS
         "${CMAKE_CURRENT_SOURCE_DIR}/STBI/stb_image.h"

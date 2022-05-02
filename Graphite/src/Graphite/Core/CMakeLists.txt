@@ -1,7 +1,7 @@
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Benchmarking")
 
 set(
-        GRAPHITE_SOURCE_FILES
+        CORE_SOURCES
         "${BENCHMARKING_SOURCES}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Application.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/Input.cpp"
@@ -13,7 +13,7 @@ set(
 )
 
 set(
-        GRAPHITE_HEADER_FILES
+        CORE_HEADERS
         "${BENCHMARKING_HEADERS}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Application.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/Core.h"

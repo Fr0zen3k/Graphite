@@ -21,26 +21,26 @@ endif (WIN32)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Graphite/src")
 
 
+# Compile dependencies
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Graphite/vendor")
+
 # Combine all files
 set(
 	GRAPHITE_FILES
 	"${GRAPHITE_SOURCES}"
 	"${GRAPHITE_HEADERS}"
-	"${DEPENDENCY_HEADERS}"
 	CACHE INTERNAL "" FORCE
 	)
 
-	
+message("${GRAPHITE_FILES}")
+
 # Create the shared library
 add_library(
 	Graphite
 	SHARED
-	"${GRAPHITE_FILES}"
+	${GRAPHITE_FILES}
 	)
-	
-	
-# Compile dependencies
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/Graphite/vendor")
+
 
 
 # Link the libraries
